@@ -77,20 +77,16 @@ class GitCommand:
     def push(self, commit_message="Iterate"):
         """Add all changed files, commit them, and push to the remote repository."""
         # 1) Stage all changes
-        cmd = "git add -A"
-        click.output.run_command_and_print_output(cmd, headline="Staging all changes")
+        click.run("git add -A", headline="Staging all changes")
 
         # 2) Commit changes with the provided commit message
-        cmd = f'git commit -m "{commit_message}"'
-        click.output.run_command_and_print_output(cmd, headline="Committing changes")
+        click.run(f'git commit -m "{commit_message}"', headline="Committing changes")
 
         # 3) Push changes to the remote repository
-        cmd = "git push"
-        click.output.run_command_and_print_output(cmd, headline="Pushing to remote repository")
+        click.run("git push", headline="Pushing to remote repository")
 
         # 4) Show status
-        cmd = "git status"
-        click.output.run_command_and_print_output(cmd, headline="Showing status")
+        click.run("git status", headline="Showing status")
 
 class GroupTwo:
     """

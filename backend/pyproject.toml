@@ -1,0 +1,39 @@
+[tool.isort]
+profile = ""
+src_paths = ["backend"]
+
+[tool.autoimport.common_statements]
+"np" = "import numpy as np"
+"Q" = "from django.db.models import Q"
+"F" = "from django.db.models import F"
+"logger" = "import logging\nlogger = logging.getLogger(__name__)"
+"serializers" = "from rest_framework import serializers"
+"partial" = "from functools import partial"
+
+[tool.ruff.lint]
+
+[project]
+name = "dss-backend"
+version = "0.1"
+
+dependencies = [
+  "Django",
+  "djangorestframework",
+  "psycopg2",
+  "django-environ",
+  "django-vite",
+  "django-jazzmin",
+  "django-countries",
+  "django-select2",
+  "django-cors-headers",
+  "django-csp",
+  "django-tasks[database]",
+  "django-extensions",
+  "django-tasks==0.6.*",
+  "whitenoise",
+  "gunicorn",
+  "google-genai",
+  "ultraimport",
+  "UltraDict @ git+https://github.com/ronny-rentner/UltraDict@dev#egg=UltraDict",
+  "ultraclick @ git+https://github.com/ronny-rentner/ultraclick@main#egg=ultraclick",
+]

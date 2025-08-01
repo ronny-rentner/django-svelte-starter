@@ -3,6 +3,7 @@ import pathlib
 import re
 import shutil
 import sys
+import termios
 from pathlib import Path
 
 import requests
@@ -824,18 +825,29 @@ class MainGroup:
             setattr(self, key, value)
             ctx.meta[key] = value
 
+        #TODO: Put in ultraclick
+        fd = sys.stdin.fileno()
+        attr = termios.tcgetattr(fd)
+        # clear the ECHOCTL bit to not print control characters like ^C
+        attr[3] &= ~termios.ECHOCTL
+        termios.tcsetattr(fd, termios.TCSANOW, attr)
+
         # Warn if not in a virtual environment
         #if sys.prefix == sys.base_prefix and "VIRTUAL_ENV" not in os.environ:
         #    click.output.warning("Virtual environment is not active. It is recommended to activate one before using this CLI.")
 
     @click.command()
-    @click.argument("target", type=click.Choice(['front', 'back', 'worker', 'all']), default="all")
+    @click.argument("target", type=click.Choice(['front', 'back', 'worker', 'all']), default="back")
     @click.argument("host", default="0.0.0.0:8000")
     def run(self, target, host):
         """Run development servers"""
         #cmd = "DEBUG=true python manage.py runserver 0.0.0.0:8000"
-        cmd = f"django-admin dev {host}"
-        click.output.run_command_and_print_output(cmd, headline="Running backend dev server (Django)")
+        if target in ['all', 'back']:
+            cmd = f"./cli/manage.py dev {host}"
+            click.run(cmd, headline="Running backend dev server (Django)")
+        if target in ['all', 'front']:
+            cmd = f"cd frontend; npm run dev"
+            click.run(cmd, headline="Running frontend dev server (NPM)")
 
     dev = click.alias(run)
 
@@ -845,7 +857,10 @@ class MainGroup:
         """Django management command"""
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
         click.output.headline(f'Running django-admin')
+        #It's not actually using manage.py, this is just a placeholder because
+        #the very first argument is ignored by django-admin
         args = ['manage.py', *args]
+        #Lazy import
         from django.core.management import execute_from_command_line
         execute_from_command_line(args)
 
@@ -869,5 +884,5 @@ class MainGroup:
 
 if __name__ == "__main__":
     # Create the CLI using MainGroup
-    cli = click.group_from_class(MainGroup, name="dm")
+    cli = click.group_from_class(MainGroup)
     cli(prog_name="dm")

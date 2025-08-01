@@ -1,44 +1,110 @@
+import importlib
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+import ultraimport
 
+from djultra.utils.config_loader import ConfigLoader
+config = ConfigLoader()
+config.config_file = config('CONFIG_FILE', default="/dev/null")
+
+###########
+# GENERAL #
+###########
+
+#os.environ["DJANGO_RUNSERVER_HIDE_WARNING"] = "true"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-m%1(yh(=n=z181232#hm=gjpanl)g=e^)b&-98f$1xxo75s_=i'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+SELF_DIR = Path(__file__).resolve().parent
+BASE_DIR = SELF_DIR.parent
+PROJECT_NAME = BASE_DIR.name
+
+# Used to generate external links, e. g. for the invitation email.
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+FRONTEND_URL_EMAILS = config('FRONTEND_URL_EMAILS', default='http://localhost:8000')
+FRONTEND_API_URL = config('FRONTEND_API_URL', default='http://localhost:8000/api')
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-i$r0^3%d)v4n6p$tb+qrww70ocsoc3w_11vi&61l*u=f#*_d21')
+
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'berlincube.ddnss.de', 'yuna.fritz.box', '192.168.178.60', 'host.docker.internal'])
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'core',
+
+    'django_vite',
+    #'jazzmin',
+
+    'corsheaders',
+    'rest_framework',
+    'csp',
+
+    'djultra',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'django.contrib.postgres',
+    'django.contrib.postgres',
 
-    'core',
+    'django_tasks',
+    'django_tasks.backends.database',
 ]
+
+INSTALLED_ULTRA_APPS = [
+    'core',
+    'djultra',
+]
+
+TASKS = {
+    "default": {
+        "BACKEND": "django_tasks.backends.database.DatabaseBackend",
+        "QUEUES": []
+    }
+}
+
+ARTIFICIAL_DELAY = {
+    'path': '/api/',  # Path to delay (e.g., '/api/slow/')
+    'delay': 5,       # Delay time in seconds
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # Sets the etag http header
+    'django.middleware.http.ConditionalGetMiddleware',
+
+
+    # Set cors http headers
+    'corsheaders.middleware.CorsMiddleware',
+
+    # Static file serving as early as possible (but not before security)
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Set csp http headers
+    "csp.middleware.CSPMiddleware",
+
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -54,6 +120,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            #'debug': False,
         },
     },
 ]
@@ -117,3 +184,31 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#####################
+# LOAD APP SETTINGS #
+#####################
+
+# Import settings for all apps in `INSTALLED_ULTRA_APPS`
+for app in INSTALLED_ULTRA_APPS:
+    path = ultraimport.search_module_path(app)
+    settings_file_path = f"{path}/settings.py"
+    if os.path.exists(settings_file_path):
+        app_settings = ultraimport(settings_file_path, '*', inject=globals(), add_to_ns=True)
+
+###########
+# LOGGING #
+###########
+
+LOGGING['loggers'] |= {
+    'django-svelte-starter': {
+        'level': 'DEBUG',
+        #'propagate': False,
+    },
+    #'cities_light': {
+    #    'handlers':['console'],
+    #    'propagate': True,
+    #    'level':'DEBUG',
+    #},
+}

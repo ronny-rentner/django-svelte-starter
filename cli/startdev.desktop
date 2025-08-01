@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=DSS Dev Environment
+Comment=Launch all dev tools in GNOME Terminal
+Exec=gnome-terminal -- bash -ic "/home/ronny/Projects/django-svelte-starter/cli/startdev.sh"
+Icon=utilities-terminal
+Terminal=true
+Categories=Development;

@@ -1,0 +1,31 @@
+{% extends 'admin/change_list.html' %}
+
+{% load i18n admin_urls static admin_list %}
+{% comment %}
+{% load jazzmin %}
+{% endcomment %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a></li>
+        <li class="breadcrumb-item active">{{ cl.opts.verbose_name_plural|capfirst }} ({{ cl.result_count }})</li>
+    </ol>
+{% endblock %}
+
+
+{% comment %} We need to override to set the nonce on the script tag {% endcomment %}
+{% block extrajs %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'vendor/select2/js/select2.min.js' %}"></script>
+    <script nonce="{{ request.csp_nonce }}">
+        {% comment %} set filterInputLength default and custom values {% endcomment %}
+        window.filterInputLengthDefault = 0;
+        window.filterInputLength = {
+            {% for k,v in cl.model_admin.filter_input_length.items %}
+                '{{ k }}': {{ v }},
+            {% endfor %}
+        }
+    </script>
+    <script type="text/javascript" src="{% static 'jazzmin/js/change_list.js' %}"></script>
+{% endblock %}

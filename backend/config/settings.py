@@ -20,15 +20,17 @@ config.config_file = config('CONFIG_FILE', default="/dev/null")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-SELF_DIR = Path(__file__).resolve().parent
-BASE_DIR = SELF_DIR.parent
+# Build paths from the repository root; `backend/` and `frontend/` are sibling application directories.
+CONFIG_DIR = Path(__file__).resolve().parent
+BACKEND_DIR = CONFIG_DIR.parent
+BASE_DIR = BACKEND_DIR.parent
 PROJECT_NAME = BASE_DIR.name
 
 # Used to generate external links, e. g. for the invitation email.
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 FRONTEND_URL_EMAILS = config('FRONTEND_URL_EMAILS', default='http://localhost:8000')
 FRONTEND_API_URL = config('FRONTEND_API_URL', default='http://localhost:8000/api')
+RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY', default='starter-dev-recaptcha-key')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -62,7 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
 
     'django_tasks',
-    'django_tasks.backends.database',
+    'django_tasks_db',
 ]
 
 INSTALLED_ULTRA_APPS = [
@@ -72,7 +74,7 @@ INSTALLED_ULTRA_APPS = [
 
 TASKS = {
     "default": {
-        "BACKEND": "django_tasks.backends.database.DatabaseBackend",
+        "BACKEND": "django_tasks_db.DatabaseBackend",
         "QUEUES": []
     }
 }
@@ -112,7 +114,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [CONFIG_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

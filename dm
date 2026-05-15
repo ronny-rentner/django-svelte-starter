@@ -18,8 +18,8 @@ def run_in_venv(venv_path, main_script, *args):
         print(f"Python executable not found in virtual environment: {venv_python}")
         sys.exit(1)
 
-    command = [str(venv_python), str(main_script)] + list(args)
-    os.execv(str(venv_python), command)
+    argv = [str(venv_python), str(main_script)] + list(args)
+    os.execvp(str(venv_python), argv)
 
 if __name__ == "__main__":
     script_dir = Path(__file__).parent.resolve()

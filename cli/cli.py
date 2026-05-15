@@ -10,6 +10,9 @@ import requests
 import ultraclick as click
 from ultraclick import ctx
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+BACKEND_DIR = PROJECT_ROOT / "backend"
+
 class ServiceType(click.ParamType):
     """
     Custom Click type for dynamic service name completion using the 'docker services' command.
@@ -825,16 +828,33 @@ class MainGroup:
             setattr(self, key, value)
             ctx.meta[key] = value
 
+        # The CLI lives outside backend/, so Django commands need the backend package root on sys.path.
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+        backend_dir = str(BACKEND_DIR)
+        if backend_dir not in sys.path:
+            sys.path.insert(0, backend_dir)
+
         #TODO: Put in ultraclick
-        fd = sys.stdin.fileno()
-        attr = termios.tcgetattr(fd)
-        # clear the ECHOCTL bit to not print control characters like ^C
-        attr[3] &= ~termios.ECHOCTL
-        termios.tcsetattr(fd, termios.TCSANOW, attr)
+        if sys.stdin.isatty():
+            fd = sys.stdin.fileno()
+            attr = termios.tcgetattr(fd)
+            # clear the ECHOCTL bit to not print control characters like ^C
+            attr[3] &= ~termios.ECHOCTL
+            termios.tcsetattr(fd, termios.TCSANOW, attr)
 
         # Warn if not in a virtual environment
         #if sys.prefix == sys.base_prefix and "VIRTUAL_ENV" not in os.environ:
         #    click.output.warning("Virtual environment is not active. It is recommended to activate one before using this CLI.")
+
+    @click.command()
+    @click.argument("target", type=click.Choice(['front', 'static', 'all']), default="all")
+    def build(self, target):
+        """Build production frontend assets and collect Django static files."""
+        if target in ['all', 'front']:
+            click.run(["npm", "--prefix", self.frontend_dir, "run", "build"], headline="Building frontend assets")
+
+        if target in ['all', 'static']:
+            return ctx.forward(self.django_admin, args=("collectstatic", "--noinput"))
 
     @click.command()
     @click.argument("target", type=click.Choice(['front', 'back', 'worker', 'all']), default="back")
@@ -846,8 +866,7 @@ class MainGroup:
             cmd = f"./cli/manage.py dev {host}"
             click.run(cmd, headline="Running backend dev server (Django)")
         if target in ['all', 'front']:
-            cmd = f"cd frontend; npm run dev"
-            click.run(cmd, headline="Running frontend dev server (NPM)")
+            click.run(["npm", "--prefix", self.frontend_dir, "run", "dev"], headline="Running frontend dev server (NPM)")
 
     dev = click.alias(run)
 
@@ -855,7 +874,6 @@ class MainGroup:
     @click.argument("args", nargs=-1)
     def django_admin(self, args, **kwargs):
         """Django management command"""
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
         click.output.headline(f'Running django-admin')
         #It's not actually using manage.py, this is just a placeholder because
         #the very first argument is ignored by django-admin

@@ -15,8 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path, re_path
+from django.views.generic import TemplateView
+
+from core import views
 
 urlpatterns = [
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('', include('core.urls')),
     path('admin/', admin.site.urls),
+    # Backend-owned paths are excluded so Svelte receives only frontend routes.
+    re_path(r'^(?!api/|static/|media/|admin).*$', views.index, name="index"),
 ]

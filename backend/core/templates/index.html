@@ -1,0 +1,58 @@
+{% load django_vite %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% vite_hmr_client %}
+    {% vite_asset 'src/main.js' %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Svelte Starter = ❤️</title>
+    <style nonce="{{ request.csp_nonce }}">
+      :root[data-theme="dark"] body {
+        background-color: #13171f;
+      }
+      :root[data-theme="light"] body {
+        background-color: hsl(24 33% 97%/1);
+      }
+    </style>
+    <script nonce="{{ request.csp_nonce }}">
+      // Ensure dark theme is applied on initial load
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      let savedTheme;
+      try {
+        const config = JSON.parse(localStorage.getItem('config'));
+        savedTheme = config?.darkMode ? 'dark' : 'light';
+        console.log('check', savedTheme, config);
+      } catch (error) {
+      }
+
+      if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+
+      /*
+      prefersDarkScheme.addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+          const newColorScheme = e.matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', newColorScheme);
+        }
+      });
+      */
+
+      // Frontend config
+      window.config = {
+        apiBaseUrl: '{{ frontend_api_url }}',
+        baseUrl: '',
+        nonce: '{{ request.csp_nonce }}',
+        recaptchaKey: '{{ recaptcha_site_key }}',
+      };
+    </script>
+    <link rel="icon" href="{% vite_asset_url 'src/assets/favicon.svg' %}" type="image/svg+xml">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>

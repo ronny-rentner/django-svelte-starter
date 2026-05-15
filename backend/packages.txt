@@ -22,3 +22,5 @@ git+https://github.com/ronny-rentner/ultraclick@main#egg=ultraclick
 youtube-transcript-api
 pytubefix
 
+setproctitle
+

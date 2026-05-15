@@ -1,7 +1,7 @@
 {
   "name": "django-svelte-starter-frontend",
   "private": true,
-  "version": "1.211",
+  "version": "1.215",
   "type": "module",
   "scripts": {
     "postbuild": "node ./scripts/update-build-info.js",

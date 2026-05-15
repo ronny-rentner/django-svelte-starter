@@ -1,0 +1,8 @@
+{% include "emails/header.html" %}
+
+    <p>Dear {{ first_name }} {{ last_name }},</p>
+    <p>Here is your sign in link:</p>
+    <p><a href="{{ signin_link }}" title="Signin link">{{ signin_link }}</a></p>
+    <p>Best regards,<br>Relonee Team</p>
+
+{% include "emails/footer.html" %}

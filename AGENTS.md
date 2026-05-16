@@ -31,3 +31,4 @@ Local defaults are developer-friendly, including PostgreSQL database `dss` on po
 
 ## Agent-Specific Instructions
 Always consult, update, and maintain `STARTER_TODO.md` while working in this repository. Treat it as the running memory for starter extraction tasks, especially items copied or deferred from Relonee.
+Before proposing or applying code changes, read the relevant files and surrounding control flow thoroughly. Write proper code from the existing source of truth, avoid duplicate state, and reject patches that only address the local symptom without fitting the file’s actual design.

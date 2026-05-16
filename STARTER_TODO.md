@@ -13,3 +13,4 @@
 - External integrations: `DocusealWebhookView`, `AnabinAiSearch`, `VidexFormChatView`, and their model/service dependencies only for projects that need them.
 - Copied templates from Relonee need adaptation before production use: `emails/*` and admin overrides. The frontend shell is copied and minimally adapted for starter routing.
 - Static source assets from Relonee `static/src` may be useful later for admin styling, favicon, and email/logo assets.
+- Fastmanage exit status follow-up: keep the current fd-based stdout/stderr design, then try returning a plain ASCII integer exit code over the existing completion socket after tests cover the current behavior.

@@ -863,8 +863,7 @@ class MainGroup:
         """Run development servers"""
         #cmd = "DEBUG=true python manage.py runserver 0.0.0.0:8000"
         if target in ['all', 'back']:
-            cmd = f"./cli/manage.py dev {host}"
-            click.run(cmd, headline="Running backend dev server (Django)")
+            click.run([sys.executable, "./cli/manage.py", "dev", host], headline="Running backend dev server (Django)")
         if target in ['all', 'front']:
             click.run(["npm", "--prefix", self.frontend_dir, "run", "dev"], headline="Running frontend dev server (NPM)")
 
@@ -878,7 +877,9 @@ class MainGroup:
         #It's not actually using manage.py, this is just a placeholder because
         #the very first argument is ignored by django-admin
         args = ['manage.py', *args]
-        #Lazy import
+        # Install the fastmanage client before Django resolves ManagementUtility.
+        import djultra.management.commands.fastmanage_patch  # noqa: F401
+        # Lazy import keeps non-Django CLI commands cheap.
         from django.core.management import execute_from_command_line
         execute_from_command_line(args)
 

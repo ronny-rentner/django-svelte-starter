@@ -828,7 +828,6 @@ class MainGroup:
             setattr(self, key, value)
             ctx.meta[key] = value
 
-        # The CLI lives outside backend/, so Django commands need the backend package root on sys.path.
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
         backend_dir = str(BACKEND_DIR)
         if backend_dir not in sys.path:
@@ -877,9 +876,7 @@ class MainGroup:
         #It's not actually using manage.py, this is just a placeholder because
         #the very first argument is ignored by django-admin
         args = ['manage.py', *args]
-        # Install the fastmanage client before Django resolves ManagementUtility.
-        import djultra.management.commands.fastmanage_patch  # noqa: F401
-        # Lazy import keeps non-Django CLI commands cheap.
+        import djultra.management.commands.fastmanage_patch
         from django.core.management import execute_from_command_line
         execute_from_command_line(args)
 

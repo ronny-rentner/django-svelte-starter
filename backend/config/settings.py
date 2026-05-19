@@ -20,7 +20,6 @@ config.config_file = config('CONFIG_FILE', default="/dev/null")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Build paths from the repository root; `backend/` and `frontend/` are sibling application directories.
 CONFIG_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = CONFIG_DIR.parent
 BASE_DIR = BACKEND_DIR.parent

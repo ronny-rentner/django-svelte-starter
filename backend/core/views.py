@@ -17,7 +17,6 @@ class GenericAPIThrottle(UserRateThrottle):
 
 
 def index(request):
-    # The Svelte entrypoint reads `window.config` before app components mount.
     context = {
         'frontend_api_url': settings.FRONTEND_API_URL,
         'recaptcha_site_key': settings.RECAPTCHA_SITE_KEY,
@@ -26,7 +25,6 @@ def index(request):
 
 
 class TokenLoginView2(APIView):
-    # Token links must be usable before the user has a session.
     permission_classes = []
 
     def get(self, request):
@@ -66,7 +64,6 @@ class SignOutView(APIView):
 
 
 class Ping(APIView):
-    # Anonymous pings let the frontend distinguish session state without redirecting.
     permission_classes = []
 
     def get(self, request):

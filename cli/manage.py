@@ -7,14 +7,12 @@ from pathlib import Path
 
 def main():
     """Run administrative tasks."""
-    # The wrapper lives in cli/, while the Django project package lives in backend/.
     backend_dir = str(Path(__file__).resolve().parent.parent / "backend")
     if backend_dir not in sys.path:
         sys.path.insert(0, backend_dir)
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-    # Install the fastmanage client before Django resolves ManagementUtility.
-    import djultra.management.commands.fastmanage_patch  # noqa: F401
+    import djultra.management.commands.fastmanage_patch
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

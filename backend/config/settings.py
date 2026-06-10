@@ -20,6 +20,8 @@ config.config_file = config('CONFIG_FILE', default="/dev/null")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+DJANGO_VITE_DEV_MODE = DEBUG
+
 CONFIG_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = CONFIG_DIR.parent
 BASE_DIR = BACKEND_DIR.parent
@@ -179,7 +181,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATIC_ROOT = BASE_DIR / 'static/collected'
+
+if DEBUG:
+
+    STATICFILES_DIRS = (
+        BASE_DIR / 'static/src',
+        BASE_DIR / 'static/frontend',
+        ('src/assets', BASE_DIR / 'frontend/src/assets'),
+    )
+
+    DJANGO_VITE_ASSETS_PATH = BASE_DIR / "static" / "frontend"
+    DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "static/frontend/manifest.json"
+
+else:
+
+    DJANGO_VITE_ASSETS_PATH = STATIC_ROOT
+    DJANGO_VITE_MANIFEST_PATH = STATIC_ROOT / 'manifest.json'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

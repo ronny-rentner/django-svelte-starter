@@ -18,9 +18,9 @@ config.config_file = config('CONFIG_FILE', default="/dev/null")
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True)
 
-DJANGO_VITE_DEV_MODE = DEBUG
+LOG_LEVEL = config('LOG_LEVEL', default="ERROR")
 
 CONFIG_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = CONFIG_DIR.parent
@@ -85,20 +85,22 @@ ARTIFICIAL_DELAY = {
     'delay': 5,       # Delay time in seconds
 }
 
+# djultra's injected app settings wrap this list with its own middleware
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    # First in the list so its CORS headers survive on every outgoing
+    # response, including the 304s that ConditionalGetMiddleware fabricates
+    'corsheaders.middleware.CorsMiddleware',
 
     # Sets the etag http header
     'django.middleware.http.ConditionalGetMiddleware',
 
+    'django.middleware.security.SecurityMiddleware',
 
-    # Set cors http headers
-    'corsheaders.middleware.CorsMiddleware',
-
-    # Static file serving as early as possible (but not before security)
+    # Static file serving
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # After the session is initialized, we can run our auth
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -107,7 +109,6 @@ MIDDLEWARE = [
 
     # Set csp http headers
     "csp.middleware.CSPMiddleware",
-
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -178,28 +179,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = '/static/'
-
-STATIC_ROOT = BASE_DIR / 'static/collected'
-
-if DEBUG:
-
-    STATICFILES_DIRS = (
-        BASE_DIR / 'static/src',
-        BASE_DIR / 'static/frontend',
-        ('src/assets', BASE_DIR / 'frontend/src/assets'),
-    )
-
-    DJANGO_VITE_ASSETS_PATH = BASE_DIR / "static" / "frontend"
-    DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "static/frontend/manifest.json"
-
-else:
-
-    DJANGO_VITE_ASSETS_PATH = STATIC_ROOT
-    DJANGO_VITE_MANIFEST_PATH = STATIC_ROOT / 'manifest.json'
+# Static files: STATIC_URL/STATIC_ROOT and the django-vite paths come from
+# djultra's injected app settings (LOAD APP SETTINGS below)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

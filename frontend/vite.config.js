@@ -2,7 +2,7 @@ import { defineConfig, createLogger } from 'vite';
 
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 //import { buildInfoPlugin } from './src/lib/buildInfoVitePlugin';
-import generateRoutesPlugin from './src/lib/vite/generateRoutes';
+import generateRoutesPlugin from 'svultra/kit/router/generateRoutes';
 
 import path from 'path';
 import fs from 'node:fs';
@@ -103,9 +103,11 @@ const config = {
   ],
   resolve: {
     alias: {
-      '@assets': path.resolve(__dirname, 'src/assets'),
-      '@icons':  '@iconify-icons',
-      '@styles': path.resolve(__dirname, 'src/styles'),
+      '@api':        path.resolve(__dirname, 'src/api'),
+      '@assets':     path.resolve(__dirname, 'src/assets'),
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@icons':      '@iconify-icons',
+      '@styles':     path.resolve(__dirname, 'src/styles'),
     },
   },
   build: {

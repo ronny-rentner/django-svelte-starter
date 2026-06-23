@@ -20,6 +20,15 @@ The Django template shell loads the Svelte entrypoint through `django-vite` usin
 ## Coding Style & Naming Conventions
 Python uses 4-space indentation, `snake_case` functions and fields, `PascalCase` models, and model constants grouped near the model they support. Keep migrations committed with model changes. JavaScript and Svelte use ES modules, 2-space indentation, `PascalCase` component filenames, and aliases such as `@components`, `@pages`, and `@api`. Svelte files use advanced preprocessors from `frontend/svelte.config.js` that rewrite syntax and allow expressions that plain Svelte rejects; inspect that configuration before changing Svelte syntax or treating compiler warnings as obvious fixes. `isort` and Ruff are configured in `backend/pyproject.toml`, but no format command is defined.
 
+**Mirror the source structure; call through module paths.** When porting from Relonee or adding modules, preserve the package/folder layout — a file that lives inside a sub-package stays there (`services/email.py`, `models/base.py`, the `api/` folder), never flattened to a top-level module. Import the module and call functions through their qualified path rather than importing the bare name:
+
+```python
+from djultra import services
+services.email.send_templated_email(subject=..., ...)   # not: from djultra.services.email import send_templated_email; send_templated_email(...)
+```
+
+The qualified call (`services.email.send_templated_email`) is more readable and shows where the function lives and how the code is structured. The same applies on the frontend: mirror Relonee's `components/`, `lib/`, `api/` folders and import through the established aliases instead of relocating files.
+
 ## Testing Guidelines
 Backend tests use Django’s test runner. Add tests beside the relevant app, currently `backend/core/tests.py`, and name test methods with `test_...`. Run `./dm django-admin test core` before backend submissions. No frontend test runner is configured; for UI changes, run `./dm build front` and include manual verification notes.
 

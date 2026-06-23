@@ -3,6 +3,9 @@
 ## Copy or Adapt Later From Relonee
 
 - Frontend dependency refresh: backend venv packages were refreshed to current PyPI releases, including Django 6 and the `django-tasks-db` split. Frontend package updates remain; current build warnings include old Browserslist data and Svelte warnings from older component code. Svelte updates need extra care because `frontend/svelte.config.js` uses advanced preprocessors that rewrite syntax and allow non-plain-Svelte expressions.
+- Frontend starter extraction: keep the Vite/Svelte shell, generated routes, layout, stores, API helper pattern, and Django template integration; separate or delete project-specific Relonee/Anabin/document/process/visa pages, markdown, and assets once replacement starter pages are defined.
+- Frontend project prototype content: current visible shell mixes starter code with the later YouTube/finance idea (`my market mentor`, `/generate`, YouTube asset) and old Relonee marketing/legal/account content; decide the minimal neutral starter surface before broad cleanup.
+- svUltra demo history: previous demo work stalled because LLM-generated demos did not communicate the library well enough; judge the next pass by whether it clearly proves the README claims instead of by generic cleanup.
 - CLI development orchestration: make `./dm run all` start backend and frontend together instead of running the backend command first and blocking the frontend command.
 - Contact form flow: `ContactMessageThrottle`, `ContactMessageView`, `ContactMessageSerializer`, recaptcha verification, and frontend contact submission wiring.
 - Sign-in request flow: `SigninRequestView`, `Person.send_signin_email()`, sign-in email template adaptation, recaptcha verification, and token email links.

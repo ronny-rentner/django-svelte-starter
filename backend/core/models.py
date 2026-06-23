@@ -5,10 +5,11 @@ import xml.etree.ElementTree as ET
 from django.db import models
 from pytubefix import YouTube
 
-from djultra import base, fields
+from djultra import fields
+import djultra.models
 
 
-class YouTubeVideo(base.BaseModel):
+class YouTubeVideo(djultra.models.Base):
     class Admin:
         search_fields = ['title']
 
@@ -66,7 +67,7 @@ class YouTubeVideo(base.BaseModel):
     def link(self):
         return f"https://www.youtube.com/watch?v={self.video_id}"
 
-    @base.admin_action()
+    @djultra.models.admin_action()
     def fetch_and_store_video(self, save_transcripts=True):
         try:
             # 1) metadata
@@ -171,7 +172,7 @@ class YouTubeVideo(base.BaseModel):
         return self.title or self.video_id
 
 
-class YouTubeTranscript(base.BaseModel):
+class YouTubeTranscript(djultra.models.Base):
     video          = models.ForeignKey(
         YouTubeVideo,
         on_delete=models.CASCADE,

@@ -18,6 +18,10 @@ export default {
     attributes: [
       ['ariaLabel', 'aria-label'],
     ],
+    // Enables <markdown file="..."> tags, resolved against src/markdown
+    markdown: {
+      path: './src/markdown',
+    },
   }),
 
   compilerOptions: {},

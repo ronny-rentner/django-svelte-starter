@@ -6,9 +6,7 @@
 - Frontend starter extraction: keep the Vite/Svelte shell, generated routes, layout, stores, API helper pattern, and Django template integration; separate or delete project-specific Relonee/Anabin/document/process/visa pages, markdown, and assets once replacement starter pages are defined.
 - Frontend project prototype content: current visible shell mixes starter code with the later YouTube/finance idea (`my market mentor`, `/generate`, YouTube asset) and old Relonee marketing/legal/account content; decide the minimal neutral starter surface before broad cleanup.
 - svUltra demo history: previous demo work stalled because LLM-generated demos did not communicate the library well enough; judge the next pass by whether it clearly proves the README claims instead of by generic cleanup.
-- CLI development orchestration: make `./dm run all` start backend and frontend together instead of running the backend command first and blocking the frontend command.
-- Contact form flow: `ContactMessageThrottle`, `ContactMessageView`, `ContactMessageSerializer`, recaptcha verification, and frontend contact submission wiring.
-- Sign-in request flow: `SigninRequestView`, `Person.send_signin_email()`, sign-in email template adaptation, recaptcha verification, and token email links.
+- CLI development orchestration: make `./dm run all` start backend and frontend together instead of running the backend command first and blocking the frontend command.- Sign-in request flow: `SigninRequestView`, `Person.send_signin_email()`, sign-in email template adaptation, recaptcha verification, and token email links.
 - Token auth support dependencies: custom token authentication backend/model behavior used by `TokenLoginView2`; the API view and route are copied, but authentication still needs a backend implementation.
 - User/person API shape: decide whether to copy `PersonView`, `PersonAcceptTermsView`, ownership permissions, and related serializers after starter user/account models exist.
 - Document/download API: `DocumentDownloadView`, `DocumentList`, file permissions, document serializer context, and media path behavior.

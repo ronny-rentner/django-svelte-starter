@@ -128,6 +128,14 @@ To keep it on across reloads while you work, set the same value in `frontend/src
 window.config.loadingDelay = 4000;
 ```
 
+## Contact form
+
+The starter ships a working contact form — a modal opened from the **Contact** link in
+the nav and footer. It validates the name/email/message fields, runs reCAPTCHA, and
+POSTs to `/api/contact/`. The backend (djultra's `ContactMessageView`) verifies the
+reCAPTCHA token, rate-limits to 2 requests per minute, and saves a `ContactMessage`
+record (with the sender's IP and user-agent).
+
 ## reCAPTCHA
 
 The contact form and the sign-in request are protected by reCAPTCHA v3. The

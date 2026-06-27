@@ -65,6 +65,69 @@ When the page and API differ in origin, cross-origin access is gated by
 `CORS_ALLOWED_ORIGINS` and the CSP `connect-src`; their comments in `settings.py`
 explain how to allow extra hosts such as LAN IPs.
 
+## Frontend config
+
+The frontend has two separate configs:
+
+- **`window.config` — system config.** The frontend's system configuration, injected
+  by the Django shell at page load: API URLs, API keys (such as the reCAPTCHA site
+  key), and similar deployment values — how this deployment is wired.
+- **`configStore` — user config.** The user's own configuration (such as dark mode),
+  persisted in the browser's `localStorage` so it survives across visits.
+
+  Read and write it from any component or module via the kit store:
+
+  ```js
+  import { configStore as config } from '@kit/stores';
+  import { get } from 'svelte/store';
+
+  $config.darkMode            // read reactively in a Svelte component
+  get(config).darkMode        // read imperatively, outside a reactive context
+
+  // Update by passing an object: it deep-merges into the current config and
+  // persists to localStorage automatically — other keys are left untouched.
+  config.update({ darkMode: true });
+
+  // Add a new user setting the same way — just write a new key:
+  config.update({ sidebarCollapsed: true });
+  ```
+
+  Changes save immediately and sync across the user's open tabs.
+
+  Because `update` deep-merges, a nested object keeps its other keys — which is exactly
+  what a UI wants: when the user flips one knob (say, a list's sort order), the rest of
+  that setting (its active tags) stays put instead of being wiped out. When you *do*
+  want to replace a nested object wholesale instead of merging into it, wrap it with
+  `overwrite()`:
+
+  ```js
+  import { configStore as config, overwrite } from '@kit/stores';
+
+  // stored value: { filters: { sort: 'date', tags: ['x'] } }
+  config.update({ filters: { sort: 'name' } });            // merge   → { filters: { sort: 'name', tags: ['x'] } }
+  config.update({ filters: overwrite({ sort: 'name' }) }); // replace → { filters: { sort: 'name' } }
+  ```
+
+## Simulating slow loading
+
+To test the loading screens and SPA behaviour under slow page loads, set a loading delay
+on `window.config`. The router then waits that many milliseconds before swapping in the
+next page, so you can watch the loading overlay and how the app behaves while content is
+slow to arrive.
+
+For a quick one-off, set it from the browser console — session-only, a reload clears it:
+
+```js
+window.config.loadingDelay = 4000   // every navigation waits 4 s before the new page swaps in
+```
+
+To keep it on across reloads while you work, set the same value in `frontend/src/init.js`
+(which builds up `window.config` on every load):
+
+```js
+window.config.loadingDelay = 4000;
+```
+
 ## reCAPTCHA
 
 The contact form and the sign-in request are protected by reCAPTCHA v3. The

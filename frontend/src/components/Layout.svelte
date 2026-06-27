@@ -5,7 +5,6 @@
   import logoDark from '@kit/assets/logo-dark.svg';
 
   import MediaQuery from '@kit/components/MediaQuery.svelte';
-  import { Button } from '@kit/components';
   import MobileMenuButton from '@components/layout/MobileMenuButton.svelte';
   import MobileMenu from '@components/layout/MobileMenu.svelte';
   import Menu from '@components/layout/Menu.svelte';
@@ -21,7 +20,7 @@
   import { writable } from 'svelte/store';
   import { configStore as config } from '@kit/stores';
 
-  import Toaster /*, { toastSuccess, toastWarning }*/ from '@kit/components/Toasts.svelte';
+  import Toaster from '@kit/components/Toasts.svelte';
 
   //import { renderSnippetToHTML } from '../snippet.svelte.js';
 
@@ -87,11 +86,6 @@
 </script>
 
 <style>
-  .loading-delay-notice {
-    margin: 0;
-    color: var(--pico-del-color);
-  }
-
   header {
     animation: fadeIn 0.5s ease-in forwards;
     position: relative;
@@ -133,12 +127,6 @@
     <MobileMenu bind:open={mobileMenuOpen} {items} {contrastMode} />
   {/if}
 <header class="container">
-  {#if $config.loadingDelay}
-    <p class="loading-delay-notice">
-      <strong>Loading delay: {$config.loadingDelay} ms</strong>
-      <Button onclick={() => config.update({ loadingDelay: 0 })}>turn off</Button>
-    </p>
-  {/if}
   <nav class:contrast={contrastMode}>
     <ul>
       <li>

@@ -1,7 +1,15 @@
 # Repository Guidelines
 
 ## Start Here
-Orient before changing anything: list the repo's top-level files and directories, then read `readme.md` (project overview) and `starter_todo.md` (the running memory for the Relonee extraction — items copied or deferred from Relonee; keep it current as you work).
+This is a **Relonee extraction in progress, not a finished design** — the code here is a copied/adapted starting point, not automatically the intended target.
+
+`readme.md` is the **single source of truth**: it is both the end-user documentation and the project's status, in one place. The rule for reading and writing it:
+
+- **Everything in `readme.md` is a settled decision — unless it is explicitly tagged `in progress`, `transient`, or `temporary`**, which is how unsettled things are marked.
+- **Writing something into the docs as how-it-works *is* recording a decision.** So never document an unsettled thing as fact — tag it, or put it under the status/open items. Never leave an unsettled thing unmarked, because unmarked = decided.
+- The job is extraction **decisions** — current state → good target → reuse-or-trim — not policing copied code as "dead."
+
+Orient first (list the repo's top-level files and dirs), then read `readme.md` and keep it in context. Record decisions there as they're made; that's how they survive across sessions.
 
 ## Project Structure & Module Organization
 This repository combines a Django backend with a Vite/Svelte frontend. Backend code lives in `backend/`: `config/` holds settings and URL wiring, while `core/` contains models, views, admin setup, migrations, and `core/tests.py`. Frontend code lives in `frontend/src/`, with reusable UI in `components/`, page views in `pages/`, API helpers in `api/`, shared state in `stores*.js`, styles in `styles/`, markdown in `markdown/`, and static assets in `assets/`. CLI helpers are in `cli/`; `dm` runs them through `backend/venv`.
@@ -42,5 +50,5 @@ Recent history uses short messages such as `Iterate` and `Initial commit`; prefe
 Local defaults are developer-friendly, including PostgreSQL database `dss` on port `5433`. Override secrets and URLs with `SECRET_KEY`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `FRONTEND_URL`, and `FRONTEND_API_URL`. Do not commit credentials, virtual environments, or generated secrets.
 
 ## Agent-Specific Instructions
-Always consult, update, and maintain `starter_todo.md` while working in this repository. Treat it as the running memory for starter extraction tasks, especially items copied or deferred from Relonee.
+Always consult, update, and maintain `readme.md` — the single source of truth — while working in this repository. Record decisions there as they are made, and tag anything not yet settled `in progress` / `transient` / `temporary` (unmarked = decided). It absorbs what used to be the separate `starter_todo.md` running list.
 Before proposing or applying code changes, read the relevant files and surrounding control flow thoroughly. Write proper code from the existing source of truth, avoid duplicate state, and reject patches that only address the local symptom without fitting the file’s actual design.

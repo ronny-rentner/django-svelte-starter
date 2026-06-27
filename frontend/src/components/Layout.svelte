@@ -1,10 +1,11 @@
 <script>
   //import { fade } from 'svelte/transition';
 
-  import logo     from 'svultra/kit/assets/logo.svg';
-  import logoDark from 'svultra/kit/assets/logo-dark.svg';
+  import logo     from '@kit/assets/logo.svg';
+  import logoDark from '@kit/assets/logo-dark.svg';
 
-  import MediaQuery from 'svultra/kit/components/MediaQuery.svelte';
+  import MediaQuery from '@kit/components/MediaQuery.svelte';
+  import { Button } from '@kit/components';
   import MobileMenuButton from '@components/layout/MobileMenuButton.svelte';
   import MobileMenu from '@components/layout/MobileMenu.svelte';
   import Menu from '@components/layout/Menu.svelte';
@@ -15,12 +16,12 @@
 
   import Footer from '@components/layout/Footer.svelte';
 
-  //import { personStore as person, authLoading } from 'svultra/kit/stores';
+  //import { personStore as person, authLoading } from '@kit/stores';
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import { configStore as config } from 'svultra/kit/stores';
+  import { configStore as config } from '@kit/stores';
 
-  import Toaster /*, { toastSuccess, toastWarning }*/ from 'svultra/kit/components/Toasts.svelte';
+  import Toaster /*, { toastSuccess, toastWarning }*/ from '@kit/components/Toasts.svelte';
 
   //import { renderSnippetToHTML } from '../snippet.svelte.js';
 
@@ -51,7 +52,6 @@
   const items = [
     { path: '/',        label: 'Home' },
     { path: '/about',   label: 'About' },
-    { path: '/pricing', label: 'Pricing' },
     { path: '/faq',     label: 'FAQ' },
     { path: '/guide',   label: 'Guide' },
     { path: '/landing', label: 'Landing' },
@@ -87,6 +87,11 @@
 </script>
 
 <style>
+  .loading-delay-notice {
+    margin: 0;
+    color: var(--pico-del-color);
+  }
+
   header {
     animation: fadeIn 0.5s ease-in forwards;
     position: relative;
@@ -128,6 +133,12 @@
     <MobileMenu bind:open={mobileMenuOpen} {items} {contrastMode} />
   {/if}
 <header class="container">
+  {#if $config.loadingDelay}
+    <p class="loading-delay-notice">
+      <strong>Loading delay: {$config.loadingDelay} ms</strong>
+      <Button onclick={() => config.update({ loadingDelay: 0 })}>turn off</Button>
+    </p>
+  {/if}
   <nav class:contrast={contrastMode}>
     <ul>
       <li>

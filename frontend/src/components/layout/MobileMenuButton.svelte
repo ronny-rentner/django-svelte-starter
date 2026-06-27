@@ -1,14 +1,14 @@
 <script>
-  import Button from 'svultra/kit/components/Button.svelte';
+  import Button from '@kit/components/Button.svelte';
 
   import LoginForm from '@components/LoginForm.svelte';
   import loginIcon from '@iconify-icons/ph/sign-in-duotone';
 
-  import ToggleDarkMode from 'svultra/kit/components/ToggleDarkMode.svelte';
+  import ToggleDarkMode from '@kit/components/ToggleDarkMode.svelte';
   //import ContactForm from '@components/ContactForm.svelte';
   import UserMenu from '@components/layout/UserMenu.svelte';
 
-  import { personStore as person /*, authLoading */ } from 'svultra/kit/stores';
+  import { personStore as person /*, authLoading */ } from '@kit/stores';
 
   let { open = $bindable(), contrastMode = false, children, ...props } = $props();
 

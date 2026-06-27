@@ -107,6 +107,7 @@ const config = {
       '@assets':     path.resolve(__dirname, 'src/assets'),
       '@components': path.resolve(__dirname, 'src/components'),
       '@icons':      '@iconify-icons',
+      '@kit':        'svultra/kit',
       '@styles':     path.resolve(__dirname, 'src/styles'),
     },
   },

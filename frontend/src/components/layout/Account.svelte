@@ -1,9 +1,9 @@
 <script>
   import { onMount } from 'svelte';
-  import { personStore as person } from 'svultra/kit/stores';
-  import { navigate } from 'svultra/kit/router';
-  import Main from 'svultra/kit/components/Main.svelte';
-  import Toaster, { /* toastSuccess, */ toastWarning } from 'svultra/kit/components/Toasts.svelte';
+  import { personStore as person } from '@kit/stores';
+  import { navigate } from '@kit/router';
+  import Main from '@kit/components/Main.svelte';
+  import Toaster, { /* toastSuccess, */ toastWarning } from '@kit/components/Toasts.svelte';
 
   onMount(() => {
     if (!$person) {

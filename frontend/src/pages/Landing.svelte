@@ -1,7 +1,7 @@
 <script>
   import { getContext, onDestroy } from 'svelte';
-  import { Main, Button } from 'svultra/kit/components';
-  import { navigate } from 'svultra/kit/router';
+  import { Main, Button } from '@kit/components';
+  import { navigate } from '@kit/router';
 
   let { meta, ...rest } = $props();
   meta({

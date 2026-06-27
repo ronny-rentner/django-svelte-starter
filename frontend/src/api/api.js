@@ -1,4 +1,5 @@
-import { personStore as person, authLoading } from 'svultra/kit/stores';
+import { personStore as person, authLoading } from '@kit/stores';
+import { executeRecaptcha } from '@kit/recaptcha';
 
 import { get } from 'svelte/store';
 
@@ -210,4 +211,15 @@ export async function checkAuthStatus() {
   }
 
   return isAuthenticated;
+}
+
+export async function submitContactForm({ name, email, message }) {
+  const recaptchaToken = await executeRecaptcha('contact_form/submit');
+  const payload = { name, email, message, recaptcha: recaptchaToken };
+
+  return await apiRequest(`${window.config.apiBaseUrl}/contact/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 }

@@ -2,12 +2,12 @@
     //import LoginForm from '@components/LoginForm.svelte';
     import ContactForm from '@components/ContactForm.svelte';
     //import UserMenu from '@components/layout/UserMenu.svelte';
-    //import ToggleDarkMode from 'svultra/kit/components/ToggleDarkMode.svelte';
+    //import ToggleDarkMode from '@kit/components/ToggleDarkMode.svelte';
 
     import { fly, /*scale,*/ slide } from 'svelte/transition';
     import { quadOut } from 'svelte/easing';
 
-    import { base, currentPath } from 'svultra/kit/router';
+    import { base, currentPath } from '@kit/router';
 
     let { open = $bindable(), contrastMode = false, items } = $props()
 

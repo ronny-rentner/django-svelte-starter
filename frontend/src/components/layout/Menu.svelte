@@ -1,13 +1,13 @@
 <script>
-  import { baseUrl, currentPath } from 'svultra/kit/router';
+  import { baseUrl, currentPath } from '@kit/router';
 
   import LoginForm from '@components/LoginForm.svelte';
   import ContactForm from '@components/ContactForm.svelte';
   import UserMenu from '@components/layout/UserMenu.svelte';
-  import ToggleDarkMode from 'svultra/kit/components/ToggleDarkMode.svelte';
-  //import { configStore as config } from 'svultra/kit/stores';
+  import ToggleDarkMode from '@kit/components/ToggleDarkMode.svelte';
+  //import { configStore as config } from '@kit/stores';
 
-  import { personStore as person /*, authLoading */ } from 'svultra/kit/stores';
+  import { personStore as person /*, authLoading */ } from '@kit/stores';
 
 
   let { items, contrastMode, ...rest } = $props();

@@ -42,6 +42,46 @@ cd frontend && npm run build
 ./dm django-admin collectstatic --noinput
 ```
 
+## How the frontend and API are served
+
+In development, Django serves the API and the HTML shell on port 8000, and Vite
+serves the Svelte app with hot-reload on port 5173. The page and the API can be
+different origins — the Vite page on `:5173` calling the API on `:8000`, or Django
+reached under a host alias (e.g. `127.0.0.1` vs `localhost`) that differs from the
+API URL.
+
+In production, a reverse proxy (nginx, in Docker or whatever you run) serves the
+built SPA and forwards `/api` to Django, normally all under one real domain — so
+the page and API share an origin. There is no Vite; the dev ports are gone.
+
+Three settings encode these URLs, set per environment:
+
+- `FRONTEND_URL` — where the SPA is served (`http://localhost:5173` in dev, the
+  real site origin in prod).
+- `FRONTEND_API_URL` — the API base the SPA calls (`http://localhost:8000/api`).
+- `FRONTEND_URL_EMAILS` — the app's public base URL used in email links.
+
+When the page and API differ in origin, cross-origin access is gated by
+`CORS_ALLOWED_ORIGINS` and the CSP `connect-src`; their comments in `settings.py`
+explain how to allow extra hosts such as LAN IPs.
+
+## reCAPTCHA
+
+The contact form and the sign-in request are protected by reCAPTCHA v3. The
+frontend loads the widget with `RECAPTCHA_SITE_KEY` and sends a token with each
+submission; the backend verifies that token with Google using
+`RECAPTCHA_SECRET_KEY`.
+
+Both keys default to Google's universal test keys, which always validate (the
+widget shows a "for testing only" banner) — so the forms work out of the box with
+no setup. For production, set real keys via environment variables (or the
+`CONFIG_FILE`):
+
+```sh
+RECAPTCHA_SITE_KEY=...      # public, used by the widget
+RECAPTCHA_SECRET_KEY=...    # private, used for server-side verification
+```
+
 ## Backend management
 
 Run the backend with `./dm run` — it starts the Django dev server together with a

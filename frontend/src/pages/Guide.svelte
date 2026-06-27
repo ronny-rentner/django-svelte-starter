@@ -1,5 +1,5 @@
 <script>
-  import { Main } from 'svultra/kit/components';
+  import { Main } from '@kit/components';
 
   let { meta, ...rest } = $props();
   meta({

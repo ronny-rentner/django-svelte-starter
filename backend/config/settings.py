@@ -27,11 +27,18 @@ BACKEND_DIR = CONFIG_DIR.parent
 BASE_DIR = BACKEND_DIR.parent
 PROJECT_NAME = BASE_DIR.name
 
-# Used to generate external links, e. g. for the invitation email.
+# Frontend / API URLs, set per environment. They encode how the app is served — in
+# dev the Django API (:8000) and Vite SPA (:5173) on separate ports, in production a
+# single reverse-proxied origin. See the readme, "How the frontend and API are
+# served". CORS_ALLOWED_ORIGINS and the CSP connect-src build on these.
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 FRONTEND_URL_EMAILS = config('FRONTEND_URL_EMAILS', default='http://localhost:8000')
 FRONTEND_API_URL = config('FRONTEND_API_URL', default='http://localhost:8000/api')
-RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY', default='starter-dev-recaptcha-key')
+# reCAPTCHA v3 — defaults to Google's universal test keys: they always validate
+# (the widget shows a "for testing only" banner), so the contact/sign-in forms
+# work out of the box. Set your real keys via env / CONFIG_FILE in production.
+RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY', default='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI')
+RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY', default='6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/

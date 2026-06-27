@@ -1,0 +1,30 @@
+/*
+ * Loaded after Pico (see main.js). Holds Pico theme/variable tweaks and fixes for
+ * Pico's own bugs. Component- or page-specific styling stays in the components.
+ * (Accordion-specific Pico fixes ship with the action — see svUltra's accordion.css.)
+ */
+
+/*********************/
+/* PICO CSS BUGFIXES */
+/*********************/
+
+/* A search combobox that isn't the last control in the group keeps its rounded
+   left corners instead of sitting flush against the control before it. */
+[role="search"] input[role="combobox"]:not(:last-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* In a grouped row Pico carries the focus border across the buttons when a
+   single-line input is focused, but not when a <textarea> is — so the buttons look
+   detached from the focused field. Restore it for the textarea case. */
+[role="group"]:has(textarea:focus) :is([role="button"], [type="button"], [type="submit"], button) {
+  --pico-button-box-shadow: 0 0 0 var(--pico-border-width) var(--pico-primary-border);
+  --pico-button-hover-box-shadow: 0 0 0 var(--pico-border-width) var(--pico-primary-hover-border);
+}
+
+/* Pico's default button bottom-margin leaves dead space under buttons placed in an
+   article footer. */
+article footer :is([type="button"], [type="reset"], [type="submit"]) {
+  margin-bottom: 0;
+}

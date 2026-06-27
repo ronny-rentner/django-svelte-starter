@@ -1,20 +1,20 @@
 <script>
 import { onMount, onDestroy } from 'svelte';
 
-import { personStore as person } from 'svultra/kit/stores';
+import { personStore as person } from '@kit/stores';
 import { signOut } from '@api/api.js';
-import { accordion } from 'svultra/kit/actions';
-import Icon from 'svultra/kit/components/IconWithLabel.svelte';
-import Link from 'svultra/kit/components/LinkWithIcon.svelte';
+import { accordion } from '@kit/actions';
+import Icon from '@kit/components/IconWithLabel.svelte';
+import Link from '@kit/components/LinkWithIcon.svelte';
 import accountIcon from '@iconify-icons/ph/user-square-duotone';
 import signOutIcon from '@iconify-icons/ph/sign-out-duotone';
 
 
-import Toaster, { toastSuccess /*, toastWarning */ } from 'svultra/kit/components/Toasts.svelte';
+import Toaster, { toastSuccess /*, toastWarning */ } from '@kit/components/Toasts.svelte';
 
-import { ripple } from 'svultra/kit/actions';
+import { ripple } from '@kit/actions';
 
-import { navigate } from 'svultra/kit/router';
+import { navigate } from '@kit/router';
 
 let { mobile = false, size = mobile ? '1.5rem' : '1.25rem', ...rest } = $props();
 
@@ -91,7 +91,7 @@ details.dropdown ul li :global(svg) {
 }
 </style>
 
-<details bind:this={details} use:accordion class="dropdown" >
+<details bind:this={details} use:accordion={{ trapFocus: true }} class="dropdown" >
   <summary use:ripple role="button" class:mobile class="primary outline {{...rest}.class}"><Icon icon={accountIcon} {size} />{if ! mobile}{$person.first_name}{/if}</summary>
   <ul>
     {#if $person}

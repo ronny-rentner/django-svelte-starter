@@ -1,5 +1,8 @@
 # Repository Guidelines
 
+## Start Here
+Orient before changing anything: list the repo's top-level files and directories, then read `readme.md` (project overview) and `starter_todo.md` (the running memory for the Relonee extraction — items copied or deferred from Relonee; keep it current as you work).
+
 ## Project Structure & Module Organization
 This repository combines a Django backend with a Vite/Svelte frontend. Backend code lives in `backend/`: `config/` holds settings and URL wiring, while `core/` contains models, views, admin setup, migrations, and `core/tests.py`. Frontend code lives in `frontend/src/`, with reusable UI in `components/`, page views in `pages/`, API helpers in `api/`, shared state in `stores*.js`, styles in `styles/`, markdown in `markdown/`, and static assets in `assets/`. CLI helpers are in `cli/`; `dm` runs them through `backend/venv`.
 
@@ -39,5 +42,5 @@ Recent history uses short messages such as `Iterate` and `Initial commit`; prefe
 Local defaults are developer-friendly, including PostgreSQL database `dss` on port `5433`. Override secrets and URLs with `SECRET_KEY`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `FRONTEND_URL`, and `FRONTEND_API_URL`. Do not commit credentials, virtual environments, or generated secrets.
 
 ## Agent-Specific Instructions
-Always consult, update, and maintain `STARTER_TODO.md` while working in this repository. Treat it as the running memory for starter extraction tasks, especially items copied or deferred from Relonee.
+Always consult, update, and maintain `starter_todo.md` while working in this repository. Treat it as the running memory for starter extraction tasks, especially items copied or deferred from Relonee.
 Before proposing or applying code changes, read the relevant files and surrounding control flow thoroughly. Write proper code from the existing source of truth, avoid duplicate state, and reject patches that only address the local symptom without fitting the file’s actual design.

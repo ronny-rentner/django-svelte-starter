@@ -2,10 +2,10 @@
 
   import Icon from '@iconify/svelte';
 
-  import logo     from 'svultra/kit/assets/logo.svg'
-  import logoDark from 'svultra/kit/assets/logo-dark.svg'
+  import logo     from '@kit/assets/logo.svg'
+  import logoDark from '@kit/assets/logo-dark.svg'
 
-  import { configStore as config } from 'svultra/kit/stores';
+  import { configStore as config } from '@kit/stores';
 
   //import buildInfo from '/src/build-info.json';
 
@@ -151,7 +151,6 @@
       <ul>
         <li><a href="/about">About</a></li>
         <li><a onclick={showContactForm}>Contact</a></li>
-        <li><a href="/pricing">Pricing</a></li>
       </ul>
     </div>
     <div>

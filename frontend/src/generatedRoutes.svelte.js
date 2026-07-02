@@ -4,5 +4,6 @@ export const routes = {
   "/faq": () => import('.//pages/FAQ.svelte'),
   "/guide": () => import('.//pages/Guide.svelte'),
   "/": () => import('.//pages/Home.svelte'),
-  "/landing": () => import('.//pages/Landing.svelte')
+  "/landing": () => import('.//pages/Landing.svelte'),
+  "/signin": () => import('.//pages/Signin.svelte')
 };

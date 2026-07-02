@@ -206,6 +206,29 @@ for app in INSTALLED_ULTRA_APPS:
     if os.path.exists(settings_file_path):
         app_settings = ultraimport(settings_file_path, '*', inject=globals(), add_to_ns=True)
 
+########
+# AUTH #
+########
+
+AUTHENTICATION_BACKENDS = [
+    'core.authentication.TokenBackend',
+    # For Django Admin
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Enables the user login API (sign-in request + token login). When False, those
+# endpoints are not registered, so users cannot log in. Backend-only: it does not
+# affect the models or the frontend.
+USER_LOGIN_ENABLED = config('USER_LOGIN_ENABLED', default=True)
+
+#########
+# EMAIL #
+#########
+
+# In dev, log emails to the console instead of attempting SMTP delivery.
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 ###########
 # LOGGING #
 ###########

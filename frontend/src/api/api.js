@@ -154,7 +154,7 @@ async function clearAuth() {
 }
 
 export async function signOut() {
-  const response = await apiRequest(`${window.config.apiBaseUrl}/signout`);
+  const response = await apiRequest(`${window.config.apiBaseUrl}/signout/`);
   if (response.success) await clearAuth();
   return response.success;
 }
@@ -169,7 +169,7 @@ export async function signIn(token) {
 
   cancelRequest(checkAuthStatus);
 
-  const response = await apiRequest(`${window.config.apiBaseUrl}/token-login2/?token=${token}`);
+  const response = await apiRequest(`${window.config.apiBaseUrl}/token-login/?token=${token}`);
 
   if (response.success) {
     const { session_key, session_id } = response.data;
@@ -211,6 +211,30 @@ export async function checkAuthStatus() {
   }
 
   return isAuthenticated;
+}
+
+export async function fetchUserInfo() {
+  const response = await apiRequest(`${window.config.apiBaseUrl}/person/`);
+  if (response.success) {
+    person.set(response.data);
+  } else {
+    await clearAuth();
+  }
+  authLoading.set('api_loaded');
+  return response.success;
+}
+
+export const getPerson = fetchUserInfo;
+
+export async function submitSigninForm({ email }) {
+  const recaptchaToken = await executeRecaptcha('signin_request/submit');
+  const payload = { email, recaptcha: recaptchaToken };
+
+  return await apiRequest(`${window.config.apiBaseUrl}/signin-request/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function submitContactForm({ name, email, message }) {

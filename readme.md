@@ -10,6 +10,8 @@ The broader extraction work is split across three directions:
 - `djultra` is the Django/backend spin-off.
 - `svUltra` is the Svelte/frontend spin-off.
 
+`djultra` is a shared library that adds common bells and whistles to Django (base models, serializers, the email service, a dev server); `svUltra` does the same for Svelte. The models and endpoints each site defines — `Person`, `ContactMessage`, the login and contact views — live in the site itself (here, the starter), not in the libraries.
+
 The current frontend here has not been replaced with `svUltra`.
 
 That was intentional: the plan was to first get the `svUltra` demo right with a few basic widgets that prove the value clearly on their own. Until that demo is convincing enough to justify integration, this starter keeps the copied/adapted frontend shell instead of forcing an early `svUltra` migration.
@@ -132,7 +134,7 @@ window.config.loadingDelay = 4000;
 
 The starter ships a working contact form — a modal opened from the **Contact** link in
 the nav and footer. It validates the name/email/message fields, runs reCAPTCHA, and
-POSTs to `/api/contact/`. The backend (djultra's `ContactMessageView`) verifies the
+POSTs to `/api/contact/`. The backend (core's `ContactMessageView`) verifies the
 reCAPTCHA token, rate-limits to 2 requests per minute, and saves a `ContactMessage`
 record (with the sender's IP and user-agent).
 

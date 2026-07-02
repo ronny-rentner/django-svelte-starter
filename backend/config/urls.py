@@ -23,7 +23,6 @@ from djultra import views
 urlpatterns = [
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     path('', include('core.urls')),
-    path('', include('djultra.urls')),
     path('admin/', admin.site.urls),
     re_path(r'^(?!api/|static/|media/|admin).*$', views.index, name="index"),
 ]

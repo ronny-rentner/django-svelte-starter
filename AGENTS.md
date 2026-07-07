@@ -58,3 +58,67 @@ Local defaults are developer-friendly, including PostgreSQL database `dss` on po
 ## Agent-Specific Instructions
 Always consult, update, and maintain `readme.md` — the single source of truth — while working in this repository. Record decisions there as they are made, and tag anything not yet settled `in progress` / `transient` / `temporary` (unmarked = decided). `starter_todo.md` sits alongside it as a loose list of todos and reminders we don't want to forget — not a final or authoritative list. When an item is finished, document the outcome in `readme.md` and then remove the item from `starter_todo.md`.
 Before proposing or applying code changes, read the relevant files and surrounding control flow thoroughly. Write proper code from the existing source of truth, avoid duplicate state, and reject patches that only address the local symptom without fitting the file’s actual design.
+
+## Frontend Page Style
+This section is agent-facing extraction guidance. Do not leak Relonee-specific
+implementation history into user-facing starter docs unless the docs are explicitly
+about lineage or extraction status.
+
+Before creating or replacing a frontend page, identify the page's job first: what
+the page needs to communicate to a visitor or let a user do. Build the page from
+that purpose outward. Do not start from "show a svUltra component" or "make a card";
+those are implementation choices, not page goals.
+
+For extraction decisions, inspect the analogous Relonee page or component when one
+exists, then extract the approach rather than copying Relonee product copy, assets,
+or domain-specific structure. Useful source references:
+
+- `/home/ronny/Projects/Relonee/frontend/src/pages/Home.svelte` and
+  `/home/ronny/Projects/Relonee/frontend/src/components/HeroBanner.svelte` for a
+  homepage built as a real visitor-facing page: hero first, then hand-authored
+  semantic sections.
+- `/home/ronny/Projects/Relonee/frontend/src/pages/About.svelte` and
+  `/home/ronny/Projects/Relonee/frontend/src/markdown/` for content-heavy pages
+  that keep prose in markdown.
+- `/home/ronny/Projects/Relonee/frontend/src/components/Document.svelte`,
+  `Dropzone.svelte`, and `components/account/tasks/Tasks.svelte` for workflow UI
+  composed from real domain data and small behavior-bearing components.
+
+PicoCSS is the visual baseline. Write semantic HTML first and let Pico style it:
+`main`, `section`, `hgroup`, headings, paragraphs, lists, `dl`/`dt`/`dd`,
+`article`, `header`, `footer`, `form`, and `fieldset role="group"`. Use Pico
+classes and conventions such as `container`, `grid`, `role="button"`, `article`
+cards, native form controls, modal/dialog structure, and CSS variables like
+`--pico-spacing`, `--pico-primary`, `--pico-muted-border-color`, and
+`--pico-card-sectioning-background-color`.
+
+Custom CSS is allowed when it has a concrete local reason. Good reasons include a
+hero that needs a distinct first-page treatment, a real line-length constraint, CTA
+alignment that Pico's default flow does not handle, consistent sizing for repeated
+items, or component selectors such as `Card` when the page needs to style a
+component directly. Do not add arbitrary padding, margins, wrappers, max-widths, or
+section styling just because a page feels plain. If a CSS rule cannot be explained
+from the content or interaction in front of it, do not add it.
+
+svUltra is the Svelte support layer: generated routes, `Main`, kit components,
+actions, markdown preprocessing, stores, dialogs, toasts, loading UI, component
+styling, and class merging. Use svUltra when it removes real ceremony or provides
+real behavior. Do not make svUltra itself the subject of a starter page unless the
+page is explicitly documenting svUltra.
+
+Static page copy should stay visible as page structure. Do not hide fixed homepage
+or documentation content in single-use arrays and render loops. Write the headings,
+paragraphs, lists, and sections directly. Use arrays and `{#each}` only for real
+collections: menus, API results, task lists, repeated records, or content that is
+actually maintained as data.
+
+Use `Card`/`article` for real contained items: repeated feature items, pricing
+options, document previews, modal bodies, status panels, and similar blocks. The
+page's main headline and primary story belong directly in `Main` or in a
+purpose-built hero/section.
+
+For reusable components, preserve the svUltra/Pico style: component order is
+`script`, `style`, then markup; accept `children` and `...rest` when the component
+is meant to behave like an HTML element; forward rest props to the real element so
+component styling and attributes keep working; prefer local nested CSS and Pico
+variables over broad global styling.

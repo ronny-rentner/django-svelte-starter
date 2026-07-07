@@ -12,9 +12,7 @@ The broader extraction work is split across three directions:
 
 `djultra` is a shared library that adds common bells and whistles to Django (base models, serializers, the email service, a dev server); `svUltra` does the same for Svelte. The models and endpoints each site defines — `Person`, `ContactMessage`, the login and contact views — live in the site itself (here, the starter), not in the libraries.
 
-The current frontend here has not been replaced with `svUltra`.
-
-That was intentional: the plan was to first get the `svUltra` demo right with a few basic widgets that prove the value clearly on their own. Until that demo is convincing enough to justify integration, this starter keeps the copied/adapted frontend shell instead of forcing an early `svUltra` migration.
+The frontend is built on `svUltra`: it was scaffolded from the svUltra kit demo and pulls its components, actions, stores, and router from the `@kit` alias (`svultra/kit`). The site-specific layer on top — pages, layout, API helpers — is the starter's own.
 
 ## Django/Svelte Build Notes
 
@@ -25,7 +23,7 @@ Run the two development servers together during normal development:
 ./dm run front
 ```
 
-Django serves the HTML shell from `backend/core/templates/index.html`. That template uses `django-vite` to load `frontend/src/main.js` in dev mode and the built Svelte bundle from `static/frontend/manifest.json` after a frontend build.
+Django serves the HTML shell through djultra's `index` view, which pushes the frontend config (API URL, reCAPTCHA key, CSP nonce) into the page. djultra ships a default `index.html`; the starter overrides it with `backend/core/templates/index.html` (searched first because `core` precedes `djultra` in `INSTALLED_APPS`). That template uses `django-vite` to load `frontend/src/main.js` in dev mode and the built Svelte bundle from `static/frontend/manifest.json` after a frontend build.
 
 Build production assets with:
 
@@ -129,6 +127,24 @@ To keep it on across reloads while you work, set the same value in `frontend/src
 ```js
 window.config.loadingDelay = 4000;
 ```
+
+## Sign-in
+
+The starter ships passwordless, token-based sign-in. The **Sign in** button opens a
+modal (`LoginForm`) that takes an email and POSTs to `/api/signin-request/` (reCAPTCHA-
+guarded). If a `Person` with that email exists, the backend emails a link —
+`/signin?token=<uuid>` — that hits `/api/token-login/` to establish the session. The
+frontend then loads the person (`fetchUserInfo` → `/api/person/`) into `personStore`
+and the nav swaps the button for a user menu with **Sign out**; `personStore` is
+localStorage-backed, so a reload stays signed in.
+
+`USER_LOGIN_ENABLED` (default `True`) gates the login API — with it off, the
+`token-login` / `signin-request` / `person` routes aren't registered. It's backend-only
+and doesn't touch the models or the frontend.
+
+In dev the sign-in email prints to the backend console (Django's console email backend
+while `DEBUG`), so you don't need a mail server; the `Person.signin_token` also shows in
+the admin.
 
 ## Contact form
 

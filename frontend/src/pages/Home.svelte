@@ -80,6 +80,17 @@
   </section>
 
   <section>
+    <h2>What is already working</h2>
+
+    <markdown>
+      TODO
+
+      - Placeholder
+      - Placeholder
+    </markdown>
+  </section>
+
+  <section>
     <h2>Where project code goes</h2>
 
     <div class="grid">

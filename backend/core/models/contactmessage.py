@@ -10,6 +10,12 @@ from djultra.models import Base
 logger = logging.getLogger(__name__)
 
 class ContactMessage(Base):
+    class Admin:
+        # Useful fields for the admin overview.
+        list_display = ('name', 'email', 'status', 'created_at')
+        list_filter = ('status', 'created_at')
+        search_fields = ('name', 'email', 'message')
+
     name = fields.AdvancedCharField(max_length=255, blank=False)
     email = models.EmailField(blank=False)
     message = models.TextField()

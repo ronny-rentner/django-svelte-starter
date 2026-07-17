@@ -19,6 +19,20 @@ from djultra.models import Base
 logger = logging.getLogger(__name__)
 
 class Person(Base):
+    class Admin:
+        # Useful fields for the admin overview.
+        list_display = ('name', 'email', 'signin_link', 'status', 'created_at')
+        search_fields = ('first_name', 'last_name', 'email')
+        list_filter = ('status',)
+        readonly_fields = (
+            'invitation_token',
+            'invitation_token_created_at',
+            'signin_token',
+            'signin_token_created_at',
+            'terms_accepted_at',
+        )
+        exclude = ('full_name',)
+
     class Meta:
         serializer_defaults = {
             'fields': [
@@ -209,4 +223,3 @@ class PersonLoginUser(AbstractBaseUser):
 
     def __str__(self):
         return f"{self.person.full_name} (Login User)"
-

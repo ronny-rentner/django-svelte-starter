@@ -65,6 +65,24 @@ When the page and API differ in origin, cross-origin access is gated by
 `CORS_ALLOWED_ORIGINS` and the CSP `connect-src`; their comments in `settings.py`
 explain how to allow extra hosts such as LAN IPs.
 
+## Live hosting plan (in progress)
+
+The production serving shape is decided at the application boundary: a real
+domain serves the built Svelte app and forwards the API to Django, so the page and
+API share one origin. The concrete hosting setup for the first launched site is
+still in progress.
+
+Shared host deployment work lives under `~/Projects/sites/host` (in progress).
+Future site projects live beside it under `~/Projects/sites/`, so the host-level
+reverse proxy, TLS, PostgreSQL, backups, and site inventory stay separate from
+the individual site repositories.
+
+Before the first site goes live, the starter needs a recorded deployment path for
+the target host, domain/TLS, reverse proxy, Django process manager, PostgreSQL,
+static/media files, backups, email delivery, reCAPTCHA keys, deploy command,
+rollback path, and the config values that differ between development and live
+hosting.
+
 ## Frontend config
 
 The frontend has two separate configs:
@@ -153,6 +171,13 @@ the nav and footer. It validates the name/email/message fields, runs reCAPTCHA, 
 POSTs to `/api/contact/`. The backend (core's `ContactMessageView`) verifies the
 reCAPTCHA token, rate-limits to 2 requests per minute, and saves a `ContactMessage`
 record (with the sender's IP and user-agent).
+
+## Admin
+
+`djultra` generates Django admin classes for models that define an inner `Admin`
+class. The starter uses that convention for `Person` and `ContactMessage`, keeping
+their admin configuration next to the model while still letting `djultra` provide
+the generated `ModelAdmin` base behavior.
 
 ## reCAPTCHA
 

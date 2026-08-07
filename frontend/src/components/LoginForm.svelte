@@ -4,7 +4,7 @@
   import loginIcon from '@iconify-icons/ph/sign-in-duotone';
   import { submitSigninForm } from '@api/api.js';
   import { toastSuccess } from '@kit/components/Toasts.svelte';
-  import { loadRecaptcha } from '@kit/recaptcha';
+  import { loadRecaptcha } from '@kit/api';
   import { autofocus } from '@kit/actions';
 
   let { children } = $props();

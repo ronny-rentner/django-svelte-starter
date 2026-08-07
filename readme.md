@@ -83,6 +83,29 @@ static/media files, backups, email delivery, reCAPTCHA keys, deploy command,
 rollback path, and the config values that differ between development and live
 hosting.
 
+## Database lifecycle (`init.sql.gz`)
+
+Each site owns a prepared initial database state: `init.sql.gz`, a gzipped SQL
+dump generated from a real Django-initialized database and committed in the site
+repository. It is never written by hand.
+
+- **Birth**: a programmer creates an empty database, runs the Django migrations,
+  seeds the defaults (the dev admin account `admin`/`admin`), and dumps the
+  result to `init.sql.gz`.
+- **Dev**: a new programmer imports `init.sql.gz` into their PostgreSQL and runs
+  `migrate`; migrations that landed after the dump move the imported state
+  forward.
+- **Live**: the first deployment initializes the site's production database from
+  the same file; from then on only migrations change it.
+- **Refresh**: live and dev databases drift away from the dump through
+  migrations and real data. Regenerating `init.sql.gz` from a chosen database
+  state is a deliberate team decision — it defines what a fresh developer
+  environment contains. Nothing forces a refresh.
+
+The dump imports into whatever PostgreSQL the site's environment points at: the
+local non-Docker PostgreSQL in development or a Docker one in testing and
+production.
+
 ## Frontend config
 
 The frontend has two separate configs:
@@ -145,6 +168,16 @@ To keep it on across reloads while you work, set the same value in `frontend/src
 ```js
 window.config.loadingDelay = 4000;
 ```
+
+## Frontend API calls
+
+The site's endpoint functions live in `frontend/src/api/api.js` (imported as
+`@api/api.js`): sign-in/sign-out, the auth ping, person loading, and the sign-in
+and contact form submits. They are small functions built on `svultra/kit/api`
+(aliased `@kit/api`), which provides the generic layer — the `apiRequest` fetch
+wrapper (CSRF header, credentials, automatic aborting of superseded requests),
+request cancellation, and the reCAPTCHA loader. New endpoints for a site go into
+`frontend/src/api/api.js` as functions calling `apiRequest`.
 
 ## Sign-in
 

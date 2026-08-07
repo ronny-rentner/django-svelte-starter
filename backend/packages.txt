@@ -10,13 +10,14 @@ django-cors-headers
 django-csp
 django-tasks[database]
 django-extensions
-django-tasks==0.6.*
+requests
 whitenoise
 gunicorn
 google-genai
 git+https://github.com/ronny-rentner/ultraimport@main#egg=ultraimport
 git+https://github.com/ronny-rentner/UltraDict@dev#egg=UltraDict
 git+https://github.com/ronny-rentner/ultraclick@main#egg=ultraclick
+git+https://github.com/ronny-rentner/djultra@main#egg=djultra
 
 
 youtube-transcript-api

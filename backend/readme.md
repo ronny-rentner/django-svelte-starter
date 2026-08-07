@@ -12,12 +12,12 @@ activation:
 ./dm django-admin createsuperuser
 ```
 
-To run `django-admin` on its own, activate the venv with `smartactivate`
-(activates `backend/venv` and puts `backend/` on `PYTHONPATH`), then point it at
-the settings module:
+To run `django-admin` on its own, activate the venv, put `backend/` on
+`PYTHONPATH`, and point it at the settings module:
 
 ```sh
-source backend/venv/bin/smartactivate
+source backend/venv/bin/activate
+export PYTHONPATH=backend
 DJANGO_SETTINGS_MODULE=config.settings django-admin check
 ```
 

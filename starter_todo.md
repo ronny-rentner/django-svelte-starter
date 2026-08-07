@@ -11,7 +11,6 @@
 
 ## Copy or Adapt Later From Relonee
 
-- Extract the backend-agnostic API wrapper from Relonee `frontend/src/api/api.js` (apiRequest with per-endpoint AbortControllers, CSRF header from the cookie, recaptcha integration) into svUltra; the starter and Relonee then import it and keep only their own endpoint functions. svUltra's readme "Wiring your backend" section documents this design.
 
 - Frontend dependency refresh: backend venv packages were refreshed to current PyPI releases, including Django 6 and the `django-tasks-db` split. Frontend package updates remain; current build warnings include old Browserslist data and Svelte warnings from older component code. Svelte updates need extra care because `frontend/svelte.config.js` uses advanced preprocessors that rewrite syntax and allow non-plain-Svelte expressions.
 - svUltra demo history: previous demo work stalled because LLM-generated demos did not communicate the library well enough; judge the next pass by whether it clearly proves the README claims instead of by generic cleanup.

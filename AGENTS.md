@@ -58,6 +58,7 @@ Local defaults are developer-friendly, including PostgreSQL database `dss` on po
 ## Agent-Specific Instructions
 Always consult, update, and maintain `readme.md` — the single source of truth — while working in this repository. Record decisions there as they are made, and tag anything not yet settled `in progress` / `transient` / `temporary` (unmarked = decided). `starter_todo.md` sits alongside it as a loose list of todos and reminders we don't want to forget — not a final or authoritative list. When an item is finished, document the outcome in `readme.md` and then remove the item from `starter_todo.md`.
 Before proposing or applying code changes, read the relevant files and surrounding control flow thoroughly. Write proper code from the existing source of truth, avoid duplicate state, and reject patches that only address the local symptom without fitting the file’s actual design.
+Before proposing hosting architecture, inspect the actual Relonee deployment files instead of inferring from copied names or templates. Keep hosting documentation unchanged until the setup is finished and verified; then update it once with the actual decisions.
 
 ## Frontend Page Style
 This section is agent-facing extraction guidance. Do not leak Relonee-specific

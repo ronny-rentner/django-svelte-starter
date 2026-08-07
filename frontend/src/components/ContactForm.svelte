@@ -1,5 +1,5 @@
 <script module>
-  import { loadRecaptcha } from '@kit/recaptcha';
+  import { loadRecaptcha } from '@kit/api';
 
   export let dialog;
   export function onclick(event) {

@@ -5,7 +5,8 @@
 <script>
   import { onMount } from 'svelte';
 
-  import { checkAuthStatus, cancelRequest } from '@api/api.js';
+  import { checkAuthStatus } from '@api/api.js';
+  import { cancelRequest } from '@kit/api';
 
   import { Router } from '@kit/router';
   import Layout from '@components/Layout.svelte';

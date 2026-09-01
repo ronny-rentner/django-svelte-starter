@@ -88,10 +88,11 @@ Then `./dm build` completes and writes `static/frontend/manifest.json`.
 Finally:
 
 ```sh
-grep -rn "dss\|django-svelte-starter" . --exclude-dir={.git,node_modules,venv}
+grep -rn "dss\|django-svelte-starter" backend cli frontend/src --exclude=*.md --exclude-dir=node_modules
 ```
 
-Only `frontend/package.json` and the migration filenames should match.
+It finds nothing once steps 2 and 3 are done. The docs keep their references to the
+starter, and `frontend/package.json` keeps its name.
 
 ## 6. Commit
 

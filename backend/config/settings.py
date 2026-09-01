@@ -46,7 +46,7 @@ RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY', default='6LeIxAcTAAAAAGG-v
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-i$r0^3%d)v4n6p$tb+qrww70ocsoc3w_11vi&61l*u=f#*_d21')
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'berlincube.ddnss.de', 'yuna.fritz.box', '192.168.178.60', 'host.docker.internal'])
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'host.docker.internal', 'example.com'])
 
 
 # Application definition
@@ -178,12 +178,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
 
 
 # Static files: STATIC_URL/STATIC_ROOT and the django-vite paths come from

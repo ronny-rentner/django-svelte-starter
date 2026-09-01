@@ -24,40 +24,34 @@ In `backend/config/settings.py`:
 
 - `DATABASES` — replace `dss` with `<site>` as the database name and user, and set a
   password. Step 4 creates the database itself.
-- `ALLOWED_HOSTS` — add `<domain>`, keeping `localhost` and `127.0.0.1`.
+- `ALLOWED_HOSTS` — replace `example.com` with `<domain>`.
+- `LOGGING` — replace the `django-svelte-starter` logger key with `<site>`.
 
 ## 3. Rebrand
 
-Replace the starter's name in the logger key in `backend/config/settings.py`, the package
-name in `backend/pyproject.toml`, the page titles in `backend/core/templates/index.html` and
-`frontend/index.html`, and the launcher name and absolute path in `cli/startdev.desktop`:
-
-```sh
-grep -rn "django-svelte-starter\|Django Svelte Starter" . --exclude-dir={.git,node_modules,venv}
-```
-
-Leave `frontend/package.json` untouched — the build manages its `version`.
-
-Then the site's own content and assets:
-
-- `frontend/src/pages/Home.svelte`, `FAQ.svelte`, `About.svelte`, `Landing.svelte`
-- `frontend/src/components/layout/Footer.svelte` — social links, the `/imprint`, `/terms`
-  and `/privacy` links, the copyright line
-- `backend/config/templates/emails/footer.html` — the imprint placeholder
-- `frontend/src/assets/favicon.svg`
-
-Then the docs: rewrite `readme.md` for the site, replace `starter_todo.md` with the site's
-own list, and delete this guide.
+- `backend/core/templates/index.html` — the `<title>`
+- `frontend/index.html` — the `<title>`
+- `frontend/src/pages/Home.svelte` — the `title` in `pageConfig`
+- `backend/pyproject.toml` — `name = "dss-backend"`
+- `cli/startdev.desktop` — `Name=` and the path in `Exec=`
 
 ## 4. Set up the environment
 
+Create the role and the database with the password from step 2:
+
+```sh
+sudo -u postgres psql -p 5433 <<'SQL'
+CREATE USER "<site>" WITH PASSWORD '<password>';
+CREATE DATABASE "<site>" OWNER "<site>";
+SQL
+```
+
+Then install the dependencies and set up the database:
+
 ```sh
 python3 -m venv backend/venv
-backend/venv/bin/pip install -r backend/packages.txt
+backend/venv/bin/pip install -e backend
 npm --prefix frontend install
-psql -h localhost -p 5433 -U postgres -c "CREATE USER <site> WITH PASSWORD '<password>';"
-psql -h localhost -p 5433 -U postgres -c "CREATE DATABASE <site> OWNER <site>;"
-psql -h localhost -p 5433 -U postgres -c "ALTER ROLE <site> SET timezone TO 'UTC';"
 ./dm django-admin migrate
 ./dm django-admin createsuperuser
 ```
@@ -97,3 +91,14 @@ git remote add origin <url> && git push -u origin main
 
 Not covered here; the site is a working development checkout at this point. `readme.md`'s
 hosting section records the current plan, which is not yet verified.
+
+## Temporary notes
+
+`svUltra` and `djultra` are still being changed alongside the sites, so a site runs against
+the local checkouts rather than the published packages. Two path changes are needed in
+chapter 4, and both disappear once the libraries are pulled from GitHub:
+
+- `frontend/package.json` — the `svultra` path needs one more level than the starter's,
+  `file:../../../js/svUltra`, because a site lives one directory deeper.
+- After installing the backend dependencies:
+  `backend/venv/bin/pip install -e ~/Projects/py/djultra`.

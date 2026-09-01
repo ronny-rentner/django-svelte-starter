@@ -27,13 +27,18 @@ dependencies = [
   "django-select2",
   "django-cors-headers",
   "django-csp",
-  "django-tasks",
-  "django-tasks-db",
   "django-extensions",
+  "requests",
   "whitenoise",
   "gunicorn",
   "google-genai",
-  "ultraimport",
-  "UltraDict @ git+https://github.com/ronny-rentner/UltraDict@dev#egg=UltraDict",
-  "ultraclick",
+  "youtube-transcript-api",
+  "pytubefix",
+  "ultraimport @ git+https://github.com/ronny-rentner/ultraimport@main",
+  "UltraDict @ git+https://github.com/ronny-rentner/UltraDict@dev",
+  "ultraclick @ git+https://github.com/ronny-rentner/ultraclick@main",
+  "djultra @ git+https://github.com/ronny-rentner/djultra@main",
 ]
+
+[tool.setuptools]
+packages = ["core", "config"]

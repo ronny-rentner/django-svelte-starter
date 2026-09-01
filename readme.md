@@ -212,6 +212,15 @@ class. The starter uses that convention for `Person` and `ContactMessage`, keepi
 their admin configuration next to the model while still letting `djultra` provide
 the generated `ModelAdmin` base behavior.
 
+## Time zones
+
+Timestamps are stored and computed in UTC. `djultra` sets `TIME_ZONE = 'UTC'` (Django's own
+default is `America/Chicago`), and `USE_TZ` is already true by default, so a site does not
+set either. Convert to a local zone only when displaying a time to a user.
+
+Override it per site with the `TIME_ZONE` environment variable or `CONFIG_FILE` if a
+deployment genuinely needs a different default.
+
 ## reCAPTCHA
 
 The contact form and the sign-in request are protected by reCAPTCHA v3. The

@@ -135,6 +135,7 @@ celerybeat.pid
 
 # Environments
 .env
+docker/*.env
 .venv
 env/
 venv/
@@ -178,3 +179,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Credentials are mounted at run time; keep the directory, never its contents
+secrets/*
+!secrets/readme.md

@@ -19,7 +19,7 @@ version = "0.1"
 dependencies = [
   "Django",
   "djangorestframework",
-  "psycopg2",
+  "psycopg2-binary",
   "django-environ",
   "django-vite",
   "django-jazzmin",

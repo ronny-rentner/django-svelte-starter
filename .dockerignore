@@ -1,0 +1,36 @@
+# Ignore Python virtual environment
+backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+.mypy_cache/
+
+# Ignore Docker-specific files
+docker/*.env
+docker/docker-compose.yml
+
+# Ignore frontend files
+frontend/
+static/frontend/
+static/src/
+
+# Ignore media files
+media/
+
+# Ignore secrets
+secrets/
+
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.sock
+
+
+
+# Ignore Git directory
+.git
+.gitignore
+
+.dockerignore
+.ruff_cache

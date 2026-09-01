@@ -1,0 +1,35 @@
+services:
+  django:
+    image: ${COMPOSE_PROJECT_NAME}-django:${TAG:-latest}
+    build:
+      context: ..
+      dockerfile: ./docker/django/Dockerfile.django
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:${DJANGO_PORT:-8000}
+    shm_size: '2gb'
+    restart: always
+    environment:
+      #Fallback values in case not set externally
+      - COLUMNS=${COLUMNS:-80}
+      - LINES=${LINES:-25}
+    env_file:
+      - path: ${ENV}.env
+        required: true
+    volumes:
+      - ../media:/app/media
+      - ../secrets:/app/secrets
+    networks:
+      # The alias the proxy forwards to; register it with sites/proxy/register-site
+      proxy_network:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME}
+      postgres_network:
+    tty: true
+    stdin_open: true
+
+networks:
+  proxy_network:
+    name: sites_proxy
+    external: true
+  postgres_network:
+    name: sites_postgres
+    external: true

@@ -66,9 +66,22 @@ npm --prefix frontend install
 At `http://localhost:5173`:
 
 - the home page renders with the new brand;
-- the **Contact** modal submits and the message appears in `/admin/`;
-- **Sign in** with the superuser's email prints a `/signin?token=…` link to the backend
-  console; following it signs in, and the subject reads `Sign in to <Site>`.
+- the **Contact** modal submits and the message appears in `/admin/`.
+
+The contact endpoint alone, without the modal:
+
+```sh
+curl -X POST http://localhost:8000/api/contact/ -H 'Content-Type: application/json' \
+  -d '{"name":"Check","email":"check@example.com","message":"Setup check","recaptcha":"test"}'
+```
+
+It answers `{"detail":"Your message has been sent!"}`, and the record is stored:
+
+```sh
+./dm django-admin shell -c "from core.models import ContactMessage; print(ContactMessage.objects.values().last())"
+```
+
+At `http://localhost:8000/admin/`, the superuser from step 4 signs in.
 
 Then `./dm build` completes and writes `static/frontend/manifest.json`.
 

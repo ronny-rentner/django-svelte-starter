@@ -2,8 +2,8 @@
 
   import Icon from '@iconify/svelte';
 
-  import logo     from '@kit/assets/logo.svg'
-  import logoDark from '@kit/assets/logo-dark.svg'
+  import logo     from '@assets/logo.svg'
+  import logoDark from '@assets/logo-dark.svg'
 
   import { configStore as config } from '@kit/stores';
 

@@ -1,8 +1,8 @@
 <script>
   //import { fade } from 'svelte/transition';
 
-  import logo     from '@kit/assets/logo.svg';
-  import logoDark from '@kit/assets/logo-dark.svg';
+  import logo     from '@assets/logo.svg';
+  import logoDark from '@assets/logo-dark.svg';
 
   import MediaQuery from '@kit/components/MediaQuery.svelte';
   import MobileMenuButton from '@components/layout/MobileMenuButton.svelte';

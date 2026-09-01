@@ -50,7 +50,7 @@ The qualified call (`services.email.send_templated_email`) is more readable and 
 Backend tests use Django’s test runner. Add tests beside the relevant app, currently `backend/core/tests.py`, and name test methods with `test_...`. Run `./dm django-admin test core` before backend submissions. No frontend test runner is configured; for UI changes, run `./dm build front` and include manual verification notes.
 
 ## Commit & Pull Request Guidelines
-Recent history uses short messages such as `Iterate` and `Initial commit`; prefer concise imperative subjects that describe the actual change, for example `Add transcript status filter`. Pull requests should include a summary, linked issue or task, commands run, migration notes, and screenshots for visible frontend changes.
+Recent history uses short messages such as `Iterate` and `Initial commit`; prefer concise imperative subjects that describe the actual change, for example `Add transcript status filter`. Pull requests should include a summary, linked issue or task, commands run, migration notes.
 
 ## Security & Configuration Tips
 Local defaults are developer-friendly, including PostgreSQL database `dss` on port `5433`. Override secrets and URLs with `SECRET_KEY`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `FRONTEND_URL`, and `FRONTEND_API_URL`. Do not commit credentials, virtual environments, or generated secrets.

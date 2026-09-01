@@ -3,6 +3,7 @@ import { defineConfig, createLogger } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 //import { buildInfoPlugin } from './src/lib/buildInfoVitePlugin';
 import generateRoutesPlugin from 'svultra/kit/router/generateRoutes';
+import watchSvultraPlugin from 'svultra/kit/vite';
 
 import path from 'path';
 import fs from 'node:fs';
@@ -60,7 +61,7 @@ function fixSourceMaps () {
         return;
       }
       currentInterval = setInterval(function () {
-        const nodeModulesPath = path.join(__dirname, 'node_modules', '.vite', 'deps');
+        const nodeModulesPath = path.join(import.meta.dirname, 'node_modules', '.vite', 'deps');
         if (fs.existsSync(nodeModulesPath)) {
           clearInterval(currentInterval);
           currentInterval = null;
@@ -98,17 +99,18 @@ const config = {
       }
     }),
     //buildInfoPlugin(),
+    watchSvultraPlugin(),
     isProduction ? () => {} : fixSourceMaps(),
     //fixSourceMaps(),
   ],
   resolve: {
     alias: {
-      '@api':        path.resolve(__dirname, 'src/api'),
-      '@assets':     path.resolve(__dirname, 'src/assets'),
-      '@components': path.resolve(__dirname, 'src/components'),
+      '@api':        path.resolve(import.meta.dirname, 'src/api'),
+      '@assets':     path.resolve(import.meta.dirname, 'src/assets'),
+      '@components': path.resolve(import.meta.dirname, 'src/components'),
       '@icons':      '@iconify-icons',
       '@kit':        'svultra/kit',
-      '@styles':     path.resolve(__dirname, 'src/styles'),
+      '@styles':     path.resolve(import.meta.dirname, 'src/styles'),
     },
   },
   build: {

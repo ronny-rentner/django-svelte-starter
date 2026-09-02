@@ -3,12 +3,13 @@ FROM python:3.13-slim
 # Don't set PYTHONUNBUFFERED, it slows Python down by 20-30%
 ENV PYTHONPYCACHEPREFIX=/dev/shm/python
 
-# git: four dependencies install from GitHub. gcc: pywatchman ships no wheel.
-# netcat-traditional: the entrypoint waits for PostgreSQL with `nc`.
+# git: four dependencies install from GitHub.
+# netcat-traditional and postgresql-client: the entrypoint waits for PostgreSQL with
+# `nc` and loads the initial dump with `psql`.
 RUN apt-get -q update && apt-get install -qy \
     git \
-    gcc \
     netcat-traditional \
+    postgresql-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

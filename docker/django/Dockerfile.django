@@ -3,11 +3,13 @@ FROM python:3.13-slim
 # Don't set PYTHONUNBUFFERED, it slows Python down by 20-30%
 ENV PYTHONPYCACHEPREFIX=/dev/shm/python
 
-# git: four dependencies install from GitHub.
+# git: four dependencies install from GitHub. gcc: ultraimport compiles a Cython
+# extension, and its git install is a source build.
 # netcat-traditional and postgresql-client: the entrypoint waits for PostgreSQL with
 # `nc` and loads the initial dump with `psql`.
 RUN apt-get -q update && apt-get install -qy \
     git \
+    gcc \
     netcat-traditional \
     postgresql-client \
     && apt-get clean \

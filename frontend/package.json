@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "svultra": "file:../../js/svUltra",
+    "svultra": "github:ronny-rentner/svUltra",
     "@picocss/pico": "*",
     "@iconify/svelte": "*",
     "@iconify-icons/mdi": "*",

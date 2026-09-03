@@ -108,11 +108,11 @@ hosting section records the current plan, which is not yet verified.
 
 ## Temporary notes
 
-`svUltra` and `djultra` are still being changed alongside the sites, so a site runs against
-the local checkouts rather than the published packages. Two path changes are needed in
-chapter 4, and both disappear once the libraries are pulled from GitHub:
+A site installs `svUltra` and `djultra` from GitHub, which is what a live host does.
+While they are still being changed alongside the sites, point a development checkout at
+the local copies instead — and keep both changes out of the site's commits:
 
-- `frontend/package.json` — the `svultra` path needs one more level than the starter's,
-  `file:../../../js/svUltra`, because a site lives one directory deeper.
+- `frontend/package.json` — `"svultra": "file:../../../js/svUltra"`, one level deeper
+  than the starter's path, because a site lives one directory further down.
 - After installing the backend dependencies:
   `backend/venv/bin/pip install -e ~/Projects/py/djultra`.

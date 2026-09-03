@@ -127,6 +127,10 @@ class DockerCommand:
         # Build the base Docker Compose command
         self._dc_cmd = self._build_dc_cmd()
 
+        # The site is named after its directory, which is its domain; Compose project
+        # names take no dots.
+        os.environ["COMPOSE_PROJECT_NAME"] = PROJECT_ROOT.name.replace(".", "-")
+
         os.environ["COMPOSE_MENU"] = "0"
         #os.environ["LINES"] = click.output.run_command('tput lines').stdout.strip()
         #os.environ["COLUMNS"] = click.output.run_command('tput cols').stdout.strip()

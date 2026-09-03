@@ -65,23 +65,44 @@ When the page and API differ in origin, cross-origin access is gated by
 `CORS_ALLOWED_ORIGINS` and the CSP `connect-src`; their comments in `settings.py`
 explain how to allow extra hosts such as LAN IPs.
 
-## Live hosting plan (in progress)
+## Live hosting
 
-The production serving shape is decided at the application boundary: a real
-domain serves the built Svelte app and forwards the API to Django, so the page and
-API share one origin. The concrete hosting setup for the first launched site is
-still in progress.
+A live host holds `~/Projects/sites`, a repository of its own with two shared Docker
+stacks, and every site checked out beside them:
 
-Shared host deployment work lives under `~/Projects/sites/host` (in progress).
-Future site projects live beside it under `~/Projects/sites/`, so the host-level
-reverse proxy, TLS, PostgreSQL, backups, and site inventory stay separate from
-the individual site repositories.
+```text
+~/Projects/sites/
+├── database/     PostgreSQL 17, one server for all sites
+├── proxy/        nginx on 80/443, one reverse proxy for all sites
+└── <site>/       a site, cloned from its own repository
+```
 
-Before the first site goes live, the starter needs a recorded deployment path for
-the target host, domain/TLS, reverse proxy, Django process manager, PostgreSQL,
-static/media files, backups, email delivery, reCAPTCHA keys, deploy command,
-rollback path, and the config values that differ between development and live
-hosting.
+The shared stacks own two external Docker networks. A site's container joins both:
+`sites_postgres` to reach the database, and `sites_proxy` under its own alias, which is
+the site's directory name with dots replaced, since Compose project names take no dots.
+nginx proxies to that alias on port 8000, so every site uses the same port and only the
+proxy publishes ports to the host.
+
+Each stack takes one site directory and reads everything else from the site itself:
+
+- `database/register-site <site-dir>` creates the site's PostgreSQL role and a database
+  owned by it, using `DB_NAME`/`DB_USER`/`DB_PASSWORD` from the site's `docker/<env>.env`.
+- `proxy/register-site <site-dir>` renders `proxy.conf.template` into
+  `proxy/sites/<site>.conf` and reloads nginx, serving the site's `ALLOWED_HOSTS` minus
+  bare IP addresses.
+
+The site fills its own empty database: its entrypoint loads `docker/init.sql.gz` when the
+schema is absent, then migrates. That runs as the site's own role, so it owns its tables.
+
+The frontend is built on the host before the image, as in Relonee: `./dm build` writes
+`static/frontend` and collects `static/collected`, and the image copies the result —
+`.dockerignore` keeps `frontend/` and the static sources out of the build context.
+
+`new_site.md`, chapter 7, is the step-by-step version of this.
+
+**Open: TLS.** The first deployed site runs behind a self-signed certificate. Certbot has
+not been run, so issuance, renewal and the ordering against a site's nginx config are
+unproven. Backups, a deploy/rollback command and email delivery are likewise still open.
 
 ## Database lifecycle (`init.sql.gz`)
 

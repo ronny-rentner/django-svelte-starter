@@ -103,8 +103,53 @@ git remote add origin <url> && git push -u origin main
 
 ## 7. Going live
 
-Not covered here; the site is a working development checkout at this point. `readme.md`'s
-hosting section records the current plan, which is not yet verified.
+The live host runs the shared services from `~/Projects/sites`: `database` (PostgreSQL)
+and `proxy` (nginx). Both are already running there; this chapter adds one site to them.
+
+Prepare the deployment files in the site, and commit them:
+
+- `docker/prod_django.ini` — `ALLOWED_HOSTS` and the three `FRONTEND_*` URLs, for
+  `<domain>` and every alias the site answers to. The proxy serves exactly these names,
+  minus any bare IP addresses.
+- `docker/init.sql.gz` — the site's initial database state:
+
+  ```sh
+  ./dm django-admin dump_db --dump-file docker/init.sql
+  gzip -9 docker/init.sql
+  ```
+
+Then `docker/prod.env`, copied from `docker/prod.env.example` and filled in with a
+generated `DB_PASSWORD` and `SECRET_KEY`. It is not committed, so it has to reach the
+host another way:
+
+```sh
+scp docker/prod.env <host>:Projects/sites/<site>/docker/prod.env
+```
+
+On the host, as the deploying user:
+
+```sh
+git clone <url> ~/Projects/sites/<site>
+cd ~/Projects/sites/<site>
+python3 -m venv backend/venv
+backend/venv/bin/pip install -e backend
+npm --prefix frontend install
+./dm build                                   # static/frontend and static/collected
+../database/register-site ../<site>          # the site's role and database
+./dm --env prod docker compose build
+./dm --env prod docker compose up -d         # loads init.sql.gz, migrates, serves
+../proxy/register-site ../<site>             # writes the nginx config and reloads
+```
+
+`register-site` for the proxy needs the site's certificate at
+`proxy/certbot/etc/letsencrypt/live/<site>/`, because the rendered config references it —
+and it needs the container already running, since nginx resolves the upstream name when
+it loads the config.
+
+**Not yet verified: TLS issuance.** `carbon.berlin` runs behind a self-signed
+certificate, generated inside the nginx container while its DNS was still propagating.
+Certbot has not been run, so the ACME flow, the renewal path and the issuance order
+relative to the site's config are all still open.
 
 ## Temporary notes
 

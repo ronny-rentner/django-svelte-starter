@@ -22,14 +22,12 @@ services:
       proxy_network:
         aliases:
           - ${COMPOSE_PROJECT_NAME}
-      postgres_network:
+      database_network:
     tty: true
     stdin_open: true
 
 networks:
   proxy_network:
-    name: sites_proxy
     external: true
-  postgres_network:
-    name: sites_postgres
+  database_network:
     external: true

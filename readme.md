@@ -77,11 +77,10 @@ stacks, and every site checked out beside them:
 └── <site>/       a site, cloned from its own repository
 ```
 
-The shared stacks own two external Docker networks. A site's container joins both:
-`sites_postgres` to reach the database, and `sites_proxy` under its own alias, which is
-the site's directory name with dots replaced, since Compose project names take no dots.
-nginx proxies to that alias on port 8000, so every site uses the same port and only the
-proxy publishes ports to the host.
+The shared stacks own two Docker networks, named by Compose after their directories:
+`database_network` and `proxy_network`. A site's container joins both, the proxy one under
+an alias derived from its directory name. nginx proxies to that alias on port 8000, so
+every site uses the same port and only the proxy publishes ports to the host.
 
 Each stack takes one site directory and reads everything else from the site itself:
 

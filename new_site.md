@@ -25,14 +25,12 @@ In `backend/config/settings.py`:
 - `DATABASES` — replace `dss` with `<site>` as the database name and user, and set a
   password. Step 4 creates the database itself.
 - `ALLOWED_HOSTS` — replace `example.com` with `<domain>`.
-- `LOGGING` — replace the `django-svelte-starter` logger key with `<site>`.
 
 ## 3. Rebrand
 
 - `backend/core/templates/index.html` — the `<title>`
 - `frontend/index.html` — the `<title>`
 - `frontend/src/pages/Home.svelte` — the `title` in `pageConfig`
-- `backend/pyproject.toml` — `name = "dss-backend"`
 - `cli/startdev.desktop` — `Name=` and the path in `Exec=`
 
 ## 4. Set up the environment
@@ -50,7 +48,7 @@ Then install the dependencies and set up the database:
 
 ```sh
 python3 -m venv backend/venv
-backend/venv/bin/pip install -e backend
+backend/venv/bin/pip install --group backend/pyproject.toml:main
 npm --prefix frontend install
 ./dm django-admin migrate
 ./dm django-admin createsuperuser
@@ -132,7 +130,7 @@ On the host, as the deploying user:
 git clone <url> ~/Projects/sites/<site>
 cd ~/Projects/sites/<site>
 python3 -m venv backend/venv
-backend/venv/bin/pip install -e backend
+backend/venv/bin/pip install --group backend/pyproject.toml:main
 npm --prefix frontend install
 ./dm build                                   # static/frontend and static/collected
 ../database/register-site ../<site>          # the site's role and database

@@ -52,7 +52,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'host
 # Application definition
 
 INSTALLED_APPS = [
-    'core',
+    'backend.core',
 
     'django_vite',
     #'jazzmin',
@@ -76,7 +76,7 @@ INSTALLED_APPS = [
 ]
 
 INSTALLED_ULTRA_APPS = [
-    'core',
+    'backend.core',
     'djultra',
 ]
 
@@ -118,7 +118,7 @@ MIDDLEWARE = [
     "csp.middleware.CSPMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = 'backend.config.urls'
 
 TEMPLATES = [
     {
@@ -136,7 +136,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = 'backend.config.wsgi.application'
 
 
 # Database
@@ -205,7 +205,7 @@ for app in INSTALLED_ULTRA_APPS:
 ########
 
 AUTHENTICATION_BACKENDS = [
-    'core.authentication.TokenBackend',
+    'backend.core.authentication.TokenBackend',
     # For Django Admin
     'django.contrib.auth.backends.ModelBackend',
 ]
@@ -228,7 +228,7 @@ if DEBUG:
 ###########
 
 LOGGING['loggers'] |= {
-    'django-svelte-starter': {
+    'backend': {
         'level': 'DEBUG',
         #'propagate': False,
     },

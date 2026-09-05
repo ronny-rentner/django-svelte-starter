@@ -2,16 +2,14 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from pathlib import Path
+
+# The project root, so `backend` imports
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 
 
 def main():
     """Run administrative tasks."""
-    backend_dir = str(Path(__file__).resolve().parent.parent / "backend")
-    if backend_dir not in sys.path:
-        sys.path.insert(0, backend_dir)
-
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.config.settings')
     import djultra.management.commands.fastmanage_patch
     try:
         from django.core.management import execute_from_command_line

@@ -3,10 +3,13 @@
 import os
 import sys
 
+# The project root, so `backend` imports
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.config.settings')
     #import djultra.management.commands.fastmanage_patch
     try:
         from django.core.management import execute_from_command_line

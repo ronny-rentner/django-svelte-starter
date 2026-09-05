@@ -1,23 +1,6 @@
-[tool.isort]
-profile = ""
-src_paths = ["backend"]
-
-[tool.autoimport.common_statements]
-"np" = "import numpy as np"
-"Q" = "from django.db.models import Q"
-"F" = "from django.db.models import F"
-"logger" = "import logging\nlogger = logging.getLogger(__name__)"
-"serializers" = "from rest_framework import serializers"
-"partial" = "from functools import partial"
-
-[tool.ruff.lint]
-
-[project]
-name = "dss-backend"
-version = "0.1"
-
-dependencies = [
-  "Django",
+[dependency-groups]
+main = [
+  "django",
   "djangorestframework",
   "psycopg2-binary",
   "django-environ",
@@ -35,10 +18,20 @@ dependencies = [
   "youtube-transcript-api",
   "pytubefix",
   "ultraimport @ git+https://github.com/ronny-rentner/ultraimport@main",
-  "UltraDict @ git+https://github.com/ronny-rentner/UltraDict@dev",
   "ultraclick @ git+https://github.com/ronny-rentner/ultraclick@main",
   "djultra @ git+https://github.com/ronny-rentner/djultra@main",
 ]
 
-[tool.setuptools]
-packages = ["core", "config"]
+[tool.isort]
+profile = ""
+src_paths = ["backend"]
+
+[tool.autoimport.common_statements]
+"np" = "import numpy as np"
+"Q" = "from django.db.models import Q"
+"F" = "from django.db.models import F"
+"logger" = "import logging\nlogger = logging.getLogger(__name__)"
+"serializers" = "from rest_framework import serializers"
+"partial" = "from functools import partial"
+
+[tool.ruff.lint]

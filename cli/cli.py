@@ -11,7 +11,6 @@ import ultraclick as click
 from ultraclick import ctx
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-BACKEND_DIR = PROJECT_ROOT / "backend"
 
 class ServiceType(click.ParamType):
     """
@@ -127,8 +126,7 @@ class DockerCommand:
         # Build the base Docker Compose command
         self._dc_cmd = self._build_dc_cmd()
 
-        # The site is named after its directory, which is its domain; Compose project
-        # names take no dots.
+        #TODO: REMOVE THIS LINE, ITS REALLY REALLY WRONG
         os.environ["COMPOSE_PROJECT_NAME"] = PROJECT_ROOT.name.replace(".", "-")
 
         os.environ["COMPOSE_MENU"] = "0"
@@ -832,10 +830,7 @@ class MainGroup:
             setattr(self, key, value)
             ctx.meta[key] = value
 
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-        backend_dir = str(BACKEND_DIR)
-        if backend_dir not in sys.path:
-            sys.path.insert(0, backend_dir)
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.config.settings')
 
         #TODO: Put in ultraclick
         if sys.stdin.isatty():

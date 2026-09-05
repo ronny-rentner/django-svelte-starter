@@ -1,36 +1,59 @@
-FROM python:3.13-slim
+# Use the official Python image from the Docker Hub
+FROM python:3.12-slim
 
-# Don't set PYTHONUNBUFFERED, it slows Python down by 20-30%
+# Set environment variables for Python
+
+# Don't set this, it slows down Python by 20-30%
+#ENV PYTHONUNBUFFERED=1
+#ENV PYTHONDONTWRITEBYTECODE=1
+
 ENV PYTHONPYCACHEPREFIX=/dev/shm/python
 
-# git: four dependencies install from GitHub. gcc: ultraimport compiles a Cython
-# extension, and its git install is a source build.
-# netcat-traditional and postgresql-client: the entrypoint waits for PostgreSQL with
-# `nc` and loads the initial dump with `psql`.
+#TODO: Cleanup packages or comment why needed, probably don't need git, rsync, gcc
+# Install build dependencies
 RUN apt-get -q update && apt-get install -qy \
-    git \
-    gcc \
     netcat-traditional \
     postgresql-client \
+    gettext \
+    git \
+    rsync \
+    wget \
+    gnupg \
+    gcc \
+#    libpq-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Add the Google Chrome APT repository
+#RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google.asc >/dev/null
+
+#RUN echo "deb [signed-by=/etc/apt/trusted.gpg.d/google.asc] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
+
+# Install Google Chrome
+#RUN apt-get -q update && apt-get install -qy google-chrome-stable \
+#    --no-install-recommends && \
+#    apt-get -q clean && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory in the container
 WORKDIR /app
 
-# The dependency list lives in backend/, so install from there before copying the
-# rest: a frontend or cli change then reuses the installed layer.
-COPY ./backend /app/backend
+COPY ./backend/pyproject.toml /app/backend/
 
+# Install the Python dependencies
 RUN pip install --no-cache-dir --upgrade pip
-# Editable, so Django reads templates and static files from the copied source tree
-RUN pip install --no-cache-dir -e ./backend
+RUN pip install --no-cache-dir --group backend/pyproject.toml:main
 
+# Copy the entire project directory to the container
 COPY . /app
 
 RUN ls -la /app
 
 # Expose the port the app runs on
 EXPOSE ${DJANGO_PORT}
+
+# Run the Django development server
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
 
 COPY ./docker/django/entrypoint.sh ./entrypoint.sh
 

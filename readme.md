@@ -97,6 +97,14 @@ The frontend is built on the host before the image, as in Relonee: `./dm build` 
 `static/frontend` and collects `static/collected`, and the image copies the result —
 `.dockerignore` keeps `frontend/` and the static sources out of the build context.
 
+Nothing is version-pinned, so a rebuild without the layer cache is also the update: it
+refreshes the base image and installs the current release of every dependency.
+
+```sh
+./dm --env prod docker build --no-cache django
+./dm --env prod docker compose up -d
+```
+
 `new_site.md`, chapter 7, is the step-by-step version of this.
 
 **Open: TLS.** The first deployed site runs behind a self-signed certificate. Certbot has

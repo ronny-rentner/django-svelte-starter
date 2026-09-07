@@ -145,6 +145,10 @@ container's alias when it loads, so the certificate and the container must exist
 `issue-cert` needs `<domain>` and `www.<domain>` to resolve to the host, and port 80
 reachable from the internet.
 
+**To verify on the next site:** `issue-cert` with the deploy hook has not run for a new
+site yet. After it, `proxy/certs/<site>/` must hold `fullchain.pem` and `privkey.pem`, and
+`register-site` must pass `nginx -t`. Remove this note once observed.
+
 Renewal is `../proxy/update-cert ../<site>`, run when due; scheduling it is still open.
 
 ## Temporary notes

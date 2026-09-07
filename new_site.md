@@ -136,18 +136,16 @@ npm --prefix frontend install
 ../database/register-site ../<site>          # the site's role and database
 ./dm --env prod docker compose build
 ./dm --env prod docker compose up -d         # loads init.sql.gz, migrates, serves
-../proxy/register-site ../<site>             # writes the nginx config and reloads
+../proxy/issue-cert ../<site>                # the site's Let's Encrypt certificate
+../proxy/register-site ../<site>             # copies it to the proxy, writes the nginx config, reloads
 ```
 
-`register-site` for the proxy needs the site's certificate at
-`proxy/certbot/etc/letsencrypt/live/<site>/`, because the rendered config references it —
-and it needs the container already running, since nginx resolves the upstream name when
-it loads the config.
+The order matters: the site's nginx config references its certificate and resolves the
+container's alias when it loads, so the certificate and the container must exist first.
+`issue-cert` needs `<domain>` and `www.<domain>` to resolve to the host, and port 80
+reachable from the internet.
 
-**Not yet verified: TLS issuance.** `carbon.berlin` runs behind a self-signed
-certificate, generated inside the nginx container while its DNS was still propagating.
-Certbot has not been run, so the ACME flow, the renewal path and the issuance order
-relative to the site's config are all still open.
+Renewal is `../proxy/update-cert ../<site>`, run when due; scheduling it is still open.
 
 ## Temporary notes
 

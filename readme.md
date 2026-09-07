@@ -107,9 +107,18 @@ refreshes the base image and installs the current release of every dependency.
 
 `new_site.md`, chapter 7, is the step-by-step version of this.
 
-**Open: TLS.** The first deployed site runs behind a self-signed certificate. Certbot has
-not been run, so issuance, renewal and the ordering against a site's nginx config are
-unproven. Backups, a deploy/rollback command and email delivery are likewise still open.
+Certificates belong to the site. `proxy/issue-cert <site-dir>` runs certbot as the invoking
+user with the site's `docker/certbot/` mounted, registers the site's own Let's Encrypt
+account as `mail@<site>` on first use, and validates over HTTP through the running proxy.
+The certificate covers the site's domain and the names below it in `ALLOWED_HOSTS`.
+`register-site` then copies `fullchain.pem` and `privkey.pem` — mode 600, owned by the
+user, read by nginx's root master process — into `proxy/certs/<site>/`, the only part of
+the site the proxy holds, and reloads nginx. `proxy/update-cert <site-dir>` renews when
+due and refreshes that copy. Issue before registering: the site's nginx config references
+the certificate.
+
+**Open:** scheduling `update-cert`, backups and restore, a deploy/rollback command, email
+delivery.
 
 ## Database lifecycle (`init.sql.gz`)
 

@@ -4,7 +4,7 @@
 
 - Trim inherited YouTube transcript functionality from the default starter unless the first site needs it. It currently ships as `backend/core/models/youtube.py`, committed migrations, and `pytubefix` / `youtube-transcript-api` dependencies.
 - Add a fresh-clone bootstrap path: how to create `backend/venv`, install backend/frontend dependencies, create the local database, and provide the first config values.
-- Finish live hosting: schedule `update-cert`, backups and restore, a deploy/rollback command, and email delivery. The rest is recorded in `readme.md`, "Live hosting".
+- Finish live hosting: schedule `update-cert`, backups and restore, a deploy/rollback command. The rest is recorded in `readme.md`, "Live hosting".
 - On the next new site, verify `proxy/issue-cert`: the deploy hook copying into `proxy/certs/<site>/` has not been observed yet. The note sits in `new_site.md`, chapter 7.
 - Add a per-site configuration template for launch-critical values: `SECRET_KEY`, `DEBUG`, database settings, frontend URLs, allowed hosts, reCAPTCHA keys, and email settings.
 - Remove local-machine defaults before cloning a real site: personal `ALLOWED_HOSTS`, the absolute path in `cli/startdev.desktop`, `dss` package/database names, and placeholder brand/legal text.

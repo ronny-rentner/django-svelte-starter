@@ -141,8 +141,7 @@ the only part of the site the proxy holds. `register-site` renders the nginx con
 referencing that copy and reloads nginx, so issue before registering. `proxy/update-cert
 <site-dir>` renews when due with the same hook, then reloads nginx.
 
-**Open:** scheduling `update-cert`, backups and restore, a deploy/rollback command, email
-delivery.
+**Open:** scheduling `update-cert`, backups and restore, a deploy/rollback command.
 
 ## Database lifecycle (`init.sql.gz`)
 

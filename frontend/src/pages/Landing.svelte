@@ -29,11 +29,12 @@
 
 <Main {...rest}>
   <section class="hero">
-    <h1>Welcome</h1>
+    <h1>Hello, Welcome</h1>
     <p>
-      This is a full-screen landing page. The site header is hidden because this
-      page set <code>pageConfig.showHeader = false</code>. Other flags like
-      <code>showFooter</code> and <code>contrast</code> are covered in the
+      On a full-screen landing page, the site header is hidden because the
+      page sets <code>pageConfig.showHeader = false</code>.
+      <br />
+      This and other flags like <code>showFooter</code> and <code>contrast</code> are covered in the
       <a href="https://github.com/ronny-rentner/svUltra#pageconfig">docs</a>.
     </p>
     <Button onclick={() => navigate('/')}>Enter the app</Button>

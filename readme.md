@@ -65,6 +65,20 @@ When the page and API differ in origin, cross-origin access is gated by
 `CORS_ALLOWED_ORIGINS` and the CSP `connect-src`; their comments in `settings.py`
 explain how to allow extra hosts such as LAN IPs.
 
+## Configuration
+
+`backend/config/settings.py` is a normal Django settings file. A setting written as
+`config('NAME', default=…)` can be overridden without editing it: by the environment
+variable `NAME`, or by `NAME = value` in the ini file that `CONFIG_FILE` names. The
+environment wins over the ini; values are cast to the type of the default, lists are
+comma-separated. A plain assignment is not overridable.
+
+In Docker the two are `docker/prod.env` and `docker/prod_django.ini`. The env file is read
+when the container starts, so it holds secrets and switches such as `DEBUG` — change it and
+`up -d`. The ini is copied into the image with the code, so it holds the site's committed
+values — domains, URLs — and changes with a rebuild. `DB_NAME`, `DB_USER`, `DB_PASSWORD`,
+`DB_HOST` and `DB_PORT` are read from the environment only.
+
 ## Live hosting
 
 A live host holds `~/Projects/sites`, a repository of its own with two shared Docker

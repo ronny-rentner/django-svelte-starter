@@ -136,8 +136,8 @@ npm --prefix frontend install
 ../database/register-site ../<site>          # the site's role and database
 ./dm --env prod docker compose build
 ./dm --env prod docker compose up -d         # loads init.sql.gz, migrates, serves
-../proxy/issue-cert ../<site>                # the site's Let's Encrypt certificate
-../proxy/register-site ../<site>             # copies it to the proxy, writes the nginx config, reloads
+../proxy/issue-cert ../<site>                # the site's Let's Encrypt certificate, copied to the proxy
+../proxy/register-site ../<site>             # writes the nginx config, reloads
 ```
 
 The order matters: the site's nginx config references its certificate and resolves the

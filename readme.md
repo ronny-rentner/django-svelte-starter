@@ -73,11 +73,21 @@ variable `NAME`, or by `NAME = value` in the ini file that `CONFIG_FILE` names. 
 environment wins over the ini; values are cast to the type of the default, lists are
 comma-separated. A plain assignment is not overridable.
 
-In Docker the two are `docker/prod.env` and `docker/prod_django.ini`. The env file is read
-when the container starts, so it holds secrets and switches such as `DEBUG` — change it and
-`up -d`. The ini is copied into the image with the code, so it holds the site's committed
-values — domains, URLs — and changes with a rebuild. `DB_NAME`, `DB_USER`, `DB_PASSWORD`,
-`DB_HOST` and `DB_PORT` are read from the environment only.
+In Docker the two are `docker/prod.env` and `docker/prod_django.ini`, and the rule for
+what goes where:
+
+- `prod.env` holds the secrets: database credentials, `SECRET_KEY`, API keys, the mail
+  relay login. It is not committed and is read when the container starts — change it and
+  `up -d`. `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` and `DB_PORT` are read from the
+  environment only.
+- `prod_django.ini` holds what is specific to this installation: `DEBUG`, `ALLOWED_HOSTS`,
+  the `FRONTEND_*` URLs, the sender address. It is committed and copied into the image, so
+  it changes with a rebuild.
+- `settings.py` holds everything else, as plain Django settings, including the mail relay's
+  host and port.
+
+Secrets never go into the repository: not into the ini, not into `settings.py`, and the
+site's Let's Encrypt account under `docker/certbot/` is ignored for the same reason.
 
 ## Live hosting
 

@@ -137,6 +137,8 @@ celerybeat.pid
 # Environments
 .env
 docker/*.env
+# The site's Let's Encrypt account and keys, written by sites/proxy/issue-cert
+docker/certbot/
 .venv
 env/
 venv/

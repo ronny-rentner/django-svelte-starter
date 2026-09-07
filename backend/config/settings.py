@@ -342,6 +342,11 @@ USER_LOGIN_ENABLED = config('USER_LOGIN_ENABLED', default=True)
 # EMAIL #
 #########
 
+# The relay; its user and password come from the environment (EMAIL_HOST_USER, EMAIL_HOST_PASSWORD).
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 # In dev, log emails to the console instead of attempting SMTP delivery.
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

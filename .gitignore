@@ -66,7 +66,6 @@ db.sqlite3-journal
 # Compiled / generated frontend static assets
 static/frontend
 static/collected
-# Build counter of the machine that builds; only the live host's means anything
 frontend/src/build-info.json
 
 # Flask stuff:

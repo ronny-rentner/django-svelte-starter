@@ -33,7 +33,7 @@ Build production assets with:
 
 This runs the Svelte build first, then collects Django static files. Use `./dm build front` for only the Vite build or `./dm build static` for only Django `collectstatic`.
 
-The frontend build writes bundled assets and the Vite manifest to `static/frontend/`. The `postbuild` script also updates generated build metadata in `frontend/src/build-info.json` and bumps the version field in `frontend/package.json`.
+The frontend build writes bundled assets and the Vite manifest to `static/frontend/`. Before it, the `prebuild` script, svUltra's `updateBuildInfo.js`, counts the build up in `frontend/src/build-info.json`, which the footer shows as "Last build … vN" through `loadBuildInfo` from `svultra/kit/buildInfo`. The file is untracked: each machine counts its own builds, and the number on the live host is the one that identifies what is deployed. A checkout that has never built has no file, and the footer leaves the line out.
 
 `static/src/` is Django static source for files that are not produced by Vite, such as admin CSS, favicons, email logos, and similar assets. The raw underlying commands are:
 

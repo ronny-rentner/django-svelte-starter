@@ -31,6 +31,8 @@ In `backend/config/settings.py`:
 - `backend/core/templates/index.html` — the `<title>`
 - `frontend/index.html` — the `<title>`
 - `frontend/src/pages/Home.svelte` — the `title` in `pageConfig`
+- `frontend/src/components/layout/Footer.svelte` — the copyright holder and the
+  "Crafted with" line
 - `cli/startdev.desktop` — `Name=` and the path in `Exec=`
 
 ## 4. Set up the environment

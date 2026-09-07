@@ -1,7 +1,6 @@
 import { defineConfig, createLogger } from 'vite';
 
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-//import { buildInfoPlugin } from './src/lib/buildInfoVitePlugin';
 import generateRoutesPlugin from 'svultra/kit/router/generateRoutes';
 import watchSvultraPlugin from 'svultra/kit/vite';
 
@@ -98,7 +97,6 @@ const config = {
         '/404': '*'
       }
     }),
-    //buildInfoPlugin(),
     watchSvultraPlugin(),
     isProduction ? () => {} : fixSourceMaps(),
     //fixSourceMaps(),

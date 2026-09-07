@@ -7,7 +7,7 @@
 
   import { configStore as config } from '@kit/stores';
 
-  //import buildInfo from '/src/build-info.json';
+  import { loadBuildInfo } from '@kit/buildInfo';
 
   import twitterIcon   from '@iconify-icons/mdi/twitter';
   import facebookIcon  from '@iconify-icons/mdi/facebook';
@@ -16,6 +16,7 @@
   import { onclick as showContactForm } from '@components/ContactForm.svelte';
 
   const isProduction = !window.config?.dev;
+  const buildInfo = loadBuildInfo();
 
   let screenStatus = '';
 
@@ -163,9 +164,9 @@
     </div>
   </div>
   <div class="copyright">
-    <strong>© 2024 Your Company</strong>.
+    <strong>© 2026 Your Company</strong>.
     <p>
-    Crafted with <svg viewBox="0 0 24 24" class="inline inline w-6 h-6 text-red-600" xmlns="http://www.w3.org/2000/svg" data-v-67ce246f=""><path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" data-v-67ce246f=""></path></svg> with care.
+    Crafted with <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"></path></svg> in Berlin.
     All rights reserved.
     </p>
 
@@ -175,7 +176,9 @@
       {:else}
         Development mode
       {/if}
-      <!-- &mdash; Last build: {buildInfo.lastBuildTimestamp} &mdash; v{buildInfo.buildNumber} -->
+      {#if buildInfo}
+        &mdash; Last build: {buildInfo.lastBuildTimestamp} &mdash; v{buildInfo.buildNumber}
+      {/if}
     </small>
   </div>
 

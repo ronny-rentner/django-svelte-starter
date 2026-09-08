@@ -60,6 +60,40 @@ Always consult, update, and maintain `readme.md` — the single source of truth 
 Before proposing or applying code changes, read the relevant files and surrounding control flow thoroughly. Write proper code from the existing source of truth, avoid duplicate state, and reject patches that only address the local symptom without fitting the file’s actual design.
 Before proposing hosting architecture, inspect the actual Relonee deployment files instead of inferring from copied names or templates. Keep hosting documentation unchanged until the setup is finished and verified; then update it once with the actual decisions.
 
+## Audience and Readme Style
+
+**Who this repository is for.** Developers who make a website from it. A starter is a worked
+example of how things can be done and an invitation to change them: they copy it, rename it,
+keep what suits them and replace the rest. Ideally they know Django, Svelte, Docker Compose,
+PostgreSQL and git; in practice nobody knows all of it equally well. The text finds the
+balance: it names the tools and the commands and shows how they fit together here, and leaves
+the tools' own documentation to explain the tools. The copy keeps `readme.md`, so the same
+text later serves whoever works on that site. Which stage a reader is at — looking at the
+starter, building, or operating — is not known and not assumed.
+
+**What the readme is for them.** The handover of a project by a colleague: what exists, where
+it is, how it works, how it is used. It describes the starter as it is, one way of doing
+things, not a rule. It does not describe the author's machines, directories or habits, and not
+the reader's situation ("to bring your site back", "if you decide to host"). Sentences are
+statements about the system. Where something is done, the commands stand in a code block;
+prose does not command the reader ("back up X", "run Y first").
+
+**The readme is also an advisor.** It guides the reader through one possible setup and says
+what is advisable and what the easiest way is, leaving the choice with them: "it is advisable
+to have backups; the easiest way is to copy these directories somewhere". Advice names the
+option and its simplest form, not an order and not a lecture on why.
+
+**What it leaves out.** History and lineage, how a decision was reached, what was tried,
+comparisons with other projects, justifications ("so that", "because"), hedges. A fact is
+either stated as settled or tagged `in progress` / `transient` / `temporary`.
+
+**Shape.** Basics first, one topic per section, short sections, terse sentences with only
+load-bearing words. Tables for what-goes-where, lists for parallel items, code blocks for
+commands and for paths that are typed.
+
+The top of `readme.md` carries a note while the rewrite into this style is in progress; the
+note lists the sections already in it.
+
 ## Frontend Page Style
 This section is agent-facing extraction guidance. Do not leak Relonee-specific
 implementation history into user-facing starter docs unless the docs are explicitly

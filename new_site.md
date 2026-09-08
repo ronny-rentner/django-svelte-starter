@@ -129,6 +129,7 @@ scp docker/prod.env <host>:Projects/sites/<site>/docker/prod.env
 On the host, as the deploying user:
 
 ```sh
+export ENV=prod                              # once per session; dm and the scripts read it
 git clone <url> ~/Projects/sites/<site>
 cd ~/Projects/sites/<site>
 python3 -m venv backend/venv
@@ -136,8 +137,8 @@ backend/venv/bin/pip install --group backend/pyproject.toml:main
 npm --prefix frontend install
 ./dm build                                   # static/frontend and static/collected
 ../database/register-site ../<site>          # the site's role and database
-./dm --env prod docker compose build
-./dm --env prod docker compose up -d         # loads init.sql.gz, migrates, serves
+./dm docker compose build
+./dm docker compose up -d                    # loads init.sql.gz, migrates, serves
 ../proxy/issue-cert ../<site>                # the site's Let's Encrypt certificate, copied to the proxy
 ../proxy/register-site ../<site>             # writes the nginx config, reloads
 ```

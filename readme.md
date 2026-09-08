@@ -1,5 +1,23 @@
 # django-svelte-starter
 
+# ⚠️ THIS README HAS THE WRONG STYLE. IT IS BEING REWRITTEN. ⚠️
+
+**Most of this file reads as a decision log and a narrative of how things came to be.
+That is the wrong style for a starter's readme. Do not add text in that style.**
+
+**The target style:** a reference for someone who takes this starter and builds a site
+with it.
+
+- Say what exists and how to use it.
+- Instruct, do not narrate. No history, no comparison with other projects, no
+  justifications.
+- Basics first. One topic per section. Commands in code blocks.
+
+**Rewritten so far:** "Configuration", "Live hosting". Until a section is rewritten, its
+facts are settled and its wording is not.
+
+---
+
 ## Project Lineage
 
 This repository is a starter-shell extraction from `Relonee`, not a greenfield app.
@@ -67,81 +85,104 @@ explain how to allow extra hosts such as LAN IPs.
 
 ## Configuration
 
-`backend/config/settings.py` is a normal Django settings file. A setting written as
-`config('NAME', default=…)` can be overridden without editing it: by the environment
-variable `NAME`, or by `NAME = value` in the ini file that `CONFIG_FILE` names. The
-environment wins over the ini; values are cast to the type of the default, lists are
-comma-separated. A plain assignment is not overridable.
+Settings live in three files:
 
-In Docker the two are `docker/prod.env` and `docker/prod_django.ini`, and the rule for
-what goes where:
+| File | Holds | Committed | A change takes effect |
+| ---- | ----- | --------- | --------------------- |
+| `backend/config/settings.py` | every setting, as plain Django settings, including the mail relay's host and port | yes | with the code |
+| `docker/prod_django.ini` | what differs per installation: `DEBUG`, `ALLOWED_HOSTS`, the `FRONTEND_*` URLs, `DEFAULT_FROM_EMAIL` | yes, copied into the image | after an image rebuild |
+| `docker/prod.env` | secrets: database credentials, `SECRET_KEY`, API keys, the mail relay login | no | after `up -d` |
 
-- `prod.env` holds the secrets: database credentials, `SECRET_KEY`, API keys, the mail
-  relay login. It is not committed and is read when the container starts — change it and
-  `up -d`. `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` and `DB_PORT` are read from the
-  environment only.
-- `prod_django.ini` holds what is specific to this installation: `DEBUG`, `ALLOWED_HOSTS`,
-  the `FRONTEND_*` URLs, the sender address. It is committed and copied into the image, so
-  it changes with a rebuild.
-- `settings.py` holds everything else, as plain Django settings, including the mail relay's
-  host and port.
+A setting written as `config('NAME', default=…)` in settings.py takes its value from the
+environment variable `NAME`, else from `NAME = value` in the ini, else from the default.
+Values are cast to the type of the default; lists are comma-separated. A plain assignment
+cannot be overridden. `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` and `DB_PORT` are read
+from the environment only.
 
-Secrets never go into the repository: not into the ini, not into `settings.py`, and the
-site's Let's Encrypt account under `docker/certbot/` is ignored for the same reason.
+Secrets go into `prod.env` and nowhere else. `docker/certbot/`, the site's Let's Encrypt
+account and keys, is ignored as well.
 
 ## Live hosting
 
-A live host holds `~/Projects/sites`, a repository of its own with two shared Docker
-stacks, and every site checked out beside them:
+The host keeps the sites and the two shared services under `~/Projects/sites`, a
+repository of its own:
 
 ```text
 ~/Projects/sites/
 ├── database/     PostgreSQL 17, one server for all sites
-├── proxy/        nginx on 80/443, one reverse proxy for all sites
+├── proxy/        nginx on 80 and 443, one reverse proxy for all sites
 └── <site>/       a site, cloned from its own repository
 ```
 
-The shared stacks own two Docker networks, named by Compose after their directories:
-`database_network` and `proxy_network`. A site's container joins both, the proxy one under
-its `COMPOSE_PROJECT_NAME` from `docker/prod.env` as alias. nginx proxies to that alias on
-port 8000, so every site uses the same port and only the proxy publishes ports to the host.
+### Shared services
 
-Each stack takes one site directory and reads everything else from the site itself:
-
-- `database/register-site <site-dir>` creates the site's PostgreSQL role and a database
-  owned by it, using `DB_NAME`/`DB_USER`/`DB_PASSWORD` from the site's `docker/<env>.env`.
-- `proxy/register-site <site-dir>` renders `proxy.conf.template` into
-  `proxy/sites/<site>.conf` and reloads nginx, serving the site's `ALLOWED_HOSTS` minus
-  bare IP addresses.
-
-The site fills its own empty database: its entrypoint loads `docker/init.sql.gz` when the
-schema is absent, then migrates. That runs as the site's own role, so it owns its tables.
-
-The frontend is built on the host before the image, as in Relonee: `./dm build` writes
-`static/frontend` and collects `static/collected`, and the image copies the result —
-`.dockerignore` keeps `frontend/` and the static sources out of the build context.
-
-Nothing is version-pinned, so a rebuild without the layer cache is also the update: it
-refreshes the base image and installs the current release of every dependency.
+Each is a Compose project, run from its directory. Bring it up once; it restarts on its
+own after a reboot, until `down`. A site's `up -d` joins the networks and needs both
+services running. The database one reads `prod.env` (copy `prod.env.example`, set the
+superuser password); the proxy has no env file.
 
 ```sh
-./dm --env prod docker build --no-cache django
-./dm --env prod docker compose up -d
+cd ~/Projects/sites/database
+docker compose --env-file prod.env up -d     # likewise: down, exec -T postgres psql
+
+cd ~/Projects/sites/proxy
+docker compose up -d
 ```
 
-`new_site.md`, chapter 7, is the step-by-step version of this.
+The database files are in `database/data/`.
 
-Certificates belong to the site. `proxy/issue-cert <site-dir>` runs certbot with the site's
-`docker/certbot/` mounted, registers the site's own Let's Encrypt account as `mail@<site>`
-on first use, and validates over HTTP through the running proxy. The certificate covers the
-site's domain and the names below it in `ALLOWED_HOSTS`. certbot's deploy hook, run inside
-its container after a successful issuance, copies `fullchain.pem` and `privkey.pem` into
-`proxy/certs/<site>/` — mode 600, owned by root, read by nginx's root master process —
-the only part of the site the proxy holds. `register-site` renders the nginx config
-referencing that copy and reloads nginx, so issue before registering. `proxy/update-cert
-<site-dir>` renews when due with the same hook, then reloads nginx.
+Each service provides a Docker network named after its directory, `database_network` and
+`proxy_network`. A site's container joins both. On `proxy_network` its alias is its
+`COMPOSE_PROJECT_NAME` from `docker/prod.env`; nginx proxies to that alias on port 8000.
 
-**Open:** scheduling `update-cert`, backups and restore, a deploy/rollback command.
+### Adding a site
+
+`new_site.md`, chapter 7, has the full steps. On the host, from the site's directory:
+
+```sh
+export ENV=prod                         # once per session; dm and the scripts read it
+../database/register-site ../<site>     # the site's role and database, from docker/prod.env
+./dm docker compose build
+./dm docker compose up -d               # loads docker/init.sql.gz, migrates, serves
+../proxy/issue-cert ../<site>           # the site's certificate
+../proxy/register-site ../<site>        # the site's nginx config
+```
+
+### Certificates
+
+- `proxy/issue-cert <site-dir>` issues the certificate for the site's domain and its
+  subdomains listed in `ALLOWED_HOSTS`, under the site's own Let's Encrypt account
+  `mail@<site>`, registered on first use. Account and certificate live in the site's
+  `docker/certbot/`. `fullchain.pem` and `privkey.pem` are copied to `proxy/certs/<site>/`,
+  the only certificate material the proxy holds.
+- `proxy/register-site <site-dir>` writes `proxy/sites/<site>.conf` for the site's
+  `ALLOWED_HOSTS` without bare IP addresses and reloads nginx. Run it after `issue-cert`.
+- `proxy/update-cert <site-dir>` renews the certificate within 30 days of expiry, refreshes
+  the proxy's copy and reloads nginx. Run it daily.
+
+### Updating a site
+
+On the host, in the site's directory:
+
+```sh
+export ENV=prod
+git pull
+npm --prefix frontend install
+./dm build                              # frontend and static files, built on the host
+./dm docker compose build
+./dm docker compose up -d
+```
+
+Nothing is version-pinned. `./dm docker build --no-cache django` also refreshes the base
+image and every dependency.
+
+### Backups
+
+It is advisable to have backups. Everything worth keeping is on the host's file system: the
+database files, the sites' uploads, and their uncommitted secrets and certificates. The
+easiest way is to copy the whole `sites` tree somewhere regularly.
+
+**Open:** scheduling `update-cert`, deploy and rollback commands in `dm`.
 
 ## Database lifecycle (`init.sql.gz`)
 

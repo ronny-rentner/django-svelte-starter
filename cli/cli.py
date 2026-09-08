@@ -468,6 +468,12 @@ class DockerCommand:
                 click.output.error(f"Error building image for service {service}: {str(e)}")
 
     @click.command()
+    def deploy(self):
+        """Build the django image from the last build and start it"""
+        ctx.invoke(self.build, services=('django',), no_pull=False, no_cache=False)
+        ctx.invoke(self.compose, args=('up', '-d'))
+
+    @click.command()
     @click.argument("service_name", required=True, type=ServiceType())
     @click.argument("mount_point", type=click.Path(), required=False)
     @click.option("-r", "--rebind", is_flag=True, help="Unmount the existing mount first before bind mounting.")
@@ -875,12 +881,6 @@ class MainGroup:
             click.run("git pull", headline="Pulling")
         click.run([sys.executable, "-m", "pip", "install", "--group", "backend/pyproject.toml:main"], headline="Installing backend dependencies")
         click.run(["npm", "--prefix", self.frontend_dir, "install"], headline="Installing frontend dependencies")
-
-    @click.command()
-    def deploy(self):
-        """Build the image from the last build and start it"""
-        ctx.invoke(self.docker.build, services=('django',), no_pull=False, no_cache=False)
-        ctx.invoke(self.docker.compose, args=('up', '-d'))
 
     @click.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
     @click.argument("args", nargs=-1)

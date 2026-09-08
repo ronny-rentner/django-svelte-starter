@@ -143,7 +143,7 @@ Each service provides a Docker network named after its directory, `database_netw
 export ENV=prod                         # once per session; dm and the scripts read it
 ../database/register-site ../<site>     # the site's role and database, from docker/prod.env
 ./dm build                              # frontend and static files, built on the host
-./dm deploy                             # image, then up -d: loads docker/init.sql.gz, migrates, serves
+./dm docker deploy                      # image, then up -d: loads docker/init.sql.gz, migrates, serves
 ../proxy/issue-cert ../<site>           # the site's certificate
 ../proxy/register-site ../<site>        # the site's nginx config
 ```
@@ -169,7 +169,7 @@ On the host, in the site's directory:
 export ENV=prod
 ./dm pull                               # git pull, then pip and npm install; `./dm pull <rev>` for a revision
 ./dm build                              # frontend and static files, built on the host
-./dm deploy                             # image, then up -d
+./dm docker deploy                      # image, then up -d
 ```
 
 An older revision is deployed the same way, with `./dm pull <rev>` as the first step.

@@ -879,9 +879,8 @@ class MainGroup:
     @click.command()
     def deploy(self):
         """Build the image from the last build and start it"""
-        docker = DockerCommand()
-        ctx.invoke(docker.build, services=('django',), no_pull=False, no_cache=False)
-        ctx.invoke(docker.compose, args=('up', '-d'))
+        ctx.invoke(self.docker.build, services=('django',), no_pull=False, no_cache=False)
+        ctx.invoke(self.docker.compose, args=('up', '-d'))
 
     @click.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
     @click.argument("args", nargs=-1)

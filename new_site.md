@@ -137,8 +137,7 @@ backend/venv/bin/pip install --group backend/pyproject.toml:main
 npm --prefix frontend install
 ./dm build                                   # static/frontend and static/collected
 ../database/register-site ../<site>          # the site's role and database
-./dm docker compose build
-./dm docker compose up -d                    # loads init.sql.gz, migrates, serves
+./dm deploy                                  # builds the image and starts it: loads init.sql.gz, migrates, serves
 ../proxy/issue-cert ../<site>                # the site's Let's Encrypt certificate, copied to the proxy
 ../proxy/register-site ../<site>             # writes the nginx config, reloads
 ```

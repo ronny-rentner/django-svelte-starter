@@ -142,8 +142,8 @@ Each service provides a Docker network named after its directory, `database_netw
 ```sh
 export ENV=prod                         # once per session; dm and the scripts read it
 ../database/register-site ../<site>     # the site's role and database, from docker/prod.env
-./dm docker compose build
-./dm docker compose up -d               # loads docker/init.sql.gz, migrates, serves
+./dm build                              # frontend and static files, built on the host
+./dm deploy                             # image, then up -d: loads docker/init.sql.gz, migrates, serves
 ../proxy/issue-cert ../<site>           # the site's certificate
 ../proxy/register-site ../<site>        # the site's nginx config
 ```
@@ -156,7 +156,8 @@ export ENV=prod                         # once per session; dm and the scripts r
   `docker/certbot/`. `fullchain.pem` and `privkey.pem` are copied to `proxy/certs/<site>/`,
   the only certificate material the proxy holds.
 - `proxy/register-site <site-dir>` writes `proxy/sites/<site>.conf` for the site's
-  `ALLOWED_HOSTS` without bare IP addresses and reloads nginx. Run it after `issue-cert`.
+  `ALLOWED_HOSTS` without bare IP addresses and reloads nginx. It comes after `issue-cert`:
+  the config references the certificate.
 - `proxy/update-cert <site-dir>` renews the certificate within 30 days of expiry, refreshes
   the proxy's copy and reloads nginx. Run it daily.
 
@@ -166,15 +167,14 @@ On the host, in the site's directory:
 
 ```sh
 export ENV=prod
-git pull
-npm --prefix frontend install
+./dm pull                               # git pull, then pip and npm install; `./dm pull <rev>` for a revision
 ./dm build                              # frontend and static files, built on the host
-./dm docker compose build
-./dm docker compose up -d
+./dm deploy                             # image, then up -d
 ```
 
-Nothing is version-pinned. `./dm docker build --no-cache django` also refreshes the base
-image and every dependency.
+An older revision is deployed the same way, with `./dm pull <rev>` as the first step.
+Nothing is version-pinned, so each `deploy` builds with the current release of every
+dependency; `./dm docker build --no-cache django` also refreshes the base image.
 
 ### Backups
 
@@ -182,7 +182,7 @@ It is advisable to have backups. Everything worth keeping is on the host's file 
 database files, the sites' uploads, and their uncommitted secrets and certificates. The
 easiest way is to copy the whole `sites` tree somewhere regularly.
 
-**Open:** scheduling `update-cert`, deploy and rollback commands in `dm`.
+**Open:** scheduling `update-cert`.
 
 ## Database lifecycle (`init.sql.gz`)
 

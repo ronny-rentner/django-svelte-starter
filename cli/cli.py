@@ -864,6 +864,25 @@ class MainGroup:
 
     dev = click.alias(run)
 
+    @click.command()
+    @click.argument("rev", required=False)
+    def pull(self, rev):
+        """Bring the checkout to REV, or to the branch's newest commit, and install its dependencies"""
+        if rev:
+            click.run("git fetch", headline="Fetching")
+            click.run(["git", "checkout", rev], headline=f"Checking out {rev}")
+        else:
+            click.run("git pull", headline="Pulling")
+        click.run([sys.executable, "-m", "pip", "install", "--group", "backend/pyproject.toml:main"], headline="Installing backend dependencies")
+        click.run(["npm", "--prefix", self.frontend_dir, "install"], headline="Installing frontend dependencies")
+
+    @click.command()
+    def deploy(self):
+        """Build the image from the last build and start it"""
+        docker = DockerCommand()
+        ctx.invoke(docker.build, services=('django',), no_pull=False, no_cache=False)
+        ctx.invoke(docker.compose, args=('up', '-d'))
+
     @click.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
     @click.argument("args", nargs=-1)
     def django_admin(self, args, **kwargs):

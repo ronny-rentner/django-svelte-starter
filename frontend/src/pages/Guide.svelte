@@ -9,5 +9,5 @@
 </script>
 
 <Main {...rest}>
-  <markdown file="guide.md" />
+  <markdown file="Guide.md" />
 </Main>

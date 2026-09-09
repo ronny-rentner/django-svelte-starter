@@ -2,11 +2,12 @@
 
 ## Before Site 1
 
-- Rewrite `readme.md` section by section in the style stated at its top. Done: "Configuration", "Live hosting".
+- Rewrite `readme.md` section by section in the style stated at its top. Done: "Configuration", "Live hosting", "Styling".
 - Trim inherited YouTube transcript functionality from the default starter unless the first site needs it. It currently ships as `backend/core/models/youtube.py`, committed migrations, and `pytubefix` / `youtube-transcript-api` dependencies.
 - Add a fresh-clone bootstrap path: how to create `backend/venv`, install backend/frontend dependencies, create the local database, and provide the first config values.
 - On yuki, `docker volume rm database_postgres_data`: the old PostgreSQL volume, kept as fallback after the data moved to `sites/database/data/` on 2026-09-08.
 - SQL dumps for backups are missing, deferred.
+- Rename `build-info.json` to `buildInfo.json`, matching svUltra's `buildInfo.js` and `updateBuildInfo.js`: the two kit modules, svUltra's readme, the starter's and the sites' `.gitignore`, readme and AGENTS.md, and the file on the host.
 - Schedule `proxy/update-cert` on yuki, deferred. carbon.berlin's certificate expires 2026-12-06; certbot renews from 2026-11-06, so the cron line, or a manual run, must be in place by then.
 - On the next new site, verify `proxy/issue-cert`: the deploy hook copying into `proxy/certs/<site>/` has not been observed yet. The note sits in `new_site.md`, chapter 7.
 - Add a per-site configuration template for launch-critical values: `SECRET_KEY`, `DEBUG`, database settings, frontend URLs, allowed hosts, reCAPTCHA keys, and email settings.

@@ -13,7 +13,7 @@ with it.
   justifications.
 - Basics first. One topic per section. Commands in code blocks.
 
-**Rewritten so far:** "Configuration", "Live hosting". Until a section is rewritten, its
+**Rewritten so far:** "Configuration", "Live hosting", "Styling". Until a section is rewritten, its
 facts are settled and its wording is not.
 
 ---
@@ -50,6 +50,8 @@ Build production assets with:
 ```
 
 This runs the Svelte build first, then collects Django static files. Use `./dm build front` for only the Vite build or `./dm build static` for only Django `collectstatic`.
+
+`dm` accepts abbreviated command names as long as they are unambiguous: `./dm do de` runs `./dm docker deploy`.
 
 The frontend build writes bundled assets and the Vite manifest to `static/frontend/`. Before it, svUltra's `prebuild` script stamps the untracked `frontend/src/build-info.json` with a build number and time, which the footer shows.
 
@@ -249,6 +251,36 @@ The frontend has two separate configs:
   config.update({ filters: { sort: 'name' } });            // merge   → { filters: { sort: 'name', tags: ['x'] } }
   config.update({ filters: overwrite({ sort: 'name' }) }); // replace → { filters: { sort: 'name' } }
   ```
+
+## Styling
+
+PicoCSS is the visual baseline. `frontend/src/styles/app.css` is loaded after it (see
+`frontend/src/main.js`) and holds the theme, the element rules and fixes for Pico's own
+bugs. Component- and page-specific styling stays in the components.
+
+Pico sets every colour of a role by hand. `app.css` derives them from the role's base
+colour, so a site sets `--pico-primary` and `--pico-secondary` and the backgrounds,
+borders, underlines, hovers and focus rings follow.
+
+### Fonts
+
+The site font is self-hosted. Its files sit in `frontend/src/assets/fonts/`, `@font-face`
+declares them at the top of `app.css`, and `--pico-font-family-headings` names the family;
+the `h1`–`h6` and button rules read that variable. The starter ships the latin subset of
+Manrope, regular and bold. Body text runs on `--pico-font-family`, which stays on the
+system stack.
+
+Another font replaces the files and the family name. Google's fonts are packaged for npm
+as `@fontsource/<name>`, with the files under `node_modules/@fontsource/<name>/files/`:
+
+```
+npm install @fontsource/<name>
+cp node_modules/@fontsource/<name>/files/<name>-latin-400-normal.woff2 src/assets/fonts/
+npm uninstall @fontsource/<name>
+```
+
+One file holds one family at one weight and style, so every weight in use needs its own
+file and its own `@font-face`.
 
 ## Simulating slow loading
 

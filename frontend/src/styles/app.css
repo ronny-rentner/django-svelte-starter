@@ -1,8 +1,313 @@
 /*
- * Loaded after Pico (see main.js). Holds Pico theme/variable tweaks and fixes for
+ * Loaded after Pico (see main.js). Holds the Pico theme, element rules and fixes for
  * Pico's own bugs. Component- or page-specific styling stays in the components.
  * (Accordion-specific Pico fixes ship with the action — see svUltra's accordion.css.)
  */
+
+/* FONTS */
+
+/* The site font, used for headings and buttons through --pico-font-family-headings below.
+   The files are the latin subset of Manrope from the @fontsource package of that name;
+   another site font replaces the files here and the family name below. */
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/src/assets/fonts/manrope-latin-400-normal.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/src/assets/fonts/manrope-latin-700-normal.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* ROOT VARIABLES */
+
+:root {
+
+  /* Base font size in pixel and then element font sizes in rem */
+  --pico-font-size: 16px;
+  --pico-font-family: Arial, Helvetica, sans-serif;
+  --pico-font-family-headings: 'Manrope', var(--pico-font-family-sans-serif);
+  --pico-progress-color: rgba(255, 255, 255, 0.2);
+  --pico-outline-width: 0.125rem;
+
+  --pico-table-background-color: var(--pico-background-color);
+  --pico-table-alt-background-color: #f0f0f0;
+
+  --pico-modal-overlay-backdrop-filter: blur(0.5rem);
+
+  --pico-typography-spacing-top: var(--pico-typography-spacing-vertical);
+
+  --pico-form-element-spacing-vertical: 0.5rem;
+  --pico-form-element-spacing-horizontal: 0.75rem;
+
+  --pico-error-color: var(--pico-del-color);
+
+  --pico-spacing-25: calc(var(--pico-spacing) * 0.25);
+  --pico-spacing-50: calc(var(--pico-spacing) * 0.50);
+  --pico-spacing-75: calc(var(--pico-spacing) * 0.75);
+
+  scrollbar-color: #666 transparent !important;
+  scrollbar-width: thin;
+}
+
+/* LIGHT THEME OVERRIDES */
+
+/* Need to mention 'not dark', otherwise it does not override Pico built in styles */
+:root:not([data-theme="dark"]), [data-theme="light"] {
+  /* Pico sets every colour of a role by hand; here they follow from the role's base colour,
+     so a site sets --pico-primary and --pico-secondary (and, if it wants, the hovers) */
+  --pico-primary-background: var(--pico-primary);
+  --pico-primary-border: var(--pico-primary-background);
+  --pico-primary-underline: rgb(from var(--pico-primary) r g b / 0.5);
+  --pico-primary-hover: color-mix(in srgb, var(--pico-primary), white 25%);
+  --pico-primary-hover-background: var(--pico-primary-hover);
+  --pico-primary-hover-border: var(--pico-primary-hover-background);
+  --pico-primary-hover-underline: var(--pico-primary-hover);
+  --pico-primary-focus: rgb(from var(--pico-primary) r g b / 0.25);
+
+  --pico-secondary-background: var(--pico-secondary);
+  --pico-secondary-border: var(--pico-secondary-background);
+  --pico-secondary-underline: rgb(from var(--pico-secondary) r g b / 0.5);
+  --pico-secondary-hover: color-mix(in srgb, var(--pico-secondary), white 25%);
+  --pico-secondary-hover-background: var(--pico-secondary-hover);
+  --pico-secondary-hover-border: var(--pico-secondary-hover-background);
+  --pico-secondary-hover-underline: var(--pico-secondary-hover);
+  --pico-secondary-focus: rgb(from var(--pico-secondary) r g b / 0.25);
+
+  --pico-dropdown-hover-background-color: var(--pico-primary-focus);
+
+  /* A site's page tint, e.g. hsl(24 33% 97%) for a warm white */
+  --pico-background-color: #ffffff;
+
+  --pico-box-shadow: rgba(0, 0, 0, 0.24) 0rem 0.25rem 0.5rem;
+
+  --pico-modal-overlay-background-color: rgba(232, 234, 237, 0.5);
+
+  --pico-card-sectioning-background-color: #f4f4f4;
+
+}
+
+/* DARK THEME OVERRIDES */
+
+:root[data-theme="dark"] {
+  /* As in the light theme; Pico's dark theme sets the families again, so they are derived again */
+  --pico-primary-background: var(--pico-primary);
+  --pico-primary-border: var(--pico-primary-background);
+  --pico-primary-underline: rgb(from var(--pico-primary) r g b / 0.5);
+  --pico-primary-hover: color-mix(in srgb, var(--pico-primary), white 25%);
+  --pico-primary-hover-background: var(--pico-primary-hover);
+  --pico-primary-hover-border: var(--pico-primary-hover-background);
+  --pico-primary-hover-underline: var(--pico-primary-hover);
+  --pico-primary-focus: rgb(from var(--pico-primary) r g b / 0.25);
+
+  --pico-secondary-background: var(--pico-secondary);
+  --pico-secondary-border: var(--pico-secondary-background);
+  --pico-secondary-underline: rgb(from var(--pico-secondary) r g b / 0.5);
+  --pico-secondary-hover: color-mix(in srgb, var(--pico-secondary), white 25%);
+  --pico-secondary-hover-background: var(--pico-secondary-hover);
+  --pico-secondary-hover-border: var(--pico-secondary-hover-background);
+  --pico-secondary-hover-underline: var(--pico-secondary-hover);
+  --pico-secondary-focus: rgb(from var(--pico-secondary) r g b / 0.25);
+
+  --pico-table-alt-background-color: var(--pico-muted-border-color);
+
+}
+
+/******************/
+/* GENERAL SIZING */
+/******************/
+
+/* We use the font-size to define a base size for each screen size */
+
+/* TODO: use CSS preprocessor to not hardcode pixels twice */
+@media (max-width: 1024px) {
+  :root {
+    --pico-font-size: 15px;
+  }
+}
+
+/* This is the default */
+@media (min-width: 1024px) {
+  :root {
+    --pico-font-size: 15px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --pico-font-size: 16px;
+  }
+}
+
+/* Replacement defined in vite.config.js:
+ * ['@media large',   '@media (min-width: 1536px)'],
+   ['@large',         '@media (min-width: 1536px)'],
+ */
+@media (min-width: 1536px) {
+  :root {
+    --pico-font-size: 17px;
+  }
+}
+
+html {
+  overflow: auto;
+}
+
+html > body {
+  overflow: hidden;
+}
+
+html > body > header {
+  padding: 0;
+}
+
+#app {
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  scrollbar-gutter: stable;
+
+  /* Smallest screen size we support */
+  min-width: 360px;
+}
+
+/*
+main h1:first-of-type {
+margin-top: 1rem;
+}
+ */
+
+input[type='checkbox'] {
+  flex-shrink: 0;
+}
+
+label:has(input[type='checkbox']) {
+  padding: 0.1rem;
+  border-radius: 0.25rem;
+}
+
+label:has(input[type='checkbox']):hover {
+  color: var(--pico-primary-hover);
+}
+
+textarea {
+  display: inline-block;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  --pico-typography-spacing-top: var(--pico-typography-spacing-vertical);
+  /*margin-top: 0;*/
+  font-family: var(--pico-font-family-headings);
+  font-weight: 700;
+
+  svg {
+    vertical-align: baseline;
+  }
+}
+
+[role="button"], [type="button"], [type="file"]::file-selector-button, [type="reset"], [type="submit"], button {
+  font-family: var(--pico-font-family-headings);
+  overflow: hidden;
+  position: relative;
+  --pico-font-weight: bold;
+  /*--pico-form-element-spacing-vertical: 0.35rem;*/
+  flex-shrink: 0;
+}
+
+kbd {
+  font-size: 75%;
+  background-color: var(--pico-secondary-background);
+  vertical-align: middle;
+}
+
+.no-selection
+{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.error-message,
+.error
+{
+  --pico-color: var(--pico-error-color);
+  --pico-font-weight: bold;
+}
+
+/* TRANSITONS & EFFECTS */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* DROPDOWN */
+
+details.dropdown {
+  position: relative;
+  /*display: inline-block;*/
+}
+details.dropdown > summary {
+  display: block;
+  position: relative;
+}
+details.dropdown > ul {
+  overflow: hidden;
+}
+
+details.dropdown summary::after, details.dropdown > a::after, details.dropdown > button::after {
+  width: 0.75rem;
+  margin-inline: .35rem .1rem;
+  background: var(--pico-color);
+  mask: var(--pico-icon-chevron) center;
+  content: "";
+
+}
+
+details.dropdown summary.mobile::after {
+  margin-inline: 0;
+}
+
+details.dropdown[open] summary::before {
+  inset: 0;
+}
+
+/* TOOLTIPS */
+[data-tooltip] {
+  &::before {
+    width: max-content;
+    max-width: 22rem;
+    word-wrap: break-word;
+    white-space: normal;
+    --pico-tooltip-background-color: rgba(0, 0, 0, 0.75);
+  }
+}
+
+/* DISABLED LINKS */
+a[disabled] {
+  pointer-events: none;
+  color: var(--pico-color);
+  &:hover {
+    text-decoration: none;
+    color: var(--pico-color);
+  }
+}
 
 /*********************/
 /* PICO CSS BUGFIXES */

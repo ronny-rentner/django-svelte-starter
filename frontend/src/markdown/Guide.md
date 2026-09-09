@@ -1,6 +1,6 @@
 # Guide
 
-This page is rendered from a markdown file. The `<markdown file="guide.md" />`
+This page is rendered from a markdown file. The `<markdown file="Guide.md" />`
 tag in `Guide.svelte` is replaced at build time with the compiled HTML — the
 component stays focused on layout while the prose lives in a file that anyone
 can edit.

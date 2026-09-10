@@ -880,6 +880,8 @@ class MainGroup:
         else:
             click.run("git pull", headline="Pulling")
         click.run([sys.executable, "-m", "pip", "install", "--group", "backend/pyproject.toml:main"], headline="Installing backend dependencies")
+        # `npm install` never upgrades an installed package; only `update` does
+        click.run(["npm", "--prefix", self.frontend_dir, "update"], headline="Updating frontend dependencies")
         click.run(["npm", "--prefix", self.frontend_dir, "install"], headline="Installing frontend dependencies")
 
     @click.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})

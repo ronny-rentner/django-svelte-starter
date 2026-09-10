@@ -2,7 +2,7 @@ import { defineConfig, createLogger } from 'vite';
 
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import generateRoutesPlugin from 'svultra/kit/router/generateRoutes';
-import watchSvultraPlugin from 'svultra/kit/vite';
+import watchSourcePlugin from 'svultra/kit/vite';
 
 import path from 'path';
 import fs from 'node:fs';
@@ -97,7 +97,7 @@ const config = {
         '/404': '*'
       }
     }),
-    watchSvultraPlugin(),
+    watchSourcePlugin(),
     isProduction ? () => {} : fixSourceMaps(),
     //fixSourceMaps(),
   ],

@@ -3,6 +3,7 @@
 ## Before Site 1
 
 - Rewrite `readme.md` section by section in the style stated at its top. Done: "Configuration", "Live hosting", "Styling".
+- We cannot install a single npm package without npm enforcing `package.json`. Find a way to stop npm from doing that.
 - Trim inherited YouTube transcript functionality from the default starter unless the first site needs it. It currently ships as `backend/core/models/youtube.py`, committed migrations, and `pytubefix` / `youtube-transcript-api` dependencies.
 - Add a fresh-clone bootstrap path: how to create `backend/venv`, install backend/frontend dependencies, create the local database, and provide the first config values.
 - On yuki, `docker volume rm database_postgres_data`: the old PostgreSQL volume, kept as fallback after the data moved to `sites/database/data/` on 2026-09-08.

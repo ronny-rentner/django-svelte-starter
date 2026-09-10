@@ -32,6 +32,15 @@ The broader extraction work is split across three directions:
 
 The frontend is built on `svUltra`: it was scaffolded from the svUltra kit demo and pulls its components, actions, stores, and router from the `@kit` alias (`svultra/kit`). The site-specific layer on top — pages, layout, API helpers — is the starter's own.
 
+`package.json` installs `svUltra` from its git repository. To work on it alongside the site, link a local checkout:
+
+```
+cd <svultra-checkout> && npm link
+cd frontend           && npm link svultra
+```
+
+Saving a file in the checkout then reaches the running dev server. `npm ls svultra` prints the resolved path. Any later `npm install` in the site replaces the link with the git version and reports it as `changed 1 package`.
+
 ## Django/Svelte Build Notes
 
 Run the two development servers together during normal development:

@@ -1,7 +1,6 @@
 # Creating a new site from this starter
 
-**Status: in progress — this guide has not yet been followed end to end. Correct it while
-following it.**
+**Status: in progress. Correct this guide while following it.**
 
 The starter is self-contained and meant to be copied whole. A new site is a full copy with
 its own git repository, its own database.
@@ -18,26 +17,43 @@ rm -rf .git
 git init && git add -A && git commit -m "Initial commit from django-svelte-starter"
 ```
 
-## 2. Configure the site
+## 2. Remove the starter's own material
+
+The copy keeps `readme.md` and `AGENTS.md`: they describe the site as much as the starter.
+What describes only the starter goes:
+
+1. Delete `new_site.md` and `starter_todo.md`.
+2. In `AGENTS.md`, delete the section "Starter extraction".
+
+## 3. Configure the site
 
 In `backend/config/settings.py`:
 
-- `DATABASES` — replace `dss` with `<site>` as the database name and user, and set a
-  password. Step 4 creates the database itself.
-- `ALLOWED_HOSTS` — replace `example.com` with `<domain>`.
+1. `DATABASES` — replace `dss` with `<site>` as the database name, user and password. It is
+   the local development database's; a real password never goes into `settings.py`. Step 5
+   creates the database itself.
+2. `ALLOWED_HOSTS` — replace `example.com` with `<domain>`.
+3. `EMAIL_HOST` — the site's mail relay. Its login goes into `docker/prod.env` in step 8.
 
-## 3. Rebrand
+## 4. Rebrand
 
-- `backend/core/templates/index.html` — the `<title>`
-- `frontend/index.html` — the `<title>`
-- `frontend/src/pages/Home.svelte` — the `title` in `pageConfig`
-- `frontend/src/components/layout/Footer.svelte` — the copyright holder and the
-  "Crafted with" line
-- `cli/startdev.desktop` — `Name=` and the path in `Exec=`
+1. `backend/core/templates/index.html` — the `<title>`.
+2. `frontend/index.html` — the `<title>`.
+3. `frontend/src/pages/Home.svelte` — `title` and `description` in `meta()`.
+4. `frontend/src/components/layout/Footer.svelte` — the copyright holder, the "Crafted
+   with" line and the social links.
+5. `frontend/src/assets/` — `logo.svg`, `logo-dark.svg` and `favicon.svg`.
+6. `frontend/src/styles/app.css` — `--pico-primary`, `--pico-secondary` and the site font;
+   the readme's "Styling" section describes both.
+7. `frontend/src/markdown/Imprint.md` — the site's details in place of the example values.
+8. `frontend/src/markdown/Privacy.md` — a privacy policy for the site. The starter's is a
+   generated template with placeholders; the generator is linked at its end.
+9. `frontend/src/markdown/Terms.md` — the site's terms. The starter ships the heading only.
+10. `cli/startdev.desktop` — `Name=` and the path in `Exec=`.
 
-## 4. Set up the environment
+## 5. Set up the environment
 
-Create the role and the database with the password from step 2:
+Create the role and the database:
 
 ```sh
 sudo -u postgres psql -p 5433 <<'SQL'
@@ -56,82 +72,88 @@ npm --prefix frontend install
 ./dm django-admin createsuperuser
 ```
 
-## 5. Run and check
+## 6. Run and check
 
 ```sh
 ./dm run back      # Django, the task worker and the fastmanage daemon
 ./dm run front     # Vite on port 5173
 ```
 
-At `http://localhost:5173`:
+1. At `http://localhost:5173`, the home page renders with the new brand, and the
+   **Contact** modal submits and the message appears in `/admin/`.
+2. The contact endpoint alone, without the modal:
 
-- the home page renders with the new brand;
-- the **Contact** modal submits and the message appears in `/admin/`.
+   ```sh
+   curl -X POST http://localhost:8000/api/contact/ -H 'Content-Type: application/json' \
+     -d '{"name":"Check","email":"check@example.com","message":"Setup check","recaptcha":"test"}'
+   ```
 
-The contact endpoint alone, without the modal:
+   It answers `{"detail":"Your message has been sent!"}`, and the record is stored:
 
-```sh
-curl -X POST http://localhost:8000/api/contact/ -H 'Content-Type: application/json' \
-  -d '{"name":"Check","email":"check@example.com","message":"Setup check","recaptcha":"test"}'
-```
+   ```sh
+   ./dm django-admin shell -c "from core.models import ContactMessage; print(ContactMessage.objects.values().last())"
+   ```
 
-It answers `{"detail":"Your message has been sent!"}`, and the record is stored:
+3. At `http://localhost:8000/admin/`, the superuser from step 5 signs in.
+4. `./dm build` completes and writes `static/frontend/manifest.json`.
+5. No starter name is left:
 
-```sh
-./dm django-admin shell -c "from core.models import ContactMessage; print(ContactMessage.objects.values().last())"
-```
+   ```sh
+   grep -rn "dss\|django-svelte-starter" backend cli docker frontend/src --exclude=*.md --exclude-dir=node_modules
+   ```
 
-At `http://localhost:8000/admin/`, the superuser from step 4 signs in.
+   It finds nothing once steps 3 and 4 are done. `frontend/package.json` keeps its name.
 
-Then `./dm build` completes and writes `static/frontend/manifest.json`.
-
-Finally:
-
-```sh
-grep -rn "dss\|django-svelte-starter" backend cli frontend/src --exclude=*.md --exclude-dir=node_modules
-```
-
-It finds nothing once steps 2 and 3 are done. The docs keep their references to the
-starter, and `frontend/package.json` keeps its name.
-
-## 6. Commit
+## 7. Commit
 
 ```sh
 git add -A && git commit -m "Rename to <Site>"
 git remote add origin <url> && git push -u origin main
 ```
 
-## 7. Going live
+## 8. Going live
 
 The live host runs the shared services from `~/Projects/sites`: `database` (PostgreSQL)
 and `proxy` (nginx). Both are already running there; this chapter adds one site to them.
 
-Prepare the deployment files in the site, and commit them:
+### Deployment files
 
-- `docker/prod_django.ini` — `ALLOWED_HOSTS` and the three `FRONTEND_*` URLs, for
-  `<domain>` and every alias the site answers to. The proxy serves exactly these names,
-  minus any bare IP addresses.
-- `docker/init.sql.gz` — the site's initial database state:
+Prepare them in the site, and commit them:
 
-  ```sh
-  ./dm django-admin dump_db --dump-file docker/init.sql
-  gzip -9 docker/init.sql
-  ```
+1. `docker/prod_django.ini` — `ALLOWED_HOSTS` and the three `FRONTEND_*` URLs, for
+   `<domain>` and every alias the site answers to, such as `www.<domain>`. The proxy serves
+   exactly these names, minus any bare IP addresses. `DEFAULT_FROM_EMAIL` — the sender of
+   the site's mails.
+2. `docker/init.sql.gz` — the site's initial database state:
 
-Then `docker/prod.env`, copied from `docker/prod.env.example` and filled in with a
-generated `DB_PASSWORD` and `SECRET_KEY`. It is not committed, so it has to reach the
-host another way:
+   ```sh
+   ./dm django-admin dump_db --dump-file docker/init.sql
+   gzip -9 docker/init.sql
+   ```
 
-```sh
-scp docker/prod.env <host>:Projects/sites/<site>/docker/prod.env
-```
+### On the host
 
-On the host, as the deploying user:
+As the deploying user:
 
 ```sh
 export ENV=prod                              # once per session; dm and the scripts read it
 git clone <url> ~/Projects/sites/<site>
 cd ~/Projects/sites/<site>
+```
+
+### Secrets
+
+`docker/prod.env` holds the secrets. It is in `.gitignore` and must not be committed. To set
+it up in the clone:
+
+1. Copy `docker/prod.env.example` to `docker/prod.env`.
+2. Replace all values.
+
+### Deploy
+
+In the clone:
+
+```sh
 python3 -m venv backend/venv
 backend/venv/bin/pip install --group backend/pyproject.toml:main
 npm --prefix frontend install

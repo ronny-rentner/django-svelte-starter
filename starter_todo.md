@@ -2,7 +2,6 @@
 
 ## Before Site 1
 
-- Rewrite `readme.md` section by section in the style stated at its top. Done: "Configuration", "Live hosting", "Styling".
 - We cannot install a single npm package without npm enforcing `package.json`. Find a way to stop npm from doing that.
 - Bug in clean-browser-mcp: `browser_scroll` tries to scroll the page when the page has to scroll `#app`. With an amount that cannot be reached (100,000 px) it never stops and blocks the browser tools.
 - Bug: stopping a backgrounded MCP tool task with `TaskStop` reports success, but the command keeps running — the `browser_scroll` above kept executing in the browser extension.

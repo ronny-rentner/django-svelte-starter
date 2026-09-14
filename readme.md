@@ -1,100 +1,92 @@
 # django-svelte-starter
 
-# ⚠️ THIS README HAS THE WRONG STYLE. IT IS BEING REWRITTEN. ⚠️
+A Django backend and a Svelte frontend, connected and ready to run: the HTML shell, the
+API, routing, sign-in, a contact form, legal pages, styling and a Docker deployment behind
+a shared proxy. The backend builds on `djultra`, the frontend on `svUltra`.
 
-**Most of this file reads as a decision log and a narrative of how things came to be.
-That is the wrong style for a starter's readme. Do not add text in that style.**
+1. [Layout](#1-layout)
+2. [Development](#2-development)
+3. [Configuration](#3-configuration)
+4. [Backend](#4-backend)
+5. [Frontend](#5-frontend)
+6. [Sign-in](#6-sign-in)
+7. [Contact form](#7-contact-form)
+8. [Legal pages](#8-legal-pages)
+9. [Live hosting](#9-live-hosting)
+10. [svUltra and djultra](#10-svultra-and-djultra)
 
-**The target style:** a reference for someone who takes this starter and builds a site
-with it.
+## 1. Layout
 
-- Say what exists and how to use it.
-- Instruct, do not narrate. No history, no comparison with other projects, no
-  justifications.
-- Basics first. One topic per section. Commands in code blocks.
+| Directory | Holds |
+| --------- | ----- |
+| `backend/config/` | settings, URLs, WSGI, the email and admin templates |
+| `backend/core/` | the site's models, views, admin, migrations, tests |
+| `frontend/src/` | the Svelte app: `pages/`, `components/`, `api/`, `markdown/`, `assets/`, `styles/` |
+| `cli/` | the `dm` commands and the development launcher |
+| `docker/` | the image, the Compose file, the live configuration |
+| `static/` | Django-side static files and the build output |
+| `secrets/` | secret files for Django, such as API keys; mounted into the container, not committed |
 
-**Rewritten so far:** "Configuration", "Live hosting", "Styling". Until a section is rewritten, its
-facts are settled and its wording is not.
+## 2. Development
 
----
+### Prerequisites
 
-## Project Lineage
+Python 3, Node.js, git, and PostgreSQL listening on port 5433.
 
-This repository is a starter-shell extraction from `Relonee`, not a greenfield app.
+### Setup
 
-The broader extraction work is split across three directions:
-
-- `Relonee` remains the original product source.
-- `djultra` is the Django/backend spin-off.
-- `svUltra` is the Svelte/frontend spin-off.
-
-`djultra` is a shared library that adds common bells and whistles to Django (base models, serializers, the email service, a dev server); `svUltra` does the same for Svelte. The models and endpoints each site defines — `Person`, `ContactMessage`, the login and contact views — live in the site itself (here, the starter), not in the libraries.
-
-The frontend is built on `svUltra`: it was scaffolded from the svUltra kit demo and pulls its components, actions, stores, and router from the `@kit` alias (`svultra/kit`). The site-specific layer on top — pages, layout, API helpers — is the starter's own.
-
-`package.json` installs `svUltra` from its git repository. To work on it alongside the site, link a local checkout:
-
-```
-cd <svultra-checkout> && npm link
-cd frontend           && npm link svultra
-```
-
-Saving a file in the checkout then reaches the running dev server. `npm ls svultra` prints the resolved path. Any later `npm install` in the site replaces the link with the git version and reports it as `changed 1 package`.
-
-## Django/Svelte Build Notes
-
-Run the two development servers together during normal development:
+The role and the database:
 
 ```sh
-./dm run back
-./dm run front
+sudo -u postgres psql -p 5433 <<'SQL'
+CREATE USER dss WITH PASSWORD 'dss';
+CREATE DATABASE dss OWNER dss;
+SQL
 ```
 
-Django serves the HTML shell through djultra's `index` view, which pushes the frontend config (API URL, reCAPTCHA key, CSP nonce) into the page. djultra ships a default `index.html`; the starter overrides it with `backend/core/templates/index.html` (searched first because `core` precedes `djultra` in `INSTALLED_APPS`). That template uses `django-vite` to load `frontend/src/main.js` in dev mode and the built Svelte bundle from `static/frontend/manifest.json` after a frontend build.
-
-Build production assets with:
+The dependencies and the schema:
 
 ```sh
-./dm build
+python3 -m venv backend/venv
+backend/venv/bin/pip install --group backend/pyproject.toml:main
+npm --prefix frontend install
+./dm django-admin migrate
+./dm django-admin createsuperuser
 ```
 
-This runs the Svelte build first, then collects Django static files. Use `./dm build front` for only the Vite build or `./dm build static` for only Django `collectstatic`.
-
-`dm` accepts abbreviated command names as long as they are unambiguous: `./dm do de` runs `./dm docker deploy`.
-
-The frontend build writes bundled assets and the Vite manifest to `static/frontend/`. Before it, svUltra's `prebuild` script stamps the untracked `frontend/src/build-info.json` with a build number and time, which the footer shows.
-
-`static/src/` is Django static source for files that are not produced by Vite, such as admin CSS, favicons, email logos, and similar assets. The raw underlying commands are:
+### Running
 
 ```sh
-cd frontend && npm run build
-./dm django-admin collectstatic --noinput
+./dm run back      # Django on port 8000, the task worker and the fastmanage daemon
+./dm run front     # Vite on port 5173
 ```
 
-## How the frontend and API are served
+Both reload on file changes. The site is at `http://localhost:5173`, the admin at
+`http://localhost:8000/admin/`.
 
-In development, Django serves the API and the HTML shell on port 8000, and Vite
-serves the Svelte app with hot-reload on port 5173. The page and the API can be
-different origins — the Vite page on `:5173` calling the API on `:8000`, or Django
-reached under a host alias (e.g. `127.0.0.1` vs `localhost`) that differs from the
-API URL.
+### The dm CLI
 
-In production, a reverse proxy (nginx, in Docker or whatever you run) serves the
-built SPA and forwards `/api` to Django, normally all under one real domain — so
-the page and API share an origin. There is no Vite; the dev ports are gone.
+`./dm` is the project's command-line tool; it runs inside `backend/venv`. It wraps
+`django-admin` and adds the development servers, the build, `pull`, `docker` and `updates`.
+`./dm --help` lists the commands, `./dm <command> --help` their options. Abbreviated names
+work as long as they are unambiguous: `./dm do de` is `./dm docker deploy`.
 
-Three settings encode these URLs, set per environment:
+`backend/readme.md` describes the backend commands.
 
-- `FRONTEND_URL` — where the SPA is served (`http://localhost:5173` in dev, the
-  real site origin in prod).
-- `FRONTEND_API_URL` — the API base the SPA calls (`http://localhost:8000/api`).
-- `FRONTEND_URL_EMAILS` — the app's public base URL used in email links.
+### Building
 
-When the page and API differ in origin, cross-origin access is gated by
-`CORS_ALLOWED_ORIGINS` and the CSP `connect-src`; their comments in `settings.py`
-explain how to allow extra hosts such as LAN IPs.
+```sh
+./dm build           # the Vite build, then collectstatic
+./dm build front     # the Vite build only
+./dm build static    # collectstatic only
+```
 
-## Configuration
+The Vite build goes to `static/frontend/`, `collectstatic` gathers everything into
+`static/collected/`. Both are generated and not committed. Before the Vite build, svUltra's
+`prebuild` script counts the build up in the untracked `frontend/src/build-info.json`; the
+footer shows the number and time.
+
+## 3. Configuration
 
 Settings live in three files:
 
@@ -113,7 +105,257 @@ from the environment only.
 Secrets go into `prod.env` and nowhere else. `docker/certbot/`, the site's Let's Encrypt
 account and keys, is ignored as well.
 
-## Live hosting
+## 4. Backend
+
+### Models and admin
+
+The site's models are in `backend/core/models/`: `Person` and `ContactMessage`. A model
+that defines an inner `Admin` class gets its admin class generated by `djultra`; the admin
+configuration stays next to the model.
+
+### Database
+
+The database is only ever moved forward by migrations. Committed migrations are applied
+history and are never edited or deleted.
+
+`docker/init.sql.gz` is the site's initial database state: a dump of a migrated database
+with the defaults seeded, committed in the site. It is never written by hand.
+
+- A new development database imports it and runs `migrate`; migrations after the dump move
+  the state forward.
+- The first live deployment initialises the production database from it; from then on
+  only migrations change it.
+- Regenerating it from a chosen database state is a deliberate decision; it defines what a
+  fresh development environment contains.
+
+```sh
+./dm django-admin dump_db --dump-file docker/init.sql
+gzip -9 docker/init.sql
+```
+
+### Management commands
+
+`./dm run back` starts the fastmanage daemon with the dev server. While it runs, every
+`./dm django-admin <command>` executes in its warm process and returns at once; without it
+the command runs normally. djultra's readme describes fastmanage.
+
+### Email
+
+`EMAIL_HOST`, `EMAIL_PORT` and `EMAIL_USE_TLS` in `settings.py` name the mail relay; its
+login is `EMAIL_HOST_USER` and `EMAIL_HOST_PASSWORD` in `prod.env`. `DEFAULT_FROM_EMAIL` is
+the sender. The templates are in `backend/config/templates/emails/`. With `DEBUG` on, mails
+print to the backend console.
+
+### Time zones
+
+Timestamps are stored and computed in UTC: `djultra` sets `TIME_ZONE = 'UTC'` and `USE_TZ`.
+A site sets neither; a local zone applies only where a time is displayed. The `TIME_ZONE`
+environment variable overrides it per installation.
+
+### reCAPTCHA
+
+The contact form and the sign-in request are guarded by reCAPTCHA v3. The frontend loads
+the widget with `RECAPTCHA_SITE_KEY` and sends a token with each submission; the backend
+verifies it with `RECAPTCHA_SECRET_KEY`.
+
+Both keys default to Google's test keys, which always validate; the widget shows a "for
+testing only" banner. Production sets real keys in `prod.env`:
+
+```sh
+RECAPTCHA_SITE_KEY=...      # public, used by the widget
+RECAPTCHA_SECRET_KEY=...    # private, used for the verification
+```
+
+## 5. Frontend
+
+### Pages and routing
+
+A file in `frontend/src/pages/` is a route: `About.svelte` is `/about`. `Home.svelte` is
+`/`, `404.svelte` catches the rest; `frontend/vite.config.js` holds these two renames. A page
+receives `meta` and sets its title and description with it, and wraps its content in the
+kit's `Main`:
+
+```svelte
+<script>
+  import { Main } from '@kit/components';
+
+  let { meta, ...rest } = $props();
+  meta({ title: 'About', description: 'Who we are.' });
+</script>
+
+<Main {...rest}>
+  ...
+</Main>
+```
+
+Prose lives in `frontend/src/markdown/` and is rendered at build time:
+
+```svelte
+<Main {...rest}>
+  <markdown file="About.md" />
+</Main>
+```
+
+### Components
+
+`frontend/src/components/` holds the site's components: the layout, the menu, the footer,
+the sign-in and contact forms. The kit's components come from `@kit/components`. A kit
+component is configured from outside: props, attributes, component styling. A site that
+needs its own version copies it into `frontend/src/components/` and changes the copy.
+
+### Styling
+
+PicoCSS is the visual baseline. `frontend/src/styles/app.css` is loaded after it (see
+`frontend/src/main.js`) and holds the theme, the element rules and fixes for Pico's own
+bugs. Component- and page-specific styling stays in the components.
+
+Pico sets every colour of a role by hand. `app.css` derives them from the role's base
+colour, so a site sets `--pico-primary` and `--pico-secondary` and the backgrounds,
+borders, underlines, hovers and focus rings follow.
+
+#### Fonts
+
+The site font is self-hosted. Its files sit in `frontend/src/assets/fonts/`, `@font-face`
+declares them at the top of `app.css`, and `--pico-font-family-headings` names the family;
+the `h1`–`h6` and button rules read that variable. The starter ships the latin subset of
+Manrope, regular and bold. Body text runs on `--pico-font-family`, which stays on the
+system stack.
+
+Another font replaces the files and the family name. Google's fonts are packaged for npm
+as `@fontsource/<name>`, with the files under `node_modules/@fontsource/<name>/files/`:
+
+```
+npm install @fontsource/<name>
+cp node_modules/@fontsource/<name>/files/<name>-latin-400-normal.woff2 src/assets/fonts/
+npm uninstall @fontsource/<name>
+```
+
+One file holds one family at one weight and style, so every weight in use needs its own
+file and its own `@font-face`.
+
+### Assets
+
+The site's assets — logo, favicon, fonts, images — live in `frontend/src/assets/`. A Svelte
+component imports one through the `@assets` alias, and Vite bundles it:
+
+```js
+import logo from '@assets/logo.svg';
+```
+
+The URL of an asset is `/static/src/assets/<name>`:
+
+```text
+frontend/src/assets/logo.svg   →  /static/src/assets/logo.svg
+```
+
+The Django admin has its own CSS and JS in `static/src/admin/`, named in `settings.py` for
+Jazzmin. Nothing else goes into `static/src/`.
+
+### Configuration
+
+The frontend has two configs:
+
+- **`window.config`** — the system configuration, injected by the Django shell at page
+  load: API URLs, the reCAPTCHA site key, and similar values of the installation.
+- **`configStore`** — the user's own configuration, such as dark mode, persisted in the
+  browser's `localStorage`.
+
+  ```js
+  import { configStore as config } from '@kit/stores';
+  import { get } from 'svelte/store';
+
+  $config.darkMode            // read reactively in a Svelte component
+  get(config).darkMode        // read imperatively, outside a reactive context
+
+  config.update({ darkMode: true });          // deep-merges and persists; other keys stay
+  config.update({ sidebarCollapsed: true });  // a new setting is a new key
+  ```
+
+  Changes save immediately and sync across the user's open tabs. `update` deep-merges, so
+  a nested object keeps its other keys; `overwrite()` replaces one:
+
+  ```js
+  import { configStore as config, overwrite } from '@kit/stores';
+
+  // stored value: { filters: { sort: 'date', tags: ['x'] } }
+  config.update({ filters: { sort: 'name' } });            // merge   → { filters: { sort: 'name', tags: ['x'] } }
+  config.update({ filters: overwrite({ sort: 'name' }) }); // replace → { filters: { sort: 'name' } }
+  ```
+
+### API calls
+
+The site's endpoint functions live in `frontend/src/api/api.js`, imported as `@api/api.js`:
+sign-in and sign-out, the auth ping, person loading, the sign-in and contact form submits.
+They are small functions on `@kit/api`, which provides `apiRequest` — the fetch wrapper with
+CSRF header, credentials and automatic aborting of superseded requests — request
+cancellation and the reCAPTCHA loader. A new endpoint is a function in `api.js` calling
+`apiRequest`.
+
+### Origins and URLs
+
+In development, Django serves the API and the HTML shell on port 8000, and Vite serves the
+Svelte app with hot-reload on port 5173. The page and the API can be different origins:
+the Vite page on `:5173` calling the API on `:8000`, or Django reached under a host alias
+that differs from the API URL.
+
+In production, the proxy serves the built app and forwards `/api` to Django under one
+domain, so the page and the API share an origin.
+
+Three settings hold these URLs, set per installation:
+
+- `FRONTEND_URL` — where the app is served: `http://localhost:5173` in development, the
+  site's origin in production.
+- `FRONTEND_API_URL` — the API base the app calls: `http://localhost:8000/api`.
+- `FRONTEND_URL_EMAILS` — the public base URL used in email links.
+
+When the page and the API differ in origin, cross-origin access is gated by
+`CORS_ALLOWED_ORIGINS` and the CSP `connect-src`; their comments in `settings.py` show how
+to allow extra hosts such as LAN IPs.
+
+### Simulating slow loading
+
+`window.config.loadingDelay` makes the router wait that many milliseconds before swapping
+in the next page, which shows the loading overlay. From the browser console, for the
+session:
+
+```js
+window.config.loadingDelay = 4000
+```
+
+Across reloads, in `frontend/src/init.js`, which builds `window.config` on every load:
+
+```js
+window.config.loadingDelay = 4000;
+```
+
+## 6. Sign-in
+
+Sign-in is passwordless. The **Sign in** button opens `LoginForm`, which takes an email
+and POSTs to `/api/signin-request/`, guarded by reCAPTCHA. If a `Person` with that email
+exists, the backend mails a link `/signin?token=<uuid>`; opening it calls
+`/api/token-login/`, which establishes the session. The frontend loads the person from
+`/api/person/` into `personStore`, and the menu shows the user with **Sign out**.
+`personStore` is kept in `localStorage`, so a reload stays signed in.
+
+`USER_LOGIN_ENABLED`, default `True`, gates the login API; with it off, the
+`signin-request`, `token-login` and `person` routes are not registered. With `DEBUG` on,
+the sign-in mail prints to the backend console, and `Person.signin_token` is visible in the
+admin.
+
+## 7. Contact form
+
+The **Contact** link in the menu and the footer opens `ContactForm`. It validates name,
+email and message, runs reCAPTCHA and POSTs to `/api/contact/`. `ContactMessageView`
+verifies the token, limits to 2 requests per minute and saves a `ContactMessage` with the
+sender's IP and user agent.
+
+## 8. Legal pages
+
+`/imprint`, `/terms` and `/privacy` are pages over `frontend/src/markdown/Imprint.md`,
+`Terms.md` and `Privacy.md`; `Privacy-de.md` is the German privacy policy. The texts are
+placeholders and templates, to be adopted by each site.
+
+## 9. Live hosting
 
 The host keeps the sites and the two shared services under `~/Projects/sites`, a
 repository of its own:
@@ -148,7 +390,7 @@ Each service provides a Docker network named after its directory, `database_netw
 
 ### Adding a site
 
-`new_site.md`, chapter 7, has the full steps. On the host, from the site's directory:
+On the host, from the site's directory:
 
 ```sh
 export ENV=prod                         # once per session; dm and the scripts read it
@@ -195,195 +437,14 @@ easiest way is to copy the whole `sites` tree somewhere regularly.
 
 **Open:** scheduling `update-cert`.
 
-## Database lifecycle (`init.sql.gz`)
+## 10. svUltra and djultra
 
-Each site owns a prepared initial database state: `init.sql.gz`, a gzipped SQL
-dump generated from a real Django-initialized database and committed in the site
-repository. It is never written by hand.
+`djultra` adds to Django what every site needs: base models, serializers, the email
+service, the HTML shell, fastmanage. `svUltra` does the same for Svelte: the router and
+generated routes, `Main`, the kit components, actions, stores, dialogs, toasts, the markdown
+preprocessor, component styling and class merging. The frontend reaches it through the
+`@kit` alias, `svultra/kit`.
 
-- **Birth**: a programmer creates an empty database, runs the Django migrations,
-  seeds the defaults (the dev admin account `admin`/`admin`), and dumps the
-  result to `init.sql.gz`.
-- **Dev**: a new programmer imports `init.sql.gz` into their PostgreSQL and runs
-  `migrate`; migrations that landed after the dump move the imported state
-  forward.
-- **Live**: the first deployment initializes the site's production database from
-  the same file; from then on only migrations change it.
-- **Refresh**: live and dev databases drift away from the dump through
-  migrations and real data. Regenerating `init.sql.gz` from a chosen database
-  state is a deliberate team decision — it defines what a fresh developer
-  environment contains. Nothing forces a refresh.
-
-The dump imports into whatever PostgreSQL the site's environment points at: the
-local non-Docker PostgreSQL in development or a Docker one in testing and
-production.
-
-## Frontend config
-
-The frontend has two separate configs:
-
-- **`window.config` — system config.** The frontend's system configuration, injected
-  by the Django shell at page load: API URLs, API keys (such as the reCAPTCHA site
-  key), and similar deployment values — how this deployment is wired.
-- **`configStore` — user config.** The user's own configuration (such as dark mode),
-  persisted in the browser's `localStorage` so it survives across visits.
-
-  Read and write it from any component or module via the kit store:
-
-  ```js
-  import { configStore as config } from '@kit/stores';
-  import { get } from 'svelte/store';
-
-  $config.darkMode            // read reactively in a Svelte component
-  get(config).darkMode        // read imperatively, outside a reactive context
-
-  // Update by passing an object: it deep-merges into the current config and
-  // persists to localStorage automatically — other keys are left untouched.
-  config.update({ darkMode: true });
-
-  // Add a new user setting the same way — just write a new key:
-  config.update({ sidebarCollapsed: true });
-  ```
-
-  Changes save immediately and sync across the user's open tabs.
-
-  Because `update` deep-merges, a nested object keeps its other keys — which is exactly
-  what a UI wants: when the user flips one knob (say, a list's sort order), the rest of
-  that setting (its active tags) stays put instead of being wiped out. When you *do*
-  want to replace a nested object wholesale instead of merging into it, wrap it with
-  `overwrite()`:
-
-  ```js
-  import { configStore as config, overwrite } from '@kit/stores';
-
-  // stored value: { filters: { sort: 'date', tags: ['x'] } }
-  config.update({ filters: { sort: 'name' } });            // merge   → { filters: { sort: 'name', tags: ['x'] } }
-  config.update({ filters: overwrite({ sort: 'name' }) }); // replace → { filters: { sort: 'name' } }
-  ```
-
-## Styling
-
-PicoCSS is the visual baseline. `frontend/src/styles/app.css` is loaded after it (see
-`frontend/src/main.js`) and holds the theme, the element rules and fixes for Pico's own
-bugs. Component- and page-specific styling stays in the components.
-
-Pico sets every colour of a role by hand. `app.css` derives them from the role's base
-colour, so a site sets `--pico-primary` and `--pico-secondary` and the backgrounds,
-borders, underlines, hovers and focus rings follow.
-
-### Fonts
-
-The site font is self-hosted. Its files sit in `frontend/src/assets/fonts/`, `@font-face`
-declares them at the top of `app.css`, and `--pico-font-family-headings` names the family;
-the `h1`–`h6` and button rules read that variable. The starter ships the latin subset of
-Manrope, regular and bold. Body text runs on `--pico-font-family`, which stays on the
-system stack.
-
-Another font replaces the files and the family name. Google's fonts are packaged for npm
-as `@fontsource/<name>`, with the files under `node_modules/@fontsource/<name>/files/`:
-
-```
-npm install @fontsource/<name>
-cp node_modules/@fontsource/<name>/files/<name>-latin-400-normal.woff2 src/assets/fonts/
-npm uninstall @fontsource/<name>
-```
-
-One file holds one family at one weight and style, so every weight in use needs its own
-file and its own `@font-face`.
-
-## Simulating slow loading
-
-To test the loading screens and SPA behaviour under slow page loads, set a loading delay
-on `window.config`. The router then waits that many milliseconds before swapping in the
-next page, so you can watch the loading overlay and how the app behaves while content is
-slow to arrive.
-
-For a quick one-off, set it from the browser console — session-only, a reload clears it:
-
-```js
-window.config.loadingDelay = 4000   // every navigation waits 4 s before the new page swaps in
-```
-
-To keep it on across reloads while you work, set the same value in `frontend/src/init.js`
-(which builds up `window.config` on every load):
-
-```js
-window.config.loadingDelay = 4000;
-```
-
-## Frontend API calls
-
-The site's endpoint functions live in `frontend/src/api/api.js` (imported as
-`@api/api.js`): sign-in/sign-out, the auth ping, person loading, and the sign-in
-and contact form submits. They are small functions built on `svultra/kit/api`
-(aliased `@kit/api`), which provides the generic layer — the `apiRequest` fetch
-wrapper (CSRF header, credentials, automatic aborting of superseded requests),
-request cancellation, and the reCAPTCHA loader. New endpoints for a site go into
-`frontend/src/api/api.js` as functions calling `apiRequest`.
-
-## Sign-in
-
-The starter ships passwordless, token-based sign-in. The **Sign in** button opens a
-modal (`LoginForm`) that takes an email and POSTs to `/api/signin-request/` (reCAPTCHA-
-guarded). If a `Person` with that email exists, the backend emails a link —
-`/signin?token=<uuid>` — that hits `/api/token-login/` to establish the session. The
-frontend then loads the person (`fetchUserInfo` → `/api/person/`) into `personStore`
-and the nav swaps the button for a user menu with **Sign out**; `personStore` is
-localStorage-backed, so a reload stays signed in.
-
-`USER_LOGIN_ENABLED` (default `True`) gates the login API — with it off, the
-`token-login` / `signin-request` / `person` routes aren't registered. It's backend-only
-and doesn't touch the models or the frontend.
-
-In dev the sign-in email prints to the backend console (Django's console email backend
-while `DEBUG`), so you don't need a mail server; the `Person.signin_token` also shows in
-the admin.
-
-## Contact form
-
-The starter ships a working contact form — a modal opened from the **Contact** link in
-the nav and footer. It validates the name/email/message fields, runs reCAPTCHA, and
-POSTs to `/api/contact/`. The backend (core's `ContactMessageView`) verifies the
-reCAPTCHA token, rate-limits to 2 requests per minute, and saves a `ContactMessage`
-record (with the sender's IP and user-agent).
-
-## Admin
-
-`djultra` generates Django admin classes for models that define an inner `Admin`
-class. The starter uses that convention for `Person` and `ContactMessage`, keeping
-their admin configuration next to the model while still letting `djultra` provide
-the generated `ModelAdmin` base behavior.
-
-## Time zones
-
-Timestamps are stored and computed in UTC. `djultra` sets `TIME_ZONE = 'UTC'` (Django's own
-default is `America/Chicago`), and `USE_TZ` is already true by default, so a site does not
-set either. Convert to a local zone only when displaying a time to a user.
-
-Override it per site with the `TIME_ZONE` environment variable or `CONFIG_FILE` if a
-deployment genuinely needs a different default.
-
-## reCAPTCHA
-
-The contact form and the sign-in request are protected by reCAPTCHA v3. The
-frontend loads the widget with `RECAPTCHA_SITE_KEY` and sends a token with each
-submission; the backend verifies that token with Google using
-`RECAPTCHA_SECRET_KEY`.
-
-Both keys default to Google's universal test keys, which always validate (the
-widget shows a "for testing only" banner) — so the forms work out of the box with
-no setup. For production, set real keys via environment variables (or the
-`CONFIG_FILE`):
-
-```sh
-RECAPTCHA_SITE_KEY=...      # public, used by the widget
-RECAPTCHA_SECRET_KEY=...    # private, used for server-side verification
-```
-
-## Backend management
-
-Run the backend with `./dm run` — it starts the Django dev server together with a
-`django-tasks` worker and the fastmanage daemon, so management commands such as
-`./dm django-admin migrate` and `./dm django-admin createsuperuser` run in a warm
-process and feel instant. See `backend/readme.md` for the backend command
-reference and djultra's readme for the fastmanage internals.
+Both are installed from GitHub, unpinned; `./dm pull` updates a checkout and its
+dependencies. What is of general use goes into a library, so every site gets it; the site's
+own models, endpoints, pages and components stay in the site.

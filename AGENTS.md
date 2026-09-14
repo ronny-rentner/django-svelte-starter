@@ -1,18 +1,21 @@
 # Repository Guidelines
 
 ## Start Here
-This is a **Relonee extraction in progress, not a finished design** — the code here is a copied/adapted starting point, not automatically the intended target.
-
 `readme.md` is the **single source of truth**: it is both the end-user documentation and the project's status, in one place. The rule for reading and writing it:
 
 - **Everything in `readme.md` is a settled decision — unless it is explicitly tagged `in progress`, `transient`, or `temporary`**, which is how unsettled things are marked.
 - **Writing something into the docs as how-it-works *is* recording a decision.** So never document an unsettled thing as fact — tag it, or put it under the status/open items. Never leave an unsettled thing unmarked, because unmarked = decided.
-- The job is extraction **decisions** — current state → good target → reuse-or-trim — not policing copied code as "dead."
 
 Orient first (list the repo's top-level files and dirs), then read `readme.md` and keep it in context. Record decisions there as they're made; that's how they survive across sessions.
 
 ## What goes where
 `djultra` (backend) and `svUltra` (frontend) are shared libraries that add common bells and whistles to Django/Svelte (base models, serializers, email, components, actions). The models and endpoints a site defines — `Person`, `ContactMessage`, the login and contact views — live in the site (here, the starter), not in the libraries.
+
+Both libraries are installed from GitHub; `./dm pull` is the upgrade path, and nothing is version-pinned. The rules that keep a site upgradable:
+
+- A component of general use goes into svUltra, so every site gets it. A site-specific version is a local copy in `frontend/src/components/`, changed freely; it does not follow svUltra updates.
+- A kit component is configured from outside: props, `...rest` attributes, component-styles. It is never edited in place and never overridden from `app.css`.
+- Likewise on the backend: behaviour of general use goes into djultra; site models and endpoints stay in the site.
 
 ## Project Structure & Module Organization
 This repository combines a Django backend with a Vite/Svelte frontend. Backend code lives in `backend/`: `config/` holds settings and URL wiring, while `core/` contains models, views, admin setup, migrations, and `core/tests.py`. Frontend code lives in `frontend/src/`, with reusable UI in `components/`, page views in `pages/`, API helpers in `api/`, shared state in `stores*.js`, styles in `styles/`, markdown in `markdown/`, and static assets in `assets/`. CLI helpers are in `cli/`; `dm` runs them through `backend/venv`.
@@ -56,68 +59,14 @@ Recent history uses short messages such as `Iterate` and `Initial commit`; prefe
 Local defaults are developer-friendly, including PostgreSQL database `dss` on port `5433`. Override secrets and URLs with `SECRET_KEY`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `FRONTEND_URL`, and `FRONTEND_API_URL`. Do not commit credentials, virtual environments, or generated secrets.
 
 ## Agent-Specific Instructions
-Always consult, update, and maintain `readme.md` — the single source of truth — while working in this repository. Record decisions there as they are made, and tag anything not yet settled `in progress` / `transient` / `temporary` (unmarked = decided). `starter_todo.md` sits alongside it as a loose list of todos and reminders we don't want to forget — not a final or authoritative list. When an item is finished, document the outcome in `readme.md` and then remove the item from `starter_todo.md`.
+Always consult, update, and maintain `readme.md` — the single source of truth — while working in this repository. Record decisions there as they are made, and tag anything not yet settled `in progress` / `transient` / `temporary` (unmarked = decided).
 Before proposing or applying code changes, read the relevant files and surrounding control flow thoroughly. Write proper code from the existing source of truth, avoid duplicate state, and reject patches that only address the local symptom without fitting the file’s actual design.
-Before proposing hosting architecture, inspect the actual Relonee deployment files instead of inferring from copied names or templates. Keep hosting documentation unchanged until the setup is finished and verified; then update it once with the actual decisions.
-
-## Audience and Readme Style
-
-**Who this repository is for.** Developers who make a website from it. A starter is a worked
-example of how things can be done and an invitation to change them: they copy it, rename it,
-keep what suits them and replace the rest. Ideally they know Django, Svelte, Docker Compose,
-PostgreSQL and git; in practice nobody knows all of it equally well. The text finds the
-balance: it names the tools and the commands and shows how they fit together here, and leaves
-the tools' own documentation to explain the tools. The copy keeps `readme.md`, so the same
-text later serves whoever works on that site. Which stage a reader is at — looking at the
-starter, building, or operating — is not known and not assumed.
-
-**What the readme is for them.** The handover of a project by a colleague: what exists, where
-it is, how it works, how it is used. It describes the starter as it is, one way of doing
-things, not a rule. It does not describe the author's machines, directories or habits, and not
-the reader's situation ("to bring your site back", "if you decide to host"). Sentences are
-statements about the system. Where something is done, the commands stand in a code block;
-prose does not command the reader ("back up X", "run Y first").
-
-**The readme is also an advisor.** It guides the reader through one possible setup and says
-what is advisable and what the easiest way is, leaving the choice with them: "it is advisable
-to have backups; the easiest way is to copy these directories somewhere". Advice names the
-option and its simplest form, not an order and not a lecture on why.
-
-**What it leaves out.** History and lineage, how a decision was reached, what was tried,
-comparisons with other projects, justifications ("so that", "because"), hedges. A fact is
-either stated as settled or tagged `in progress` / `transient` / `temporary`.
-
-**Shape.** Basics first, one topic per section, short sections, terse sentences with only
-load-bearing words. Tables for what-goes-where, lists for parallel items, code blocks for
-commands and for paths that are typed.
-
-The top of `readme.md` carries a note while the rewrite into this style is in progress; the
-note lists the sections already in it.
 
 ## Frontend Page Style
-This section is agent-facing extraction guidance. Do not leak Relonee-specific
-implementation history into user-facing starter docs unless the docs are explicitly
-about lineage or extraction status.
-
 Before creating or replacing a frontend page, identify the page's job first: what
 the page needs to communicate to a visitor or let a user do. Build the page from
 that purpose outward. Do not start from "show a svUltra component" or "make a card";
 those are implementation choices, not page goals.
-
-For extraction decisions, inspect the analogous Relonee page or component when one
-exists, then extract the approach rather than copying Relonee product copy, assets,
-or domain-specific structure. Useful source references:
-
-- `/home/ronny/Projects/Relonee/frontend/src/pages/Home.svelte` and
-  `/home/ronny/Projects/Relonee/frontend/src/components/HeroBanner.svelte` for a
-  homepage built as a real visitor-facing page: hero first, then hand-authored
-  semantic sections.
-- `/home/ronny/Projects/Relonee/frontend/src/pages/About.svelte` and
-  `/home/ronny/Projects/Relonee/frontend/src/markdown/` for content-heavy pages
-  that keep prose in markdown.
-- `/home/ronny/Projects/Relonee/frontend/src/components/Document.svelte`,
-  `Dropzone.svelte`, and `components/account/tasks/Tasks.svelte` for workflow UI
-  composed from real domain data and small behavior-bearing components.
 
 PicoCSS is the visual baseline. Write semantic HTML first and let Pico style it:
 `main`, `section`, `hgroup`, headings, paragraphs, lists, `dl`/`dt`/`dd`,
@@ -157,3 +106,63 @@ For reusable components, preserve the svUltra/Pico style: component order is
 is meant to behave like an HTML element; forward rest props to the real element so
 component styling and attributes keep working; prefer local nested CSS and Pico
 variables over broad global styling.
+
+## Starter extraction
+This section applies to the starter only. `new_site.md` removes it from a site.
+
+This is a **Relonee extraction in progress, not a finished design** — the code here is a copied/adapted starting point, not automatically the intended target. The job is extraction **decisions** — current state → good target → reuse-or-trim — not policing copied code as "dead."
+
+`starter_todo.md` sits alongside `readme.md` as a loose list of todos and reminders we don't want to forget — not a final or authoritative list. When an item is finished, document the outcome in `readme.md` and then remove the item from `starter_todo.md`.
+
+Before proposing hosting architecture, inspect the actual Relonee deployment files instead of inferring from copied names or templates. Keep hosting documentation unchanged until the setup is finished and verified; then update it once with the actual decisions.
+
+For extraction decisions on frontend pages, inspect the analogous Relonee page or component when one
+exists, then extract the approach rather than copying Relonee product copy, assets,
+or domain-specific structure. Do not leak Relonee-specific implementation history into
+user-facing starter docs unless the docs are explicitly about lineage or extraction status.
+Useful source references:
+
+- `/home/ronny/Projects/Relonee/frontend/src/pages/Home.svelte` and
+  `/home/ronny/Projects/Relonee/frontend/src/components/HeroBanner.svelte` for a
+  homepage built as a real visitor-facing page: hero first, then hand-authored
+  semantic sections.
+- `/home/ronny/Projects/Relonee/frontend/src/pages/About.svelte` and
+  `/home/ronny/Projects/Relonee/frontend/src/markdown/` for content-heavy pages
+  that keep prose in markdown.
+- `/home/ronny/Projects/Relonee/frontend/src/components/Document.svelte`,
+  `Dropzone.svelte`, and `components/account/tasks/Tasks.svelte` for workflow UI
+  composed from real domain data and small behavior-bearing components.
+
+### Audience and Readme Style
+
+**Who this repository is for.** Developers who make a website from it. A starter is a worked
+example of how things can be done and an invitation to change them: they copy it, rename it,
+keep what suits them and replace the rest. Ideally they know Django, Svelte, Docker Compose,
+PostgreSQL and git; in practice nobody knows all of it equally well. The text finds the
+balance: it names the tools and the commands and shows how they fit together here, and leaves
+the tools' own documentation to explain the tools. The copy keeps `readme.md`, so the same
+text later serves whoever works on that site. Which stage a reader is at — looking at the
+starter, building, or operating — is not known and not assumed.
+
+**What the readme is for them.** The handover of a project by a colleague: what exists, where
+it is, how it works, how it is used. It describes the starter as it is, one way of doing
+things, not a rule. It does not describe the author's machines, directories or habits, and not
+the reader's situation ("to bring your site back", "if you decide to host"). Sentences are
+statements about the system. Where something is done, the commands stand in a code block;
+prose does not command the reader ("back up X", "run Y first").
+
+**The readme is also an advisor.** It guides the reader through one possible setup and says
+what is advisable and what the easiest way is, leaving the choice with them: "it is advisable
+to have backups; the easiest way is to copy these directories somewhere". Advice names the
+option and its simplest form, not an order and not a lecture on why.
+
+**What it leaves out.** History and lineage, how a decision was reached, what was tried,
+comparisons with other projects, justifications ("so that", "because"), hedges. A fact is
+either stated as settled or tagged `in progress` / `transient` / `temporary`.
+
+**Shape.** Basics first, one topic per section, short sections, terse sentences with only
+load-bearing words. Tables for what-goes-where, lists for parallel items, code blocks for
+commands and for paths that are typed.
+
+The top of `readme.md` carries a note while the rewrite into this style is in progress; the
+note lists the sections already in it.

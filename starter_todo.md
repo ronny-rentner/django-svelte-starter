@@ -4,6 +4,8 @@
 
 - Rewrite `readme.md` section by section in the style stated at its top. Done: "Configuration", "Live hosting", "Styling".
 - We cannot install a single npm package without npm enforcing `package.json`. Find a way to stop npm from doing that.
+- Bug in clean-browser-mcp: `browser_scroll` tries to scroll the page when the page has to scroll `#app`. With an amount that cannot be reached (100,000 px) it never stops and blocks the browser tools.
+- Bug: stopping a backgrounded MCP tool task with `TaskStop` reports success, but the command keeps running — the `browser_scroll` above kept executing in the browser extension.
 - Trim inherited YouTube transcript functionality from the default starter unless the first site needs it. It currently ships as `backend/core/models/youtube.py`, committed migrations, and `pytubefix` / `youtube-transcript-api` dependencies.
 - Add a fresh-clone bootstrap path: how to create `backend/venv`, install backend/frontend dependencies, create the local database, and provide the first config values.
 - On yuki, `docker volume rm database_postgres_data`: the old PostgreSQL volume, kept as fallback after the data moved to `sites/database/data/` on 2026-09-08.

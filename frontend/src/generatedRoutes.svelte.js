@@ -4,6 +4,9 @@ export const routes = {
   "/faq": () => import('.//pages/FAQ.svelte'),
   "/guide": () => import('.//pages/Guide.svelte'),
   "/": () => import('.//pages/Home.svelte'),
+  "/imprint": () => import('.//pages/Imprint.svelte'),
   "/landing": () => import('.//pages/Landing.svelte'),
-  "/signin": () => import('.//pages/Signin.svelte')
+  "/privacy": () => import('.//pages/Privacy.svelte'),
+  "/signin": () => import('.//pages/Signin.svelte'),
+  "/terms": () => import('.//pages/Terms.svelte')
 };

@@ -19,9 +19,12 @@ site is run, built, configured and deployed — and stays as it came from the st
 
 ## The starter and the libraries
 
-Keep the site upgradable: from the starter, from `svUltra` and `djultra`, and from the
-Django and Svelte releases underneath. Nothing the site does may stand in the way of the
-next update of any of them.
+Keep the site upgradable as far as reasonably possible: from the starter, from `svUltra`
+and `djultra`, and from the Django and Svelte releases underneath. Breaking that is a
+judgement call, never a side effect. The main way is to add — components, styles, pages,
+content — in the site's own directories, and to keep the starter's ways of working: an
+email goes out through Django and the existing SMTP configuration, not through something
+reimplemented in the frontend.
 
 - `svUltra` and `djultra` are installed from GitHub and are never changed from the site.
   What the site needs beyond them is written in the site.

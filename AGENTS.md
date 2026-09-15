@@ -108,7 +108,7 @@ component styling and attributes keep working; prefer local nested CSS and Pico
 variables over broad global styling.
 
 ## Starter extraction
-This section applies to the starter only. `new_site.md` removes it from a site.
+This section applies to the starter only. `setup.md` removes it from a site.
 
 This is a **Relonee extraction in progress, not a finished design** — the code here is a copied/adapted starting point, not automatically the intended target. The job is extraction **decisions** — current state → good target → reuse-or-trim — not policing copied code as "dead."
 

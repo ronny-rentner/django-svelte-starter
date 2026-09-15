@@ -1,19 +1,22 @@
 # django-svelte-starter
 
 A Django backend and a Svelte frontend, connected and ready to run: the HTML shell, the
-API, routing, sign-in, a contact form, legal pages, styling and a Docker deployment behind
-a shared proxy. The backend builds on `djultra`, the frontend on `svUltra`.
+API, routing, sign-in, a contact form, legal pages, styling and a Docker deployment. The
+backend builds on `djultra`, the frontend on `svUltra`. `setup.md` takes a copy of the
+starter to a running site.
 
 1. [Layout](#1-layout)
-2. [Development](#2-development)
-3. [Configuration](#3-configuration)
-4. [Backend](#4-backend)
-5. [Frontend](#5-frontend)
-6. [Sign-in](#6-sign-in)
-7. [Contact form](#7-contact-form)
-8. [Legal pages](#8-legal-pages)
-9. [Live hosting](#9-live-hosting)
-10. [svUltra and djultra](#10-svultra-and-djultra)
+2. [Running](#2-running)
+3. [The dm CLI](#3-the-dm-cli)
+4. [Building](#4-building)
+5. [Configuration](#5-configuration)
+6. [Backend](#6-backend)
+7. [Frontend](#7-frontend)
+8. [Sign-in](#8-sign-in)
+9. [Contact form](#9-contact-form)
+10. [Legal pages](#10-legal-pages)
+11. [Deployment](#11-deployment)
+12. [svUltra and djultra](#12-svultra-and-djultra)
 
 ## 1. Layout
 
@@ -27,34 +30,7 @@ a shared proxy. The backend builds on `djultra`, the frontend on `svUltra`.
 | `static/` | Django-side static files and the build output |
 | `secrets/` | secret files for Django, such as API keys; mounted into the container, not committed |
 
-## 2. Development
-
-### Prerequisites
-
-Python 3, Node.js, git, and PostgreSQL listening on port 5433.
-
-### Setup
-
-The role and the database:
-
-```sh
-sudo -u postgres psql -p 5433 <<'SQL'
-CREATE USER dss WITH PASSWORD 'dss';
-CREATE DATABASE dss OWNER dss;
-SQL
-```
-
-The dependencies and the schema:
-
-```sh
-python3 -m venv backend/venv
-backend/venv/bin/pip install --group backend/pyproject.toml:main
-npm --prefix frontend install
-./dm django-admin migrate
-./dm django-admin createsuperuser
-```
-
-### Running
+## 2. Running
 
 ```sh
 ./dm run back      # Django on port 8000, the task worker and the fastmanage daemon
@@ -64,7 +40,7 @@ npm --prefix frontend install
 Both reload on file changes. The site is at `http://localhost:5173`, the admin at
 `http://localhost:8000/admin/`.
 
-### The dm CLI
+## 3. The dm CLI
 
 `./dm` is the project's command-line tool; it runs inside `backend/venv`. It wraps
 `django-admin` and adds the development servers, the build, `pull`, `docker` and `updates`.
@@ -73,7 +49,7 @@ work as long as they are unambiguous: `./dm do de` is `./dm docker deploy`.
 
 `backend/readme.md` describes the backend commands.
 
-### Building
+## 4. Building
 
 ```sh
 ./dm build           # the Vite build, then collectstatic
@@ -86,7 +62,7 @@ The Vite build goes to `static/frontend/`, `collectstatic` gathers everything in
 `prebuild` script counts the build up in the untracked `frontend/src/build-info.json`; the
 footer shows the number and time.
 
-## 3. Configuration
+## 5. Configuration
 
 Settings live in three files:
 
@@ -105,7 +81,7 @@ from the environment only.
 Secrets go into `prod.env` and nowhere else. `docker/certbot/`, the site's Let's Encrypt
 account and keys, is ignored as well.
 
-## 4. Backend
+## 6. Backend
 
 ### Models and admin
 
@@ -166,7 +142,7 @@ RECAPTCHA_SITE_KEY=...      # public, used by the widget
 RECAPTCHA_SECRET_KEY=...    # private, used for the verification
 ```
 
-## 5. Frontend
+## 7. Frontend
 
 ### Pages and routing
 
@@ -328,7 +304,7 @@ Across reloads, in `frontend/src/init.js`, which builds `window.config` on every
 window.config.loadingDelay = 4000;
 ```
 
-## 6. Sign-in
+## 8. Sign-in
 
 Sign-in is passwordless. The **Sign in** button opens `LoginForm`, which takes an email
 and POSTs to `/api/signin-request/`, guarded by reCAPTCHA. If a `Person` with that email
@@ -342,102 +318,47 @@ exists, the backend mails a link `/signin?token=<uuid>`; opening it calls
 the sign-in mail prints to the backend console, and `Person.signin_token` is visible in the
 admin.
 
-## 7. Contact form
+## 9. Contact form
 
 The **Contact** link in the menu and the footer opens `ContactForm`. It validates name,
 email and message, runs reCAPTCHA and POSTs to `/api/contact/`. `ContactMessageView`
 verifies the token, limits to 2 requests per minute and saves a `ContactMessage` with the
 sender's IP and user agent.
 
-## 8. Legal pages
+## 10. Legal pages
 
 `/imprint`, `/terms` and `/privacy` are pages over `frontend/src/markdown/Imprint.md`,
 `Terms.md` and `Privacy.md`; `Privacy-de.md` is the German privacy policy. The texts are
 placeholders and templates, to be adopted by each site.
 
-## 9. Live hosting
+## 11. Deployment
 
-The host keeps the sites and the two shared services under `~/Projects/sites`, a
-repository of its own:
+The site runs as a Docker container. `docker/` holds the image (`django/Dockerfile.django`
+and `django/entrypoint.sh`), `docker-compose.yml`, `prod_django.ini`, `prod.env` and
+`init.sql.gz`. `setup.md`, chapter 8, has the first deployment.
 
-```text
-~/Projects/sites/
-├── database/     PostgreSQL 17, one server for all sites
-├── proxy/        nginx on 80 and 443, one reverse proxy for all sites
-└── <site>/       a site, cloned from its own repository
-```
-
-### Shared services
-
-Each is a Compose project, run from its directory. Bring it up once; it restarts on its
-own after a reboot, until `down`. A site's `up -d` joins the networks and needs both
-services running. The database one reads `prod.env` (copy `prod.env.example`, set the
-superuser password); the proxy has no env file.
+By default, the container is reached through the Docker network `proxy_network` under its
+`COMPOSE_PROJECT_NAME` on port 8000, where a reverse proxy serves the site's domain; the
+database is a PostgreSQL server reached as `postgres` on `database_network`, holding the
+role and database named in `prod.env`. Both networks exist before the container starts. If
+you want to run without a proxy, you can publish the port with a `ports:` entry in
+`docker-compose.yml`.
 
 ```sh
-cd ~/Projects/sites/database
-docker compose --env-file prod.env up -d     # likewise: down, exec -T postgres psql
-
-cd ~/Projects/sites/proxy
-docker compose up -d
+export ENV=prod          # once per session; dm reads it
+./dm pull                # git pull, then the pip and npm installs; `./dm pull <rev>` for a revision
+./dm build               # frontend and static files, built on the host
+./dm docker deploy       # builds the image, then up -d
 ```
 
-The database files are in `database/data/`.
+The container waits for the database, loads `init.sql.gz` into it when it is empty, runs
+the migrations, starts the task worker and serves with gunicorn on port 8000.
 
-Each service provides a Docker network named after its directory, `database_network` and
-`proxy_network`. A site's container joins both. On `proxy_network` its alias is its
-`COMPOSE_PROJECT_NAME` from `docker/prod.env`; nginx proxies to that alias on port 8000.
-
-### Adding a site
-
-On the host, from the site's directory:
-
-```sh
-export ENV=prod                         # once per session; dm and the scripts read it
-../database/register-site ../<site>     # the site's role and database, from docker/prod.env
-./dm build                              # frontend and static files, built on the host
-./dm docker deploy                      # image, then up -d: loads docker/init.sql.gz, migrates, serves
-../proxy/issue-cert ../<site>           # the site's certificate
-../proxy/register-site ../<site>        # the site's nginx config
-```
-
-### Certificates
-
-- `proxy/issue-cert <site-dir>` issues the certificate for the site's domain and its
-  subdomains listed in `ALLOWED_HOSTS`, under the site's own Let's Encrypt account
-  `mail@<site>`, registered on first use. Account and certificate live in the site's
-  `docker/certbot/`. `fullchain.pem` and `privkey.pem` are copied to `proxy/certs/<site>/`,
-  the only certificate material the proxy holds.
-- `proxy/register-site <site-dir>` writes `proxy/sites/<site>.conf` for the site's
-  `ALLOWED_HOSTS` without bare IP addresses and reloads nginx. It comes after `issue-cert`:
-  the config references the certificate.
-- `proxy/update-cert <site-dir>` renews the certificate within 30 days of expiry, refreshes
-  the proxy's copy and reloads nginx. Run it daily.
-
-### Updating a site
-
-On the host, in the site's directory:
-
-```sh
-export ENV=prod
-./dm pull                               # git pull, then pip and npm install; `./dm pull <rev>` for a revision
-./dm build                              # frontend and static files, built on the host
-./dm docker deploy                      # image, then up -d
-```
-
-An older revision is deployed the same way, with `./dm pull <rev>` as the first step.
 Nothing is version-pinned, so each `deploy` builds with the current release of every
-dependency; `./dm docker build --no-cache django` also refreshes the base image.
+dependency; `./dm docker build --no-cache django` also refreshes the base image. An older
+revision is deployed the same way, with `./dm pull <rev>` as the first step.
 
-### Backups
-
-It is advisable to have backups. Everything worth keeping is on the host's file system: the
-database files, the sites' uploads, and their uncommitted secrets and certificates. The
-easiest way is to copy the whole `sites` tree somewhere regularly.
-
-**Open:** scheduling `update-cert`.
-
-## 10. svUltra and djultra
+## 12. svUltra and djultra
 
 `djultra` adds to Django what every site needs: base models, serializers, the email
 service, the HTML shell, fastmanage. `svUltra` does the same for Svelte: the router and
@@ -446,5 +367,4 @@ preprocessor, component styling and class merging. The frontend reaches it throu
 `@kit` alias, `svultra/kit`.
 
 Both are installed from GitHub, unpinned; `./dm pull` updates a checkout and its
-dependencies. What is of general use goes into a library, so every site gets it; the site's
-own models, endpoints, pages and components stay in the site.
+dependencies.

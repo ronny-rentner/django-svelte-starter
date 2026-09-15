@@ -1,164 +1,61 @@
-# Creating a new site from this starter
+# Creating a new site
 
-**Status: in progress. Correct this guide while following it.**
+The values and decisions for `setup.md` on this side: where sites live, and the host they
+run on.
 
-The starter is self-contained and meant to be copied whole. A new site is a full copy with
-its own git repository, its own database.
+**Status: in progress. Correct this file while following it.**
 
-Placeholders below: `<site>` is the directory and database name (lowercase, e.g.
-`example`), `<Site>` is the display name, `<domain>` is the public domain.
+## Values for setup.md
 
-## 1. Copy the starter
+- Step 1 — `<starter-url>` is `git@github.com:ronny-rentner/django-svelte-starter.git`;
+  `<site>` is `~/Projects/sites/<site>`.
+- Step 8 — the host is `<host>`; the site is cloned to `~/Projects/sites/<site>` there.
 
-```sh
-git clone git@github.com:ronny-rentner/django-svelte-starter.git ~/Projects/sites/<site>
-cd ~/Projects/sites/<site>
-rm -rf .git
-git init && git add -A && git commit -m "Initial commit from django-svelte-starter"
+## The host
+
+The host keeps the sites and the two shared services under `~/Projects/sites`, a
+repository of its own:
+
+```text
+~/Projects/sites/
+├── database/     PostgreSQL 17, one server for all sites
+├── proxy/        nginx on 80 and 443, one reverse proxy for all sites
+└── <site>/       a site, cloned from its own repository
 ```
 
-## 2. Remove the starter's own material
+### Shared services
 
-The copy keeps `readme.md` and `AGENTS.md`: they describe the site as much as the starter.
-What describes only the starter goes:
-
-1. Delete `new_site.md` and `starter_todo.md`.
-2. In `AGENTS.md`, delete the section "Starter extraction".
-
-## 3. Configure the site
-
-In `backend/config/settings.py`:
-
-1. `DATABASES` — replace `dss` with `<site>` as the database name, user and password. It is
-   the local development database's; a real password never goes into `settings.py`. Step 5
-   creates the database itself.
-2. `ALLOWED_HOSTS` — replace `example.com` with `<domain>`.
-3. `EMAIL_HOST` — the site's mail relay. Its login goes into `docker/prod.env` in step 8.
-
-## 4. Rebrand
-
-1. `backend/core/templates/index.html` — the `<title>`.
-2. `frontend/index.html` — the `<title>`.
-3. `frontend/src/pages/Home.svelte` — `title` and `description` in `meta()`.
-4. `frontend/src/components/layout/Footer.svelte` — the copyright holder, the "Crafted
-   with" line and the social links.
-5. `frontend/src/assets/` — `logo.svg`, `logo-dark.svg` and `favicon.svg`.
-6. `frontend/src/styles/app.css` — `--pico-primary`, `--pico-secondary` and the site font;
-   the readme's "Styling" section describes both.
-7. `frontend/src/markdown/Imprint.md` — the site's details in place of the example values.
-8. `frontend/src/markdown/Privacy.md` — a privacy policy for the site. The starter's is a
-   generated template with placeholders; the generator is linked at its end.
-9. `frontend/src/markdown/Terms.md` — the site's terms. The starter ships the heading only.
-10. `cli/startdev.desktop` — `Name=` and the path in `Exec=`.
-
-## 5. Set up the environment
-
-Create the role and the database:
+Each is a Compose project, run from its directory. Bring it up once; it restarts on its
+own after a reboot, until `down`. A site's `up -d` joins the networks and needs both
+services running. The database one reads `prod.env` (copy `prod.env.example`, set the
+superuser password); the proxy has no env file.
 
 ```sh
-sudo -u postgres psql -p 5433 <<'SQL'
-CREATE USER "<site>" WITH PASSWORD '<password>';
-CREATE DATABASE "<site>" OWNER "<site>";
-SQL
+cd ~/Projects/sites/database
+docker compose --env-file prod.env up -d     # likewise: down, exec -T postgres psql
+
+cd ~/Projects/sites/proxy
+docker compose up -d
 ```
 
-Then install the dependencies and set up the database:
+The database files are in `database/data/`.
 
-```sh
-python3 -m venv backend/venv
-backend/venv/bin/pip install --group backend/pyproject.toml:main
-npm --prefix frontend install
-./dm django-admin migrate
-./dm django-admin createsuperuser
-```
+Each service provides a Docker network named after its directory, `database_network` and
+`proxy_network`. A site's container joins both. On `proxy_network` its alias is its
+`COMPOSE_PROJECT_NAME` from `docker/prod.env`; nginx proxies to that alias on port 8000.
 
-## 6. Run and check
+### Adding a site
 
-```sh
-./dm run back      # Django, the task worker and the fastmanage daemon
-./dm run front     # Vite on port 5173
-```
-
-1. At `http://localhost:5173`, the home page renders with the new brand, and the
-   **Contact** modal submits and the message appears in `/admin/`.
-2. The contact endpoint alone, without the modal:
-
-   ```sh
-   curl -X POST http://localhost:8000/api/contact/ -H 'Content-Type: application/json' \
-     -d '{"name":"Check","email":"check@example.com","message":"Setup check","recaptcha":"test"}'
-   ```
-
-   It answers `{"detail":"Your message has been sent!"}`, and the record is stored:
-
-   ```sh
-   ./dm django-admin shell -c "from core.models import ContactMessage; print(ContactMessage.objects.values().last())"
-   ```
-
-3. At `http://localhost:8000/admin/`, the superuser from step 5 signs in.
-4. `./dm build` completes and writes `static/frontend/manifest.json`.
-5. No starter name is left:
-
-   ```sh
-   grep -rn "dss\|django-svelte-starter" backend cli docker frontend/src --exclude=*.md --exclude-dir=node_modules
-   ```
-
-   It finds nothing once steps 3 and 4 are done. `frontend/package.json` keeps its name.
-
-## 7. Commit
-
-```sh
-git add -A && git commit -m "Rename to <Site>"
-git remote add origin <url> && git push -u origin main
-```
-
-## 8. Going live
-
-The live host runs the shared services from `~/Projects/sites`: `database` (PostgreSQL)
-and `proxy` (nginx). Both are already running there; this chapter adds one site to them.
-
-### Deployment files
-
-Prepare them in the site, and commit them:
-
-1. `docker/prod_django.ini` — `ALLOWED_HOSTS` and the three `FRONTEND_*` URLs, for
-   `<domain>` and every alias the site answers to, such as `www.<domain>`. The proxy serves
-   exactly these names, minus any bare IP addresses. `DEFAULT_FROM_EMAIL` — the sender of
-   the site's mails.
-2. `docker/init.sql.gz` — the site's initial database state:
-
-   ```sh
-   ./dm django-admin dump_db --dump-file docker/init.sql
-   gzip -9 docker/init.sql
-   ```
-
-### On the host
-
-As the deploying user:
+Step 8 of `setup.md`, with the host's scripts around it. On the host, in the site's clone,
+after the secrets are set up:
 
 ```sh
 export ENV=prod                              # once per session; dm and the scripts read it
-git clone <url> ~/Projects/sites/<site>
-cd ~/Projects/sites/<site>
-```
-
-### Secrets
-
-`docker/prod.env` holds the secrets. It is in `.gitignore` and must not be committed. To set
-it up in the clone:
-
-1. Copy `docker/prod.env.example` to `docker/prod.env`.
-2. Replace all values.
-
-### Deploy
-
-In the clone:
-
-```sh
 python3 -m venv backend/venv
 backend/venv/bin/pip install --group backend/pyproject.toml:main
 npm --prefix frontend install
 ./dm build                                   # static/frontend and static/collected
-../database/register-site ../<site>          # the site's role and database
+../database/register-site ../<site>          # the site's role and database, from docker/prod.env
 ./dm docker deploy                           # builds the image and starts it: loads init.sql.gz, migrates, serves
 ../proxy/issue-cert ../<site>                # the site's Let's Encrypt certificate, copied to the proxy
 ../proxy/register-site ../<site>             # writes the nginx config, reloads
@@ -173,7 +70,41 @@ reachable from the internet.
 site yet. After it, `proxy/certs/<site>/` must hold `fullchain.pem` and `privkey.pem`, and
 `register-site` must pass `nginx -t`. Remove this note once observed.
 
-Renewal is `../proxy/update-cert ../<site>`, run when due; scheduling it is still open.
+### Certificates
+
+- `proxy/issue-cert <site-dir>` issues the certificate for the site's domain and its
+  subdomains listed in `ALLOWED_HOSTS`, under the site's own Let's Encrypt account
+  `mail@<site>`, registered on first use. Account and certificate live in the site's
+  `docker/certbot/`. `fullchain.pem` and `privkey.pem` are copied to `proxy/certs/<site>/`,
+  the only certificate material the proxy holds.
+- `proxy/register-site <site-dir>` writes `proxy/sites/<site>.conf` for the site's
+  `ALLOWED_HOSTS` without bare IP addresses and reloads nginx. It comes after `issue-cert`:
+  the config references the certificate.
+- `proxy/update-cert <site-dir>` renews the certificate within 30 days of expiry, refreshes
+  the proxy's copy and reloads nginx. Run it daily.
+
+**Open:** scheduling `update-cert`.
+
+### Updating a site
+
+On the host, in the site's directory:
+
+```sh
+export ENV=prod
+./dm pull                               # git pull, then pip and npm install; `./dm pull <rev>` for a revision
+./dm build                              # frontend and static files, built on the host
+./dm docker deploy                      # image, then up -d
+```
+
+An older revision is deployed the same way, with `./dm pull <rev>` as the first step.
+Nothing is version-pinned, so each `deploy` builds with the current release of every
+dependency; `./dm docker build --no-cache django` also refreshes the base image.
+
+### Backups
+
+It is advisable to have backups. Everything worth keeping is on the host's file system: the
+database files, the sites' uploads, and their uncommitted secrets and certificates. The
+easiest way is to copy the whole `sites` tree somewhere regularly.
 
 ## Temporary notes
 

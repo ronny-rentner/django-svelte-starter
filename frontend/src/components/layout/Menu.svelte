@@ -103,10 +103,12 @@
       <a href={"#"} class="" {onclick}>Contact</a>
     </ContactForm>
   </li>
-  {#if $person}
-    <li><UserMenu /></li>
-  {:else}
-    <li><LoginForm /></li>
+  {#if window.config.userLoginEnabled}
+    {#if $person}
+      <li><UserMenu /></li>
+    {:else}
+      <li><LoginForm /></li>
+    {/if}
   {/if}
   <li><ToggleDarkMode /></li>
 </ul>

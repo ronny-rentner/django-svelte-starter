@@ -232,7 +232,15 @@ Jazzmin. Nothing else goes into `static/src/`.
 The frontend has two configs:
 
 - **`window.config`** — the system configuration, injected by the Django shell at page
-  load: API URLs, the reCAPTCHA site key, and similar values of the installation.
+  load: API URLs, the reCAPTCHA site key, and similar values of the installation. The
+  site adds its own keys through `FRONTEND_CONFIG` in `settings.py`, a dict whose values
+  are written into the page as they are:
+
+  ```python
+  FRONTEND_CONFIG = {
+      'userLoginEnabled': USER_LOGIN_ENABLED,
+  }
+  ```
 - **`configStore`** — the user's own configuration, such as dark mode, persisted in the
   browser's `localStorage`.
 
@@ -313,10 +321,11 @@ exists, the backend mails a link `/signin?token=<uuid>`; opening it calls
 `/api/person/` into `personStore`, and the menu shows the user with **Sign out**.
 `personStore` is kept in `localStorage`, so a reload stays signed in.
 
-`USER_LOGIN_ENABLED`, default `True`, gates the login API; with it off, the
-`signin-request`, `token-login` and `person` routes are not registered. With `DEBUG` on,
-the sign-in mail prints to the backend console, and `Person.signin_token` is visible in the
-admin.
+`USER_LOGIN_ENABLED`, default `True`, turns the login on and off: with it off, the
+`signin-request`, `token-login` and `person` routes are not registered, and the menu shows
+no **Sign in** button. The setting reaches the frontend as `window.config.userLoginEnabled`
+through `FRONTEND_CONFIG`. With `DEBUG` on, the sign-in mail prints to the backend console,
+and `Person.signin_token` is visible in the admin.
 
 ## 9. Contact form
 

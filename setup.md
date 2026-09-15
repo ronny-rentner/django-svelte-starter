@@ -29,9 +29,8 @@ In `backend/config/settings.py`:
 
 ## 4. Rebrand
 
-1. `backend/core/templates/index.html` — the `<title>`.
-2. `frontend/index.html` — the `<title>`.
-3. `frontend/src/pages/Home.svelte` — `title` and `description` in `meta()`.
+1. `frontend/index.html` — the `<title>`.
+2. `frontend/src/pages/Home.svelte` — `title` and `description` in `meta()`.
 4. `frontend/src/components/layout/Footer.svelte` — the copyright holder, the "Crafted
    with" line and the social links.
 5. `frontend/src/assets/` — `logo.svg`, `logo-dark.svg` and `favicon.svg`.

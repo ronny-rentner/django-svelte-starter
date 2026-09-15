@@ -44,3 +44,8 @@ if (localStorage.getItem('theme') === 'dark') {
 if (!window.config.apiBaseUrl && import.meta.env.DEV) {
   window.config.apiBaseUrl = 'http://localhost:8000/api';
 }
+
+// Without the Django shell (the Vite page in dev) the login is on, as in the settings
+if (window.config.userLoginEnabled === undefined) {
+  window.config.userLoginEnabled = true;
+}

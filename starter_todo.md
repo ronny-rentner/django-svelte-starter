@@ -2,7 +2,6 @@
 
 ## Doc gaps found while rolling out site 2
 
-- Bug: `USER_LOGIN_ENABLED = False` only unregisters the login API. The frontend still shows the **Sign in** button in the menu and the mobile menu, and a click ends in a 404. The setting has to reach the frontend through `window.config`, so the button disappears with it. carbon.berlin commented the button out by hand.
 - `setup.md` step 7 pushes to `<url>` but never creates the repository. `new_site.md` needs the local decision: a private GitHub repository under `ronny-rentner`, created before step 7.
 - `setup.md` step 1 removes the git history. Keep it: `git remote rename origin starter`, so a starter update is `git pull starter main`. All git operations go into this one step: the clone, the `starter` remote, creating the site's repository, adding it as `origin`. Step 7 keeps only the commit and push.
 - `AGENTS.md` must say that the agent runs all commands and edits of a setup itself. Where a command really needs the user, such as `sudo`, the agent gives the exact command to paste.
@@ -12,8 +11,6 @@
 - `setup.md` step 6 greps the site for the starter's names. Remove it: the grep is the maintainer's tool for finding the spots when writing steps 3 and 4, noted in `development.md`; the guide lists the spots.
 - `setup.md` step 6, the shell check `from core.models import ContactMessage` fails with `ModuleNotFoundError: No module named 'core'`; the app is `backend.core`. The command in the guide is wrong.
 - A login on `/admin/login/` opened directly, without `next`, ends on Django's default `LOGIN_REDIRECT_URL`, `/accounts/profile/`, which the app answers with its 404 page. Via `/admin/`, as `setup.md` says, it does not happen.
-- `backend/core/templates/index.html` hardcodes the `<title>`.
-- `backend/core/templates/index.html` duplicates djultra's `templates/index.html`. The only differences are the theme backgrounds, the `data-theme` bootstrap script and the favicon link, none of them site-specific.
 - `frontend/index.html` hardcodes the `<title>`.
 - `new_site.md` needs the values for `setup.md` step 8, `prod_django.ini`: the LAN alias `<site>.yuki` in `ALLOWED_HOSTS`, as carbon.berlin has, and the sender `info@<domain>`.
 - The domain is hardcoded again and again: `ALLOWED_HOSTS` in `settings.py`, `ALLOWED_HOSTS`, the three `FRONTEND_*` URLs and `DEFAULT_FROM_EMAIL` in `prod_django.ini`, the titles, the footer, the database name. Put it in one variable and derive the rest from it throughout the app.
@@ -37,8 +34,8 @@
 - `setup.md` says `<site>` is lowercase like `example`; carbon.berlin uses the domain as directory, database and role name. `new_site.md` needs the local decision: `<site>` is the domain.
 - `setup.md` step 2 must not edit `AGENTS.md`. The rollout only deletes and replaces files, at the end, once the site runs. A site gets its own short `AGENTS.md`, still to be written, with the rules for working on a site and no copy of the readme. The last step deletes `new_site.md`, `development.md`, `starter_todo.md` and puts that file in place.
 - `AGENTS.md` lists `./dm run all`, which was never fully implemented.
-- `setup.md` step 4 mixes the name spots with the owner's content. Setup sets only the name: the three titles, the footer's copyright holder, `startdev.desktop`. The owner's content — `Home.svelte`, the social links and the "Crafted with" line, logo and favicon, colours and font, the legal texts — is not a setup step.
-- The site name is typed three times: `backend/core/templates/index.html` `<title>`, `frontend/index.html` `<title>`, `Home.svelte` `meta()`. `settings.py` has `PROJECT_NAME`, which names the admin, and the email header gets `project_name`. Give the titles the same source, so the rebrand sets one value; `setup.md` step 4 then loses three items.
+- `setup.md` step 4 mixes the name spots with the owner's content. Setup sets only the name: the two titles, the footer's copyright holder, `startdev.desktop`. The owner's content — `Home.svelte`, the social links and the "Crafted with" line, logo and favicon, colours and font, the legal texts — is not a setup step.
+- The site name is typed twice: `frontend/index.html` `<title>` and `Home.svelte` `meta()`; the Django shell's title is `PROJECT_NAME` now. Give the other two the same source, so the rebrand sets one value; `setup.md` step 4 then loses two items.
 - `settings.py` reads `DATABASES` with `os.environ.get`, copied from Relonee before `config()` existed. Refactor it to `config('DB_NAME', default='dss')` and so on, so the ini can set them too; the readme's Configuration section then drops the "environment only" exception.
 
 ## Before Site 1

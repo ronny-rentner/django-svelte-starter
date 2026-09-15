@@ -333,10 +333,15 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# Enables the user login API (sign-in request + token login). When False, those
-# endpoints are not registered, so users cannot log in. Backend-only: it does not
-# affect the models or the frontend.
+# Enables the user login: the API (sign-in request + token login) is registered, and the
+# frontend shows the sign-in button. When False, the endpoints are not registered, so
+# users cannot log in. The models are not affected.
 USER_LOGIN_ENABLED = config('USER_LOGIN_ENABLED', default=True)
+
+# The site's own keys of window.config, written into index.html by djultra's index view
+FRONTEND_CONFIG = {
+    'userLoginEnabled': USER_LOGIN_ENABLED,
+}
 
 #########
 # EMAIL #

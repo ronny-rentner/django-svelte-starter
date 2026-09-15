@@ -151,12 +151,14 @@
 
 <ToggleDarkMode class:contrastMode mobile />
 
-{#if $person}
-  <UserMenu class:contrastMode mobile></UserMenu>
-{:else}
-  <LoginForm let:onclick>
-    <Button {onclick} icon={loginIcon} iconSize="2rem" class="outline" class:contrastMode />
-  </LoginForm>
+{#if window.config.userLoginEnabled}
+  {#if $person}
+    <UserMenu class:contrastMode mobile></UserMenu>
+  {:else}
+    <LoginForm let:onclick>
+      <Button {onclick} icon={loginIcon} iconSize="2rem" class="outline" class:contrastMode />
+    </LoginForm>
+  {/if}
 {/if}
 
 <button class="hamburger {defaultStyle}" class:open type="button" {onclick}>

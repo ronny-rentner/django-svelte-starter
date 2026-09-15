@@ -2,6 +2,7 @@
 
 ## Doc gaps found while rolling out site 2
 
+- Bug: `USER_LOGIN_ENABLED = False` only unregisters the login API. The frontend still shows the **Sign in** button in the menu and the mobile menu, and a click ends in a 404. The setting has to reach the frontend through `window.config`, so the button disappears with it. carbon.berlin commented the button out by hand.
 - `setup.md` step 7 pushes to `<url>` but never creates the repository. `new_site.md` needs the local decision: a private GitHub repository under `ronny-rentner`, created before step 7.
 - `setup.md` step 1 removes the git history. Keep it: `git remote rename origin starter`, so a starter update is `git pull starter main`. All git operations go into this one step: the clone, the `starter` remote, creating the site's repository, adding it as `origin`. Step 7 keeps only the commit and push.
 - `AGENTS.md` must say that the agent runs all commands and edits of a setup itself. Where a command really needs the user, such as `sudo`, the agent gives the exact command to paste.

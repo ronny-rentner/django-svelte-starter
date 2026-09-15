@@ -22,9 +22,8 @@ git init && git add -A && git commit -m "Initial commit from django-svelte-start
 
 In `backend/config/settings.py`:
 
-1. `DATABASES` — replace `dss` with `<site>` as the database name, user and password. It is
-   the local development database's; a real password never goes into `settings.py`. Step 5
-   creates the database itself.
+1. `DATABASES` — replace `dss` with `<site>` as the database name and user. For local
+   development, the password can be the site name.
 2. `ALLOWED_HOSTS` — replace `example.com` with `<domain>`.
 3. `EMAIL_HOST` — the site's mail relay. Its login goes into `docker/prod.env` in step 8.
 

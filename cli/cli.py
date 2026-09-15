@@ -474,6 +474,23 @@ class DockerCommand:
         ctx.invoke(self.compose, args=('up', '-d'))
 
     @click.command()
+    @click.argument("domains", nargs=-1)
+    def generate_ssl_cert(self, domains):
+        """Generate a self-signed certificate for DOMAINS, the site's own name by default, for the time before a real one exists"""
+        domains = domains or (PROJECT_ROOT.name,)
+        # Next to certbot's material under docker/certbot
+        cert_dir = Path(self.docker_dir) / 'certbot' / 'selfsigned'
+        if (cert_dir / 'privkey.pem').exists():
+            click.output.error(f"'{cert_dir}' already holds a certificate.")
+            sys.exit(1)
+        cert_dir.mkdir(parents=True)
+        san = ','.join(f'DNS:{domain}' for domain in domains)
+        cmd = (f"openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj /CN={domains[0]} -addext subjectAltName={san} "
+               f"-keyout {cert_dir / 'privkey.pem'} -out {cert_dir / 'fullchain.pem'}")
+        click.output.run_command(cmd, headline=f"Generating a self-signed certificate for: {' '.join(domains)}")
+        click.output.success(f"Certificate in {cert_dir}")
+
+    @click.command()
     @click.argument("service_name", required=True, type=ServiceType())
     @click.argument("mount_point", type=click.Path(), required=False)
     @click.option("-r", "--rebind", is_flag=True, help="Unmount the existing mount first before bind mounting.")

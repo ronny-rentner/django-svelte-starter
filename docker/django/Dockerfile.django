@@ -39,9 +39,6 @@ WORKDIR /app
 
 COPY ./backend/pyproject.toml /app/backend/
 
-# dm changes this value on every build, invalidating the pip layers while retaining their download cache.
-ARG PIP_REFRESH
-
 # Install the Python dependencies; pip's cache is a BuildKit cache on the host, kept across builds
 RUN --mount=type=cache,id=pip,target=/root/.cache/pip pip install --upgrade pip
 RUN --mount=type=cache,id=pip,target=/root/.cache/pip pip install --upgrade --group backend/pyproject.toml:main

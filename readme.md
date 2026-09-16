@@ -370,9 +370,19 @@ export ENV=prod          # once per session; dm reads it
 The container waits for the database, loads `init.sql.gz` into it when it is empty, runs
 the migrations, starts the task worker and serves with gunicorn on port 8000.
 
-`./dm docker build` pulls the base image unless `--no-pull` is given. A new timestamp
-reruns `pip install --upgrade` on every build. BuildKit retains pip's download and wheel
-cache between builds; Git branch dependencies are fetched and rebuilt each time.
+`./dm docker build` and `./dm docker deploy` reuse cached image layers by default.
+`--refresh` reruns every build step, including system-package and pip installs;
+`--force` and `--no-cache` are aliases. BuildKit retains pip's download and wheel cache
+between builds. Git branch dependencies are fetched and rebuilt when pip runs.
+
+```sh
+./dm docker deploy --refresh   # rebuilds all image layers, then up -d
+./dm docker build --refresh    # rebuilds all image layers without starting containers
+```
+
+`./dm docker build` pulls the base image unless `--no-pull` is given; `deploy` always
+pulls it. A changed base image or `backend/pyproject.toml` also rebuilds the dependency
+layers.
 
 Dependencies are unpinned by default. An individual Python dependency can be pinned in
 `backend/pyproject.toml` when a newer release breaks the build.

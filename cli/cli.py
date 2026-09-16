@@ -4,7 +4,6 @@ import re
 import shutil
 import sys
 import termios
-import time
 from pathlib import Path
 
 import requests
@@ -424,7 +423,7 @@ class DockerCommand:
     @click.command()
     @click.argument("services", type=ServiceType(), nargs=-1)
     @click.option("--no-pull", is_flag=True, help="Do not pull the latest base image before building.")
-    @click.option("--no-cache", is_flag=True, help="Build the image without using cache.")
+    @click.option("--refresh", "--force", "--no-cache", "no_cache", is_flag=True, help="Rebuild all image layers, including Python dependencies.")
     def build(self, services, no_pull, no_cache):
         """
         Build the Docker image(s) for the specified SERVICES using 'docker compose build'.
@@ -456,8 +455,8 @@ class DockerCommand:
 
             # Step 2: Use docker compose to build the service
             try:
-                # Refresh the pip layers even when the dependency declarations are unchanged.
-                build_cmd = f"{self._dc_cmd} build --build-arg PIP_REFRESH={time.time_ns()} {service}"
+                # --refresh bypasses image layers; pip's separate download cache remains available.
+                build_cmd = f"{self._dc_cmd} build {service}"
                 if no_cache:
                     build_cmd += " --no-cache"
                 if not no_pull:
@@ -470,9 +469,10 @@ class DockerCommand:
                 click.output.error(f"Error building image for service {service}: {str(e)}")
 
     @click.command()
-    def deploy(self):
+    @click.option("--refresh", "--force", "--no-cache", "no_cache", is_flag=True, help="Rebuild all image layers, including Python dependencies.")
+    def deploy(self, no_cache):
         """Build the django image from the last build and start it"""
-        ctx.invoke(self.build, services=('django',), no_pull=False, no_cache=False)
+        ctx.invoke(self.build, services=('django',), no_pull=False, no_cache=no_cache)
         ctx.invoke(self.compose, args=('up', '-d'))
 
     @click.command()

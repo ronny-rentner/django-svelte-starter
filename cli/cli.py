@@ -4,6 +4,7 @@ import re
 import shutil
 import sys
 import termios
+import time
 from pathlib import Path
 
 import requests
@@ -455,7 +456,8 @@ class DockerCommand:
 
             # Step 2: Use docker compose to build the service
             try:
-                build_cmd = f"{self._dc_cmd} build {service}"
+                # Refresh the pip layers even when the dependency declarations are unchanged.
+                build_cmd = f"{self._dc_cmd} build --build-arg PIP_REFRESH={time.time_ns()} {service}"
                 if no_cache:
                     build_cmd += " --no-cache"
                 if not no_pull:

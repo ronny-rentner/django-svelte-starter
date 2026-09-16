@@ -23,7 +23,7 @@ starter to a running site.
 | Directory | Holds |
 | --------- | ----- |
 | `backend/config/` | settings, URLs, WSGI, the email and admin templates |
-| `backend/core/` | the site's models, views, admin, migrations, tests |
+| `backend/core/` | the site's models, views, admin, migrations |
 | `frontend/src/` | the Svelte app: `pages/`, `components/`, `api/`, `markdown/`, `assets/`, `styles/` |
 | `cli/` | the `dm` commands and the development launcher |
 | `docker/` | the image, the Compose file, the live configuration |
@@ -39,6 +39,8 @@ starter to a running site.
 
 Both reload on file changes. The site is at `http://localhost:5173`, the admin at
 `http://localhost:8000/admin/`.
+
+The task worker processes the `default` queue.
 
 ## 3. The dm CLI
 
@@ -82,6 +84,8 @@ Secrets go into `prod.env` and nowhere else. `docker/certbot/`, the site's Let's
 account and keys, is ignored as well.
 
 ## 6. Backend
+
+The backend has no automated tests yet. `backend/core/tests.py` is a placeholder.
 
 ### Models and admin
 

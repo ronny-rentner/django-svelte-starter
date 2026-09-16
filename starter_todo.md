@@ -6,10 +6,8 @@
 - `setup.md` step 1 removes the git history. Keep it: `git remote rename origin starter`, so a starter update is `git pull starter main`. All git operations go into this one step: the clone, the `starter` remote, creating the site's repository, adding it as `origin`. Step 7 keeps only the commit and push.
 - `AGENTS.md` must say that the agent runs all commands and edits of a setup itself. Where a command really needs the user, such as `sudo`, the agent gives the exact command to paste.
 - `setup.md` step 6 assumes ports 8000 and 5173 are free. With another site's dev servers running, say what to do: stop them, or run the new site's on other ports.
-- Bug, djultra: `./dm run back` with django-tasks 0.12.0 fails to start the task worker, `Worker.__init__() missing 1 required keyword-only argument: 'excluded_queue_names'` in `djultra/management/commands/dev.py:54`. The dev server itself runs on; nothing processes tasks.
 - `./dm run back` and `./dm django-admin` warn `staticfiles.W004: static/frontend does not exist` until the first `./dm build`. Silence it or say so in `setup.md`.
 - `setup.md` step 6 greps the site for the starter's names. Remove it: the grep is the maintainer's tool for finding the spots when writing steps 3 and 4, noted in `development.md`; the guide lists the spots.
-- `setup.md` step 6, the shell check `from core.models import ContactMessage` fails with `ModuleNotFoundError: No module named 'core'`; the app is `backend.core`. The command in the guide is wrong.
 - A login on `/admin/login/` opened directly, without `next`, ends on Django's default `LOGIN_REDIRECT_URL`, `/accounts/profile/`, which the app answers with its 404 page. Via `/admin/`, as `setup.md` says, it does not happen.
 - `frontend/index.html` hardcodes the `<title>`.
 - `new_site.md` needs the values for `setup.md` step 8, `prod_django.ini`: the LAN alias `<site>.yuki` in `ALLOWED_HOSTS`, as carbon.berlin has, and the sender `info@<domain>`.
@@ -20,9 +18,7 @@
 - `new_site.md` and `setup.md` use relative paths everywhere (`../database/register-site ../<site>`, `cd <site>`) without saying which directory a command runs in. State the working directory once at the beginning, keep it the same throughout, and stop the `cd` all over the place. With the site's directory as the working directory, the host scripts take `.`: `../database/register-site .`, `../proxy/issue-cert .`, `../proxy/register-site .`, `../proxy/update-cert .`.
 - `docker/certbot/` mirrors the certbot container's absolute paths: `etc/letsencrypt/live/<site>/` and `var/lib/letsencrypt/`, from `issue-cert`'s mounts. A strange, deep layout for two files; rework it, with the self-signed pair in the same structure as the issued one. The proxy's `var/www/html` is the same pattern, and worse: named after `/var/www/html` and then mounted at `/usr/share/nginx/html`.
 - `sites/proxy/register-site` and `sites/proxy/issue-cert` each parse `prod_django.ini` with their own inline Python. One reader for the ini, not one per script.
-- Bug, `sites/database/register-site`: its final message prints the argument as the site name, "Site '.' has database 'aylinschaer.de' …", instead of the site directory's name.
 - `COMPOSE_PROJECT_NAME` must consist of lowercase alphanumerics, hyphens and underscores; a domain with a dot such as `aylinschaer.de` is rejected: `invalid project name "aylinschaer.de"`. carbon.berlin uses `carbon-berlin`, the domain with the dot as a hyphen. `new_site.md` needs that convention.
-- Bug, `dm`: when a command it runs fails, its error output is not shown. `./dm docker deploy` ended with "exited with code 15" and nothing else; the compose error above was only visible by running the command directly.
 - `setup.md` step 8 has no check after `./dm docker deploy`, unlike step 6 after the local run: nothing says how to see that the container loaded the database, migrated and answers on port 8000.
 - Without DNS, `issue-cert` cannot run, and without its certificate the proxy's `register-site` cannot write a valid config: a site is unreachable until DNS is set up. Nothing delivers a self-signed certificate for the time before, so the site works out of the box, with a browser warning.
 - `setup.md` needs a headline for what can be set up after launch: reCAPTCHA keys, the SMTP account, tracking, proper SSL certificates, proper DNS.
@@ -53,7 +49,6 @@
 - SQL dumps for backups are missing, deferred.
 - Rename `build-info.json` to `buildInfo.json`, matching svUltra's `buildInfo.js` and `updateBuildInfo.js`: the two kit modules, svUltra's readme, the starter's and the sites' `.gitignore`, readme and AGENTS.md, and the file on the host.
 - Schedule `proxy/update-cert` on yuki, deferred. carbon.berlin's certificate expires 2026-12-06; certbot renews from 2026-11-06, so the cron line, or a manual run, must be in place by then.
-- On the next new site, verify `proxy/issue-cert`: the deploy hook copying into `proxy/certs/<site>/` has not been observed yet. The note sits in `new_site.md`, chapter 7.
 - Add a per-site configuration template for launch-critical values: `SECRET_KEY`, `DEBUG`, database settings, frontend URLs, allowed hosts, reCAPTCHA keys, and email settings.
 - Remove local-machine defaults before cloning a real site: personal `ALLOWED_HOSTS`, the absolute path in `cli/startdev.desktop`, `dss` package/database names, and placeholder brand/legal text.
 - Quiet development/demo noise that would distract site work: frontend request/debug logs, layout pageConfig logging, placeholder footer/social links, and demo-only `About` / `Landing` page content.

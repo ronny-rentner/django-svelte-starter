@@ -83,7 +83,7 @@ npm --prefix frontend install
    It answers `{"detail":"Your message has been sent!"}`, and the record is stored:
 
    ```sh
-   ./dm django-admin shell -c "from core.models import ContactMessage; print(ContactMessage.objects.values().last())"
+   ./dm django-admin shell -c "from backend.core.models import ContactMessage; print(ContactMessage.objects.values().last())"
    ```
 
 3. At `http://localhost:8000/admin/`, the superuser from step 5 signs in.

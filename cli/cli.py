@@ -564,7 +564,11 @@ class DockerCommand:
 
         # Step 1: Fetch all available services
         cmd = f"{self._dc_cmd} config --format=json"
-        compose_data = click.output.run_command_and_parse_json(cmd, headline="Listing services")
+        try:
+            compose_data = click.output.run_command_and_parse_json(cmd, headline="Listing services")
+        except SystemExit as e:
+            click.output.error(f"Listing the services failed with exit code {e.code}")
+            raise
 
         if not isinstance(compose_data, dict):
             raise ValueError("Failed to parse Docker Compose configuration.")
@@ -852,6 +856,10 @@ class MainGroup:
 
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.config.settings')
 
+        # Subcommands run in dm's own venv: the launcher starts its Python, this is the rest of activate
+        os.environ['VIRTUAL_ENV'] = sys.prefix
+        os.environ['PATH'] = f"{sys.prefix}/bin:{os.environ['PATH']}"
+
         #TODO: Put in ultraclick
         if sys.stdin.isatty():
             fd = sys.stdin.fileno()
@@ -896,10 +904,7 @@ class MainGroup:
             click.run(["git", "checkout", rev], headline=f"Checking out {rev}")
         else:
             click.run("git pull", headline="Pulling")
-        click.run([sys.executable, "-m", "pip", "install", "--group", "backend/pyproject.toml:main"], headline="Installing backend dependencies")
-        # `npm install` never upgrades an installed package; only `update` does
-        click.run(["npm", "--prefix", self.frontend_dir, "update"], headline="Updating frontend dependencies")
-        click.run(["npm", "--prefix", self.frontend_dir, "install"], headline="Installing frontend dependencies")
+        ctx.invoke("updates.install", target="all")
 
     @click.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
     @click.argument("args", nargs=-1)

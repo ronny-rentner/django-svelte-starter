@@ -1,5 +1,5 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.12-slim
+FROM python:3-slim
 
 # Set environment variables for Python
 
@@ -39,9 +39,9 @@ WORKDIR /app
 
 COPY ./backend/pyproject.toml /app/backend/
 
-# Install the Python dependencies
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir --group backend/pyproject.toml:main
+# Install the Python dependencies; pip's cache is a BuildKit cache on the host, kept across builds
+RUN --mount=type=cache,id=pip,target=/root/.cache/pip pip install --upgrade pip
+RUN --mount=type=cache,id=pip,target=/root/.cache/pip pip install --upgrade --group backend/pyproject.toml:main
 
 # Copy the entire project directory to the container
 COPY . /app

@@ -25,7 +25,6 @@ This repository combines a Django backend with a Vite/Svelte frontend. Backend c
 - `./dm run front`: start the Vite development server in `frontend/`.
 - `./dm run all`: start backend and frontend from the project CLI.
 - `./dm django-admin migrate`: apply Django migrations.
-- `./dm django-admin test core`: run backend tests for the `core` app.
 - `./dm build`: build Svelte assets into `static/frontend`, refresh generated build metadata, then collect Django static files.
 - `./dm build front`: run only the Vite production build.
 - `./dm build static`: run only Django `collectstatic`.
@@ -50,7 +49,7 @@ services.email.send_templated_email(subject=..., ...)   # not: from djultra.serv
 The qualified call (`services.email.send_templated_email`) is more readable and shows where the function lives and how the code is structured. The same applies on the frontend: mirror Relonee's `components/`, `lib/`, `api/` folders and import through the established aliases instead of relocating files.
 
 ## Testing Guidelines
-Backend tests use Django’s test runner. Add tests beside the relevant app, currently `backend/core/tests.py`, and name test methods with `test_...`. Run `./dm django-admin test core` before backend submissions. No frontend test runner is configured; for UI changes, run `./dm build front` and include manual verification notes.
+Backend test status is documented in `readme.md`. New backend tests use Django’s test runner. Add tests beside the relevant app, currently `backend/core/tests.py`, and name test methods with `test_...`. No frontend test runner is configured; for UI changes, run `./dm build front` and include manual verification notes.
 
 ## Commit & Pull Request Guidelines
 Recent history uses short messages such as `Iterate` and `Initial commit`; prefer concise imperative subjects that describe the actual change, for example `Add transcript status filter`. Pull requests should include a summary, linked issue or task, commands run, migration notes.

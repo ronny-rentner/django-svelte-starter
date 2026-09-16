@@ -8,6 +8,8 @@ __pycache__/
 # Ignore Docker-specific files
 docker/*.env
 docker/docker-compose.yml
+# The site's Let's Encrypt account and keys stay on the host.
+docker/certbot/
 
 # Ignore frontend files
 frontend/

@@ -25,7 +25,8 @@ LOG_LEVEL = config('LOG_LEVEL', default="ERROR")
 CONFIG_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = CONFIG_DIR.parent
 BASE_DIR = BACKEND_DIR.parent
-PROJECT_NAME = BASE_DIR.name
+# Note: Do not derive PROJECT_NAME from dir name, it can change per hosting site
+PROJECT_NAME = 'django-svelte-starter'
 
 # Frontend / API URLs, set per environment. They encode how the app is served — in
 # dev the Django API (:8000) and Vite SPA (:5173) on separate ports, in production a

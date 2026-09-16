@@ -74,6 +74,9 @@ Settings live in three files:
 | `docker/prod_django.ini` | what differs per installation: `DEBUG`, `ALLOWED_HOSTS`, the `FRONTEND_*` URLs, `DEFAULT_FROM_EMAIL` | yes, copied into the image | after an image rebuild |
 | `docker/prod.env` | secrets: database credentials, `SECRET_KEY`, API keys, the mail relay login | no | after `up -d` |
 
+`PROJECT_NAME` in `settings.py` is the site's name as a string, used by the Django shell
+and admin.
+
 A setting written as `config('NAME', default=…)` in settings.py takes its value from the
 environment variable `NAME`, else from `NAME = value` in the ini, else from the default.
 Values are cast to the type of the default; lists are comma-separated. A plain assignment
@@ -367,9 +370,14 @@ export ENV=prod          # once per session; dm reads it
 The container waits for the database, loads `init.sql.gz` into it when it is empty, runs
 the migrations, starts the task worker and serves with gunicorn on port 8000.
 
-Nothing is version-pinned, so each `deploy` builds with the current release of every
-dependency; `./dm docker build --no-cache django` also refreshes the base image. An older
-revision is deployed the same way, with `./dm pull <rev>` as the first step.
+`./dm docker build` pulls the base image unless `--no-pull` is given. A new timestamp
+reruns `pip install --upgrade` on every build. BuildKit retains pip's download and wheel
+cache between builds; Git branch dependencies are fetched and rebuilt each time.
+
+Dependencies are unpinned by default. An individual Python dependency can be pinned in
+`backend/pyproject.toml` when a newer release breaks the build.
+
+An older revision is deployed the same way, with `./dm pull <rev>` as the first step.
 
 ## 12. svUltra and djultra
 

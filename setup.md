@@ -26,6 +26,7 @@ In `backend/config/settings.py`:
    development, the password can be the site name.
 2. `ALLOWED_HOSTS` — replace `example.com` with `<domain>`.
 3. `EMAIL_HOST` — the site's mail relay. Its login goes into `docker/prod.env` in step 8.
+4. `PROJECT_NAME` — replace `django-svelte-starter` with the site's name as a string.
 
 ## 4. Rebrand
 

@@ -11,15 +11,52 @@
 
 <style>
   details {
-    border: 1px solid var(--pico-muted-border-color);
+    /* Limit line length while allowing items to fill narrower screens. */
+    max-width: 48rem;
+    margin-bottom: calc(var(--pico-spacing) * 0.5);
+    border: var(--pico-border-width) solid var(--pico-muted-border-color);
     border-radius: var(--pico-border-radius);
-    margin-bottom: 0.5rem;
-    padding: 0 1rem;
+    background-color: var(--pico-card-background-color);
 
+    /* Inset the focus outline inside the item's border. */
+    outline-offset: calc(-1 * (var(--pico-outline-width) + var(--pico-border-width)));
+
+    /* Separate question text from the enclosing border. */
     summary {
+      padding: var(--pico-spacing);
+    }
+
+    /* Align answer text with the summary text. */
+    > summary + * {
+      padding-inline: var(--pico-spacing);
+    }
+
+    /* Keep the focus frame on the item as its answer opens and closes. */
+    &:has(> summary:focus) {
+      outline: var(--pico-outline-width) solid var(--pico-primary-focus);
+    }
+
+    /* The item supplies the focus frame for both summary variants. */
+    > summary:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    /* Emphasize plain questions and round their hover background. */
+    summary:not([role="button"]) {
+      /* Keep unfocused question text the same color in both states. */
+      --pico-accordion-open-summary-color: var(--pico-accordion-close-summary-color);
       font-weight: bold;
-      padding: 1rem 0;
-      margin: 0;
+      border-radius: var(--pico-border-radius);
+      transition-property: color, background-color;
+
+      &:hover, &:focus-visible {
+        background-color: var(--pico-card-sectioning-background-color);
+      }
+
+      &:focus, &:focus-visible {
+        color: var(--pico-color)
+      }
     }
   }
 </style>

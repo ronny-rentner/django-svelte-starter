@@ -1,5 +1,9 @@
 # Starter Extraction TODO
 
+## Frontend keyboard navigation
+
+- Add focus management to the hamburger navigation (`MobileMenu.svelte`, `MobileMenuButton.svelte`, `Layout.svelte`). Opening currently leaves focus on the hamburger button; Tab goes into the page behind the menu because the menu links precede the button in the DOM. Focus the first link on opening, trap Tab/Shift+Tab within the menu links and hamburger/close button, support Escape, and restore focus on closing. Verify the contact dialog and switching back to desktop as well. Keep FAQ accordions untrapped.
+
 ## Doc gaps found while rolling out site 2
 
 - `setup.md` step 7 pushes to `<url>` but never creates the repository. `new_site.md` needs the local decision: a private GitHub repository under `ronny-rentner`, created before step 7.

@@ -763,19 +763,33 @@ class UpdatesCommand:
             "pip list --outdated --format=json", parse_json=True, suppress=True
         )
 
+        # pip list compares published versions; Git packages must be updated from their original URLs.
+        installed_packages = click.output.run_command("pip inspect", parse_json=True, suppress=True)
+        for package in installed_packages["installed"]:
+            source = package.get("direct_url", {})
+            if source.get("vcs_info", {}).get("vcs") == "git":
+                url = f"git+{source['url']}"
+                # Follow the requested branch or tag, not the commit recorded at installation.
+                if revision := source["vcs_info"].get("requested_revision"):
+                    url += f"@{revision}"
+                if subdirectory := source.get("subdirectory"):
+                    url += f"#subdirectory={subdirectory}"
+                outdated_packages = [pkg for pkg in outdated_packages if pkg["name"] != package["metadata"]["name"]]
+                outdated_packages.append({"name": url})
+
         if not isinstance(outdated_packages, list) or not outdated_packages:
             click.output.success("All packages are up-to-date.")
             return
 
         try:
-            # Extract package names
-            package_names = " ".join(pkg["name"] for pkg in outdated_packages)
+            # Keep each name or Git URL as one argument; ultraclick handles shell quoting.
+            package_names = [pkg["name"] for pkg in outdated_packages]
             if not package_names:
                 click.output.success("All packages are up-to-date.")
                 return
 
             # Install updates
-            click.output.run_command(f"pip install --upgrade {package_names}")
+            click.output.run_command(["pip", "install", "--upgrade", *package_names])
             click.output.success("Packages updated successfully.")
         except KeyError:
             click.output.error("Unexpected format in pip list output.")

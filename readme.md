@@ -49,8 +49,10 @@ The task worker processes the `default` queue.
 `./dm --help` lists the commands, `./dm <command> --help` their options. Abbreviated names
 work as long as they are unambiguous: `./dm do de` is `./dm docker deploy`.
 
-`./dm updates install npm` updates frontend packages. Git dependencies are included in
-the update list on every run.
+`./dm updates install pip` updates Python packages; `./dm updates install npm` updates
+frontend packages. Both include Git dependencies in the update list on every run.
+Python Git dependencies need an increased package version (for example, `.dev1` →
+`.dev2`) for `pip install --upgrade` to install new commits.
 
 `backend/readme.md` describes the backend commands.
 

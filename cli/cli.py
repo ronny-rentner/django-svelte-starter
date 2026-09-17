@@ -803,6 +803,14 @@ class UpdatesCommand:
         outdated_command = f"cd {self.frontend_dir} && npm outdated --json"
         outdated_packages = click.output.run_command(outdated_command, parse_json=True, suppress=True, error_handling=False)
 
+        # npm outdated skips Git dependencies; refresh them even when their package version is unchanged.
+        git_command = f"cd {self.frontend_dir} && npm query ':type(git)'"
+        git_packages = click.output.run_command(git_command, parse_json=True, suppress=True)
+        for package in git_packages:
+            outdated_packages[package["name"]] = {
+                "current": package["version"], "latest": "Git (refresh)"
+            }
+
         if not outdated_packages:
             click.output.success("All npm packages are up-to-date.")
             return

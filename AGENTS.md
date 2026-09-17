@@ -30,6 +30,14 @@ This repository combines a Django backend with a Vite/Svelte frontend. Backend c
 - `./dm build static`: run only Django `collectstatic`.
 - `cd frontend && npm run preview`: preview the production frontend build.
 
+## Routine deployment
+
+The deployment sequence in `readme.md` is settled. Once local changes are committed and
+pushed, run it directly in the site's checkout on the deployment host with `ENV=prod`.
+Do not repeat setup, architecture or dependency research for a routine deployment.
+Investigate if a command fails or the requested change affects the deployment workflow.
+Deploy multiple sites one at a time and check startup logs before proceeding to the next.
+
 ## Migrations
 The DB is only ever moved forward by migrations — it is never dropped or reset. Committed migrations are applied history: never delete or edit one.
 

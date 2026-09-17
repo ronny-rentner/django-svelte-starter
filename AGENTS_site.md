@@ -44,6 +44,14 @@ something reimplemented in the frontend.
 - A component is `script`, `style`, then markup; it accepts `children` and `...rest` and
   forwards `...rest` to its real element.
 
+## Routine deployment
+
+The deployment sequence in `readme.md` is settled. Once local changes are committed and
+pushed, run it directly in the site's checkout on the deployment host with `ENV=prod`.
+Do not repeat setup, architecture or dependency research for a routine deployment.
+Investigate if a command fails or the requested change affects the deployment workflow.
+Deploy multiple sites one at a time and check startup logs before proceeding to the next.
+
 ## Commits
 
 One-line imperative subjects that say what changed.

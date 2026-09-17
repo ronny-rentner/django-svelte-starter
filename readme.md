@@ -49,6 +49,9 @@ The task worker processes the `default` queue.
 `./dm --help` lists the commands, `./dm <command> --help` their options. Abbreviated names
 work as long as they are unambiguous: `./dm do de` is `./dm docker deploy`.
 
+`./dm updates install npm` updates frontend packages. Git dependencies are included in
+the update list on every run.
+
 `backend/readme.md` describes the backend commands.
 
 ## 4. Building
@@ -371,6 +374,10 @@ The container waits for the database, loads `init.sql.gz` into it when it is emp
 the migrations, starts the task worker and serves with gunicorn on port 8000.
 
 `./dm docker build` and `./dm docker deploy` reuse cached image layers by default.
+Application and frontend changes use the normal deployment above. Updating Python
+dependencies inside the image requires `--refresh` when the base image and
+`backend/pyproject.toml` are unchanged.
+
 `--refresh` reruns every build step, including system-package and pip installs;
 `--force` and `--no-cache` are aliases. BuildKit retains pip's download and wheel cache
 between builds. Git branch dependencies are fetched and rebuilt when pip runs.

@@ -18,8 +18,8 @@
     border-radius: var(--pico-border-radius);
     background-color: var(--pico-card-background-color);
 
-    /* Inset the focus outline inside the item's border. */
-    outline-offset: calc(-1 * (var(--pico-outline-width) + var(--pico-border-width)));
+    /* Draw the focus outline over the item's border. */
+    outline-offset: calc(-1 * var(--pico-outline-width));
 
     /* Separate question text from the enclosing border. */
     summary {

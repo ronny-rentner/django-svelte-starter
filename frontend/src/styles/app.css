@@ -54,7 +54,6 @@
   --pico-spacing-75: calc(var(--pico-spacing) * 0.75);
 
   scrollbar-color: #666 transparent !important;
-  scrollbar-width: thin;
 }
 
 /* LIGHT THEME OVERRIDES */
@@ -158,10 +157,11 @@
 
 html {
   overflow: auto;
+  scrollbar-gutter: stable;
 }
 
 html > body {
-  overflow: hidden;
+  background: var(--pico-background-color);
 }
 
 html > body > header {
@@ -169,14 +169,7 @@ html > body > header {
 }
 
 #app {
-  overflow: auto;
   scroll-behavior: smooth;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  scrollbar-gutter: stable;
 
   /* Smallest screen size we support */
   min-width: 360px;

@@ -37,21 +37,16 @@
 
 <style>
   footer {
-    /*
-     */
-    padding: var(--pico-spacing) 0;
-    border-top: 1px solid var(--pico-muted-border-color);
     margin-top: calc(var(--pico-spacing) * 8);
+    border-top: 1px solid var(--pico-muted-border-color);
 
     div.grid {
-      padding: var(--pico-spacing);
-      justify-content: center;
-      grid-template-columns: repeat(auto-fit,minmax(8rem,1fr));
-      white-space: nowrap;
+      width: fit-content;
+      margin-inline: auto;
+      padding: var(--pico-spacing) calc(var(--pico-spacing) * 3);
+      grid-template-columns: repeat(3, 1fr);
 
-      div {
-        padding-inline: 1rem;
-      }
+      > div { margin-inline: auto; }
 
       div.grid-column {
         display: flex;
@@ -91,12 +86,6 @@
     margin-bottom: 1rem;
     opacity: 0.7;
   }
-  /*
-  footer > div {
-    flex: 1;
-    margin: 1rem calc(var(--pico-spacing) * 2);
-  }
-   */
   footer h4 {
     margin-bottom: calc(var(--pico-typography-spacing-vertical) * 0.75);
   }
@@ -115,12 +104,10 @@
     text-decoration: var(--pico-text-decoration);
   }
   div.copyright {
+    border-top: 1px solid var(--pico-muted-border-color);
     flex-basis: 100%;
     text-align: center;
-    padding-top: calc(var(--pico-spacing) * 0.75);
-    margin: 0;
-    text-align: center;
-    border-top: 1px solid var(--pico-muted-border-color);
+    padding: var(--pico-spacing);
 
     svg {
       width: 1.35rem;

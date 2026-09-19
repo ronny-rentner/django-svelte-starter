@@ -63,8 +63,10 @@
     margin: 0;
     /*color: #eef;*/
     /*flex-basis: 100%;*/
-    position: absolute;
+    position: fixed;
     top: 0;
+    max-height: 100dvh;
+    overflow-y: auto;
     padding-top: 4.5rem;
     left: 0;
     right: 0;

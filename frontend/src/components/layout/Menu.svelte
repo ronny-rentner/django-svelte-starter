@@ -50,7 +50,7 @@
       left: 0;
       background-color: var(--pico-primary);
       transform: scaleX(0);
-      transition: transform 0.3s ease;
+      transition: transform var(--pico-transition);
     }
 
     ToggleDarkMode {
@@ -72,14 +72,14 @@
       }
 
       ToggleDarkMode {
-        transition: color, border-color 0.3s ease;
+        transition: color var(--pico-transition), border-color var(--pico-transition);
         color: var(--pico-contrast);
         border-color: var(--pico-contrast);
         --pico-primary-focus: var(--pico-primary);
       }
 
       UserMenu {
-        transition: color, border-color 0.3s ease;
+        transition: color var(--pico-transition), border-color var(--pico-transition);
         --pico-color: var(--pico-contrast);
         --pico-border-color: var(--pico-contrast);
         /*--pico-primary-focus: var(--pico-secondary-focus);*/

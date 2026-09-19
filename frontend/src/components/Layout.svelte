@@ -30,7 +30,8 @@
 
   let mobileMenuOpen = $state(false);
 
-  let contrastMode = $derived(pageConfig['contrast']);
+  // Effective header contrast mode: disabled while the mobile menu surface sits behind the header.
+  let contrastMode = $derived(pageConfig['contrast'] && !mobileMenuOpen);
 
   // A page can hide the header and/or footer (e.g. a full-screen landing) by
   // setting pageConfig.showHeader / showFooter to false; see the Router's
@@ -96,7 +97,7 @@
     margin-top: 0;
     height: 2.5rem;
     will-change: filter;
-    transition: filter 300ms;
+    transition: filter var(--pico-transition);
     z-index: 20;
     position: relative;
 

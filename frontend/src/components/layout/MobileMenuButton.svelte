@@ -134,7 +134,7 @@
 
     &.contrastMode {
       --pico-color: var(--pico-contrast) !important;
-      transition: color, background-color 0.4s ease;
+      transition: color var(--pico-transition), background-color var(--pico-transition);
     }
 
     @mobile {
@@ -144,7 +144,7 @@
 
   /* Hamburger menu button high contrast mode */
   button span.contrastMode {
-    transition: color, background-color 0.4s ease;
+    transition: color var(--pico-transition), background-color var(--pico-transition);
     --pico-background-color: var(--pico-contrast);
   }
 </style>

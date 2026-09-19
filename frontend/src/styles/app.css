@@ -34,6 +34,8 @@
   --pico-font-family-headings: 'Manrope', var(--pico-font-family-sans-serif);
   --pico-progress-color: rgba(255, 255, 255, 0.2);
   --pico-outline-width: 0.125rem;
+  /* Site transition default used by Pico and local component transitions. */
+  --pico-transition: 0.4s ease-in-out;
 
   --pico-table-background-color: var(--pico-background-color);
   --pico-table-alt-background-color: #f0f0f0;

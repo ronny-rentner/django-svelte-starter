@@ -31,7 +31,8 @@
 
     a {
       position: relative;
-      transition: none !important;
+      /* Match the link colour change to the header gradient fade in both directions. */
+      transition: color var(--pico-transition) !important;
       text-decoration: none;
     }
 
@@ -50,7 +51,8 @@
       left: 0;
       background-color: var(--pico-primary);
       transform: scaleX(0);
-      transition: transform var(--pico-transition);
+      /* Keep the visible hover underline in step with the link and header colour changes. */
+      transition: transform var(--pico-transition), background-color var(--pico-transition);
     }
 
     ToggleDarkMode {

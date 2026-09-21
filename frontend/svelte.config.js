@@ -13,6 +13,8 @@ const replacements = [
 ];
 
 export default {
+  extensions: ['.svelte', '.md'],
+
   preprocess: svultraPreprocess({
     replacements,
     attributes: [

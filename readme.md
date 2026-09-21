@@ -236,6 +236,10 @@ The URL of an asset is `/static/src/assets/<name>`:
 frontend/src/assets/logo.svg   →  /static/src/assets/logo.svg
 ```
 
+Image, font and icon files are treated as long-lived by URL. The URL is the cache boundary:
+a changed asset gets a new URL, usually by a new filename such as `logo-v2.svg`. A query
+suffix such as `logo.svg?2` is the fallback when the filename must stay the same.
+
 The Django admin has its own CSS and JS in `static/src/admin/`, named in `settings.py` for
 Jazzmin. Nothing else goes into `static/src/`.
 
@@ -296,6 +300,11 @@ that differs from the API URL.
 
 In production, the proxy serves the built app and forwards `/api` to Django under one
 domain, so the page and the API share an origin.
+
+`DJANGO_VITE_DEV_MODE`, defaulting to `DEBUG`, decides whether the Django shell points at
+the Vite dev server or at the built manifest. With it on, a page opened through Django still
+loads the frontend entrypoint and Vite-handled assets from the dev server. With it off, the
+shell uses the built files from `static/frontend/` or `static/collected/`.
 
 Three settings hold these URLs, set per installation:
 

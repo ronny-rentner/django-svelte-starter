@@ -378,11 +378,14 @@ you want to run without a proxy, you can publish the port with a `ports:` entry 
 export ENV=prod          # once per session; dm reads it
 ./dm pull                # git pull, then the pip and npm installs; `./dm pull <rev>` for a revision
 ./dm build               # frontend and static files, built on the host
-./dm docker deploy       # builds the image, then up -d
+./dm docker deploy       # builds the image, then up -d and recent Django logs
 ```
 
 The container waits for the database, loads `init.sql.gz` into it when it is empty, runs
 the migrations, starts the task worker and serves with gunicorn on port 8000.
+
+Deployment prints the latest 80 Django log lines. Startup can still be in progress;
+`./dm docker follow django` streams subsequent log output.
 
 `./dm docker build` and `./dm docker deploy` reuse cached image layers by default.
 Application and frontend changes use the normal deployment above. Updating Python

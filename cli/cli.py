@@ -471,9 +471,11 @@ class DockerCommand:
     @click.command()
     @click.option("--refresh", "--force", "--no-cache", "no_cache", is_flag=True, help="Rebuild all image layers, including Python dependencies.")
     def deploy(self, no_cache):
-        """Build the django image from the last build and start it"""
+        """Build the django image from the last build, start it and show recent logs."""
         ctx.invoke(self.build, services=('django',), no_pull=False, no_cache=no_cache)
         ctx.invoke(self.compose, args=('up', '-d'))
+        # Print recent output without leaving deploy attached to the log stream.
+        ctx.invoke(self.compose, args=('logs', '--tail', '80', 'django'))
 
     @click.command()
     @click.argument("domains", nargs=-1)

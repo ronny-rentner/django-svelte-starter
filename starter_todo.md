@@ -9,7 +9,7 @@
 - `setup.md` step 7 pushes to `<url>` but never creates the repository. `new_site.md` needs the local decision: a private GitHub repository under `ronny-rentner`, created before step 7.
 - `setup.md` step 1 removes the git history. Keep it: `git remote rename origin starter`, so a starter update is `git pull starter main`. All git operations go into this one step: the clone, the `starter` remote, creating the site's repository, adding it as `origin`. Step 7 keeps only the commit and push.
 - `AGENTS.md` must say that the agent runs all commands and edits of a setup itself. Where a command really needs the user, such as `sudo`, the agent gives the exact command to paste.
-- `setup.md` step 6 assumes ports 8000 and 5173 are free. With another site's dev servers running, say what to do: stop them, or run the new site's on other ports.
+- `setup.md` step 6 assumes ports 8010 and 5183 are free. With another site's dev servers running, say what to do: stop them, or run the new site's on other ports.
 - `./dm run back` and `./dm django-admin` warn `staticfiles.W004: static/frontend does not exist` until the first `./dm build`. Silence it or say so in `setup.md`.
 - `setup.md` step 6 greps the site for the starter's names. Remove it: the grep is the maintainer's tool for finding the spots when writing steps 3 and 4, noted in `development.md`; the guide lists the spots.
 - A login on `/admin/login/` opened directly, without `next`, ends on Django's default `LOGIN_REDIRECT_URL`, `/accounts/profile/`, which the app answers with its 404 page. Via `/admin/`, as `setup.md` says, it does not happen.

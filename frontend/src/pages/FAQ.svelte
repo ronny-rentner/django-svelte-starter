@@ -24,6 +24,9 @@
     /* Separate question text from the enclosing border. */
     summary {
       padding: var(--pico-spacing);
+      /* Use capital height and baseline so equal vertical padding visually centers the question,
+         without font-specific padding adjustments. */
+      text-box: trim-both cap alphabetic;
     }
 
     /* Align answer text with the summary text. */

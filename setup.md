@@ -69,15 +69,15 @@ npm --prefix frontend install
 
 ```sh
 ./dm run back      # Django, the task worker and the fastmanage daemon
-./dm run front     # Vite on port 5173
+./dm run front     # Vite on port 5183
 ```
 
-1. At `http://localhost:5173`, the home page renders with the new brand, and the
+1. At `http://localhost:5183`, the home page renders with the new brand, and the
    **Contact** modal submits and the message appears in `/admin/`.
 2. The contact endpoint alone, without the modal:
 
    ```sh
-   curl -X POST http://localhost:8000/api/contact/ -H 'Content-Type: application/json' \
+   curl -X POST http://localhost:8010/api/contact/ -H 'Content-Type: application/json' \
      -d '{"name":"Check","email":"check@example.com","message":"Setup check","recaptcha":"test"}'
    ```
 
@@ -87,7 +87,7 @@ npm --prefix frontend install
    ./dm django-admin shell -c "from backend.core.models import ContactMessage; print(ContactMessage.objects.values().last())"
    ```
 
-3. At `http://localhost:8000/admin/`, the superuser from step 5 signs in.
+3. At `http://localhost:8010/admin/`, the superuser from step 5 signs in.
 4. `./dm build` completes and writes `static/frontend/manifest.json`.
 5. No starter name is left:
 

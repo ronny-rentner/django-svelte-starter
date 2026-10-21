@@ -37,7 +37,8 @@ if (!isProduction) {
       devSourcemap: true,
     },
     server: {
-      origin: 'http://localhost:5173',
+      port: 5183,
+      origin: 'http://localhost:5183',
       //no effect
       sourcemap: true,
     },

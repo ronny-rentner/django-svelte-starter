@@ -28,13 +28,16 @@ BASE_DIR = BACKEND_DIR.parent
 # Note: Do not derive PROJECT_NAME from dir name, it can change per hosting site
 PROJECT_NAME = 'django-svelte-starter'
 
+BIND_PORT = 8010
+BIND_ADDRESS = f'0.0.0.0:{BIND_PORT}'
+
 # Frontend / API URLs, set per environment. They encode how the app is served — in
-# dev the Django API (:8000) and Vite SPA (:5173) on separate ports, in production a
+# dev the Django API (:8010) and Vite SPA (:5183) on separate ports, in production a
 # single reverse-proxied origin. See the readme, "How the frontend and API are
 # served". CORS_ALLOWED_ORIGINS and the CSP connect-src build on these.
-FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
-FRONTEND_URL_EMAILS = config('FRONTEND_URL_EMAILS', default='http://localhost:8000')
-FRONTEND_API_URL = config('FRONTEND_API_URL', default='http://localhost:8000/api')
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5183')
+FRONTEND_URL_EMAILS = config('FRONTEND_URL_EMAILS', default=f'http://localhost:{BIND_PORT}')
+FRONTEND_API_URL = config('FRONTEND_API_URL', default=f'http://localhost:{BIND_PORT}/api')
 # reCAPTCHA v3 — defaults to Google's universal test keys: they always validate
 # (the widget shows a "for testing only" banner), so the contact/sign-in forms
 # work out of the box. Set your real keys via env / CONFIG_FILE in production.

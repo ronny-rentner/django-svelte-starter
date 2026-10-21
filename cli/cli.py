@@ -139,9 +139,17 @@ class DockerCommand:
 
     @click.command()
     @click.argument("services", nargs=-1, type=ServiceType())
-    def follow(self, services):
+    @click.option("-f", "--follow", is_flag=True, help="Keep streaming new log output.")
+    def logs(self, services, follow):
+        """Show service logs and exit, or stream new output with --follow."""
         services = " ".join(ctx.invoke(self.services, services=services))
-        return self._run_dc_cmd(f'logs -f {services}', headline=f'Following {services}')
+        return self._run_dc_cmd(f'logs{" -f" if follow else ""} {services}', headline=f'Logs for {services}')
+
+    @click.command()
+    @click.argument("services", nargs=-1, type=ServiceType())
+    def follow(self, services):
+        """Alias for docker logs --follow."""
+        return ctx.invoke(self.logs, services=services, follow=True)
 
     @click.command()
     @click.argument("service_name", required=True)
@@ -471,11 +479,9 @@ class DockerCommand:
     @click.command()
     @click.option("--refresh", "--force", "--no-cache", "no_cache", is_flag=True, help="Rebuild all image layers, including Python dependencies.")
     def deploy(self, no_cache):
-        """Build the django image from the last build, start it and show recent logs."""
+        """Build the django image from the last build and start it"""
         ctx.invoke(self.build, services=('django',), no_pull=False, no_cache=no_cache)
         ctx.invoke(self.compose, args=('up', '-d'))
-        # Print recent output without leaving deploy attached to the log stream.
-        ctx.invoke(self.compose, args=('logs', '--tail', '80', 'django'))
 
     @click.command()
     @click.argument("domains", nargs=-1)
@@ -910,12 +916,14 @@ class MainGroup:
 
     @click.command()
     @click.argument("target", type=click.Choice(['front', 'back', 'worker', 'all']), default="back")
-    @click.argument("host", default="0.0.0.0:8000")
+    @click.argument("host", required=False)
     def run(self, target, host):
         """Run development servers"""
-        #cmd = "DEBUG=true python manage.py runserver 0.0.0.0:8000"
         if target in ['all', 'back']:
-            click.run([sys.executable, "./cli/manage.py", "dev", host], headline="Running backend dev server (Django)")
+            cmd = [sys.executable, "./cli/manage.py", "dev"]
+            if host:
+                cmd.append(host)
+            click.run(cmd, headline="Running backend dev server (Django)")
         if target in ['all', 'front']:
             click.run(["npm", "--prefix", self.frontend_dir, "run", "dev"], headline="Running frontend dev server (NPM)")
 

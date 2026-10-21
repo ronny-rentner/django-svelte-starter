@@ -42,8 +42,6 @@
 
   --pico-modal-overlay-backdrop-filter: blur(0.5rem);
 
-  --pico-typography-spacing-top: var(--pico-typography-spacing-vertical);
-
   --pico-form-element-spacing-vertical: 0.5rem;
   --pico-form-element-spacing-horizontal: 0.75rem;
 
@@ -200,8 +198,6 @@ textarea {
 
 
 h1, h2, h3, h4, h5, h6 {
-  --pico-typography-spacing-top: var(--pico-typography-spacing-vertical);
-  /*margin-top: 0;*/
   font-family: var(--pico-font-family-headings);
   font-weight: 700;
 
@@ -217,6 +213,12 @@ h1, h2, h3, h4, h5, h6 {
   --pico-font-weight: bold;
   /*--pico-form-element-spacing-vertical: 0.35rem;*/
   flex-shrink: 0;
+}
+
+/* A list right after a paragraph continues it: the paragraph's bottom margin is halved so
+   the lead-in sentence stays with its list */
+p + :is(ul, ol) {
+  margin-top: calc(var(--pico-typography-spacing-vertical) * -0.5);
 }
 
 kbd {

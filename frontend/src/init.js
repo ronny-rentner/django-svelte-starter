@@ -42,7 +42,7 @@ if (localStorage.getItem('theme') === 'dark') {
 
 // Set the apiBaseUrl if it hasn't been set before, but only for dev
 if (!window.config.apiBaseUrl && import.meta.env.DEV) {
-  window.config.apiBaseUrl = 'http://localhost:8000/api';
+  window.config.apiBaseUrl = 'http://localhost:8010/api';
 }
 
 // Without the Django shell (the Vite page in dev) the login is on, as in the settings

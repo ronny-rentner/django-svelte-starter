@@ -33,14 +33,12 @@ starter to a running site.
 ## 2. Running
 
 ```sh
-./dm run back      # Django on port 8000, the task worker and the fastmanage daemon
-./dm run front     # Vite on port 5173
+./dm run back      # Django on port 8010, the task worker and the fastmanage daemon
+./dm run front     # Vite on port 5183
 ```
 
-Both reload on file changes. The site is at `http://localhost:5173`, the admin at
-`http://localhost:8000/admin/`.
-
-The task worker processes the `default` queue.
+Both reload on file changes. The site is at `http://localhost:5183`, the admin at
+`http://localhost:8010/admin/`.
 
 ## 3. The dm CLI
 
@@ -191,6 +189,12 @@ the sign-in and contact forms. The kit's components come from `@kit/components`.
 component is configured from outside: props, attributes, component styling. A site that
 needs its own version copies it into `frontend/src/components/` and changes the copy.
 
+For content that loads within a page, svUltra's [Loader](https://github.com/ronny-rentner/svUltra#loading-content-loader)
+handles the content swap and a viewport-sized loading overlay.
+
+In progress: [asynchronous content loading research](async-content-loading-research.md)
+compares approaches for loading and transitioning content within a page.
+
 ### Styling
 
 PicoCSS is the visual baseline. `frontend/src/styles/app.css` is loaded after it (see
@@ -293,9 +297,9 @@ cancellation and the reCAPTCHA loader. A new endpoint is a function in `api.js` 
 
 ### Origins and URLs
 
-In development, Django serves the API and the HTML shell on port 8000, and Vite serves the
-Svelte app with hot-reload on port 5173. The page and the API can be different origins:
-the Vite page on `:5173` calling the API on `:8000`, or Django reached under a host alias
+In development, Django serves the API and the HTML shell on port 8010, and Vite serves the
+Svelte app with hot-reload on port 5183. The page and the API can be different origins:
+the Vite page on `:5183` calling the API on `:8010`, or Django reached under a host alias
 that differs from the API URL.
 
 In production, the proxy serves the built app and forwards `/api` to Django under one
@@ -308,9 +312,9 @@ shell uses the built files from `static/frontend/` or `static/collected/`.
 
 Three settings hold these URLs, set per installation:
 
-- `FRONTEND_URL` — where the app is served: `http://localhost:5173` in development, the
+- `FRONTEND_URL` — where the app is served: `http://localhost:5183` in development, the
   site's origin in production.
-- `FRONTEND_API_URL` — the API base the app calls: `http://localhost:8000/api`.
+- `FRONTEND_API_URL` — the API base the app calls: `http://localhost:8010/api`.
 - `FRONTEND_URL_EMAILS` — the public base URL used in email links.
 
 When the page and the API differ in origin, cross-origin access is gated by
@@ -319,9 +323,9 @@ to allow extra hosts such as LAN IPs.
 
 ### Simulating slow loading
 
-`window.config.loadingDelay` makes the router wait that many milliseconds before swapping
-in the next page, which shows the loading overlay. From the browser console, for the
-session:
+`window.config.loadingDelay` makes Router and Loader wait that many milliseconds before
+swapping in the next page or content, which shows the loading overlay. From the browser
+console, for the session:
 
 ```js
 window.config.loadingDelay = 4000
@@ -378,14 +382,18 @@ you want to run without a proxy, you can publish the port with a `ports:` entry 
 export ENV=prod          # once per session; dm reads it
 ./dm pull                # git pull, then the pip and npm installs; `./dm pull <rev>` for a revision
 ./dm build               # frontend and static files, built on the host
-./dm docker deploy       # builds the image, then up -d and recent Django logs
+./dm docker deploy       # builds the image, then up -d
 ```
 
 The container waits for the database, loads `init.sql.gz` into it when it is empty, runs
 the migrations, starts the task worker and serves with gunicorn on port 8000.
 
-Deployment prints the latest 80 Django log lines. Startup can still be in progress;
-`./dm docker follow django` streams subsequent log output.
+Service logs are available separately:
+
+```sh
+./dm docker logs django    # prints existing logs and exits
+./dm docker follow django  # alias for logs -f; Ctrl+C stops viewing
+```
 
 `./dm docker build` and `./dm docker deploy` reuse cached image layers by default.
 Application and frontend changes use the normal deployment above. Updating Python

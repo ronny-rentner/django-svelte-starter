@@ -1,5 +1,13 @@
 # Starter Extraction TODO
 
+## Move to svUltra's layoutConfig
+
+- From svUltra `b623de7` on, the Router no longer has `pageConfig` or its context: the Layout owns `layoutConfig`, passes it to the page with `children(layoutConfig)` and restores its defaults through `onPageChange`. The starter breaks with that svUltra until it is moved over. Do it as aylinschaer.de did in `e240ba5`: `Layout.svelte` declares `const defaults`, `const layoutConfig = $state({ ...defaults })`, `onPageChange(() => Object.assign(layoutConfig, defaults))` and renders `{@render children(layoutConfig)}`; pages take `layoutConfig` from `$props()` and set it, without `getContext` or `onDestroy`. Files: `frontend/src/components/Layout.svelte`, `frontend/src/pages/Landing.svelte`.
+
+## Comment rule in svelte.config.js
+
+- The replacement `[/\/\*[\s\S]*?\*\//gm, '']` in `frontend/svelte.config.js` takes every `/*` as the start of a comment, also one inside a string, a regex literal or a `//` comment, and deletes the code up to the next `*/`; in markup it removes text. Seen in aylinschaer.de: a line comment with `'/articles/*'` in svUltra's `Router.svelte` broke the compile with "'return' outside of function". aylinschaer.de has the rule commented out. Replace it with the parser-based `stripComments` option once svUltra has it (svUltra `todo.md`), or comment it out until then.
+
 ## Frontend keyboard navigation
 
 - Add focus management to the hamburger navigation (`MobileMenu.svelte`, `MobileMenuButton.svelte`, `Layout.svelte`). Opening currently leaves focus on the hamburger button; Tab goes into the page behind the menu because the menu links precede the button in the DOM. Focus the first link on opening, trap Tab/Shift+Tab within the menu links and hamburger/close button, support Escape, and restore focus on closing. Verify the contact dialog and switching back to desktop as well. Keep FAQ accordions untrapped.

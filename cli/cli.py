@@ -821,6 +821,13 @@ class UpdatesCommand:
             click.output.error("No 'frontend' directory found.")
             return
 
+        # npm drops its record of the installed packages as soon as any folder in node_modules, or the target of a link
+        # in it, is newer than the record, and then reinstalls every package, unchanged ones included. A fresh
+        # timestamp keeps the record, so npm replaces only packages with a newer version.
+        hidden_lockfile = self.frontend_dir / "node_modules" / ".package-lock.json"
+        if hidden_lockfile.exists():
+            hidden_lockfile.touch()
+
         # Navigate to the frontend directory and check for outdated packages
         outdated_command = f"cd {self.frontend_dir} && npm outdated --json"
         outdated_packages = click.output.run_command(outdated_command, parse_json=True, suppress=True, error_handling=False)

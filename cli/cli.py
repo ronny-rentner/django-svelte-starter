@@ -840,7 +840,8 @@ class UpdatesCommand:
         try:
             # Prepare a summary of packages to be updated
             packages_to_update = [
-                f"{pkg} (current: {details['current']}, latest: {details['latest']})"
+                # npm outdated gives no current version for a package in package.json that is not installed yet
+                f"{pkg} (current: {details.get('current', 'not installed')}, latest: {details['latest']})"
                 for pkg, details in outdated_packages.items()
             ]
             click.output.info("The following packages will be updated:")

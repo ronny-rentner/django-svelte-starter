@@ -67,6 +67,7 @@ db.sqlite3-journal
 static/frontend
 static/collected
 frontend/src/build-info.json
+frontend/src/generatedRoutes2.svelte.js
 
 # Flask stuff:
 instance/

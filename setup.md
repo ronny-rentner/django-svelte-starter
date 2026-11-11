@@ -59,7 +59,7 @@ Then install the dependencies and set up the database:
 
 ```sh
 python3 -m venv backend/venv
-backend/venv/bin/pip install --group backend/pyproject.toml:main
+backend/venv/bin/pip install --group backend/pyproject.toml:main --group backend/pyproject.toml:dev
 npm --prefix frontend install
 ./dm django-admin migrate
 ./dm django-admin createsuperuser

@@ -92,6 +92,7 @@ const config = {
     //Handle *.svelte files, convert them to Javascript
     svelte(),
     generateRoutesPlugin({
+      outputFile: './src/generatedRoutes2.svelte.js',
       //Special routes that need to be configured manually
       routeRenames: {
         '/home': '/',

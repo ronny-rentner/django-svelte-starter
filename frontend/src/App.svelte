@@ -11,7 +11,7 @@
   import { Router } from '@kit/router';
   import Layout from '@components/Layout.svelte';
 
-  import { routes } from './generatedRoutes.svelte.js';
+  import { routes } from './generatedRoutes2.svelte.js';
 
   //TODO: Do we still have to import the favicon to include it in the bundle (and therefore manifest)?
   import '@assets/favicon.svg';

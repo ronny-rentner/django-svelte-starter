@@ -1,8 +1,8 @@
 # Repository Guidelines
 
-This site is built from django-svelte-starter. `readme.md` is the starter's manual — how the
-site is run, built, configured and deployed — and stays as it came from the starter;
-`setup.md` is the manual that set the site up. Read `readme.md` first and keep it in context.
+This site is built from django-svelte-starter. `starter.md` is the starter's manual, read-only;
+`readme.md` is the site's own. `setup.md` is the manual that set the site up. Read `starter.md`
+and `readme.md` first and keep them in context.
 
 ## Working on the site
 
@@ -46,7 +46,7 @@ something reimplemented in the frontend.
 
 ## Routine deployment
 
-The deployment sequence in `readme.md` is settled. Once local changes are committed and
+The deployment sequence in `starter.md` is settled. Once local changes are committed and
 pushed, run it directly in the site's checkout on the deployment host with `ENV=prod`.
 Do not repeat setup, architecture or dependency research for a routine deployment.
 Investigate if a command fails or the requested change affects the deployment workflow.

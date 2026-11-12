@@ -16,7 +16,9 @@ git init && git add -A && git commit -m "Initial commit from django-svelte-start
 ## 2. Remove the starter's own material
 
 1. Delete `new_site.md`, `development.md` and `starter_todo.md`.
-2. In `AGENTS.md`, delete the section "Starter extraction".
+2. Rename `AGENTS_site.md` to `AGENTS.md`, replacing the starter's.
+3. Rename `readme.md` to `starter.md`, head it with `> The starter's manual, read-only: do not
+   change. The site's own is readme.md.` and create the site's `readme.md`.
 
 ## 3. Configure the site
 
@@ -36,7 +38,7 @@ In `backend/config/settings.py`:
    with" line and the social links.
 5. `frontend/src/assets/` — `logo.svg`, `logo-dark.svg` and `favicon.svg`.
 6. `frontend/src/styles/app.css` — `--pico-primary`, `--pico-secondary` and the site font;
-   the readme's "Styling" section describes both.
+   the "Styling" section of `starter.md` describes both.
 7. `frontend/src/markdown/Imprint.md` — the site's details in place of the example values.
 8. `frontend/src/markdown/Privacy.md` — a privacy policy for the site. The starter's is a
    generated template with placeholders; the generator is linked at its end.
@@ -72,7 +74,7 @@ npm --prefix frontend install
 ./dm run front     # Vite on port 5183
 ```
 
-1. At `http://localhost:5183`, the home page renders with the new brand, and the
+1. At `http://localhost:8010`, the home page renders with the new brand, and the
    **Contact** modal submits and the message appears in `/admin/`.
 2. The contact endpoint alone, without the modal:
 

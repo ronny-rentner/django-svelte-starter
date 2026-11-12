@@ -37,8 +37,12 @@ starter to a running site.
 ./dm run front     # Vite on port 5183
 ```
 
-Both reload on file changes. The site is at `http://localhost:5183`, the admin at
+Run both, then open the site at `http://localhost:8010` and the admin at
 `http://localhost:8010/admin/`.
+
+Vite's `http://localhost:5183` is not opened in the browser. Django's index HTML template
+includes the Svelte frontend from it, so the open page updates as soon as a frontend file
+changes. Django reloads when a backend file changes.
 
 ## 3. The dm CLI
 

@@ -21,7 +21,6 @@
     "@sveltejs/vite-plugin-svelte": "*",
     "browserslist": "*",
     "browserslist-to-esbuild": "*",
-    "chokidar": "*",
     "postcss-nested": "*",
     "svelte": "*",
     "vite": "*"

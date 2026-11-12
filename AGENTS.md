@@ -8,6 +8,11 @@
 
 Orient first (list the repo's top-level files and dirs), then read `readme.md` and keep it in context. Record decisions there as they're made; that's how they survive across sessions.
 
+## Documentation
+The starter documents itself in `readme.md`, its manual, and `setup.md`, its setup manual. A site
+created from it keeps the starter's manual as read-only `starter.md` and documents itself only in its
+own `readme.md`, never mixed into the starter's documentation.
+
 ## What goes where
 `djultra` (backend) and `svUltra` (frontend) are shared libraries that add common bells and whistles to Django/Svelte (base models, serializers, email, components, actions). The models and endpoints a site defines — `Person`, `ContactMessage`, the login and contact views — live in the site (here, the starter), not in the libraries.
 
